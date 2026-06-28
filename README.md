@@ -22,10 +22,20 @@ Open `index.html` in any browser — no internet or install required (works full
 
 **6 lectures · 69 topics · ~480 practice questions · 6 flashcard decks.**
 
+## Offline single file (for a flight)
+Want one file you can just download and open — no folder, no internet?
+Grab **`bio22800-offline.html`**: it has the app, all content, and every slide
+image embedded inside it. Download that one file, open it in any browser, and
+everything works fully offline. (~39 MB.)
+
+To rebuild it after changing the content, run `python3 build-offline.py`.
+
 ## Files
-- `index.html` — the app (open this)
+- `index.html` — the app (open this), uses the files below
 - `course-data.js` — all lecture content, quizzes, flashcards
 - `slides/` — rendered lecture slide images
+- `bio22800-offline.html` — everything above bundled into one self-contained file
+- `build-offline.py` — regenerates `bio22800-offline.html`
 
 ## Note on materials
 Lecture slide images are course materials from BIO 22800 (© the course instructor), included here **with the instructor's permission** for personal exam study.
