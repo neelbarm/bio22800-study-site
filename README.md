@@ -26,9 +26,16 @@ Open `index.html` in any browser — no internet or install required (works full
 Want one file you can just download and open — no folder, no internet?
 Grab **`bio22800-offline.html`**: it has the app, all content, and every slide
 image embedded inside it. Download that one file, open it in any browser, and
-everything works fully offline. (~39 MB.)
+everything works fully offline. (~14 MB — slides are downscaled so it
+downloads and opens comfortably on a phone.)
 
-To rebuild it after changing the content, run `python3 build-offline.py`.
+To rebuild it after changing the content, run `python3 build-offline.py`
+(needs `pip install Pillow`). Adjust `MAX_WIDTH` / `JPEG_QUALITY` in that
+script to trade file size against slide sharpness.
+
+**Opening it on an iPhone:** download the file into the **Files** app, then
+tap it there — iOS renders and runs it. Viewing it on github.com or a text
+preview just shows the source code; it only *runs* from the Files app.
 
 ## Files
 - `index.html` — the app (open this), uses the files below
