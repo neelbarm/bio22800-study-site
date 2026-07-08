@@ -2323,3 +2323,206 @@ Genotype frequencies: p² + 2pq + q² = 1</div>
  };
 
 })();
+
+/* ===================== LECTURE 7 — Molecular Systematics ===================== */
+(function(){
+ const c=(n)=>({src:"slides/L7/slide-"+String(n).padStart(2,"0")+".jpg",cap:"L7 · Slide "+n});
+ const L7={
+  id:"L7", icon:"🔬", short:"L7 · Molecular Systematics",
+  title:"Lecture 7 — Molecular Systematics",
+  blurb:"Using DNA as character data: limits of morphology, coding vs non-coding DNA, the sample-to-phylogeny pipeline, phylogenies as hypotheses, and applications.",
+  objectives:[
+   "Describe the limitations of morphology-based phylogenies",
+   "Understand how DNA can be used as character data",
+   "Describe the differences in use of coding vs non-coding DNA in molecular systematics",
+   "Describe the process of creating a phylogeny from sample collection to phylogenetic inference",
+   "Compare and contrast field-based vs museum-based samples for DNA extraction",
+   "Explain why a phylogeny is a hypothesis",
+   "Describe the applications of molecular systematics"
+  ],
+  topics:[
+   {id:"L7T1", title:"Recap: inferring phylogenies & parsimony", sub:"The foundation carried over from Lecture 6 (slides 1–8).",
+    slides:[
+     {h:"Phylogenetics, homologous characters, ancestral vs derived", imgs:[c(3),c(4),c(6)], html:`
+       <p class="lead">Quick recap: <b>phylogenetics</b> uncovers relationships; <b>taxonomy</b> names/organizes; <b>systematics</b> classifies by evolutionary relationships. We infer trees from <span class="kw">homologous characters</span> (inherited from a common ancestor) and their <b>character states</b>.</p>
+       <p>A state is <b>ancestral</b> if found in the common ancestor, <b>derived</b> if it evolved from the ancestral state. An <b>outgroup</b> (the sister group) determines <span class="kw-2">polarity</span> — which states are ancestral vs derived.</p>`},
+     {h:"Maximum parsimony", imgs:[c(7),c(8)], html:`
+       <p class="lead"><span class="kw">Maximum parsimony</span> compares states across homologous characters, scoring outgroup-shared states as ancestral (0) and novel ones as derived (1). The best tree is the one requiring the <b>fewest evolutionary changes</b> (Occam's razor). This lecture applies the same logic to <b>DNA</b>.</p>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"In parsimony, character states shared with the outgroup are scored as:",opts:["Derived (1)","Ancestral (0)","Random","Missing"],a:1,exp:"Outgroup states are treated as ancestral (0); novel states are derived (1)."},
+     {type:"mcq",q:"The best tree under maximum parsimony is the one that:",opts:["Has the most species","Requires the fewest evolutionary changes","Has the longest branches","Uses only morphology"],a:1,exp:"Most parsimonious = fewest changes (Occam's razor)."},
+     {type:"short",q:"What does an outgroup do in phylogenetic inference?",model:"An outgroup is a comparison group, usually the sister group, that is used to determine the polarity of character states — that is, which states are ancestral and which are derived. States shared with the outgroup are treated as ancestral.",pts:["Comparison group / sister group","Determines polarity","Shared-with-outgroup = ancestral"]}
+    ]},
+   {id:"L7T2", title:"Limitations of morphology-based phylogenies", sub:"Why we turn to DNA (slides 9–10).",
+    slides:[
+     {h:"Three limitations", imgs:[c(9),c(10)], html:`
+       <p class="lead">Building trees from morphology has real problems:</p>
+       <ol><li><b>Limited to measurable traits</b> — you can only use traits you can feasibly measure. (Leaf length: 5 individuals × 20 min × 250 species = 400+ hours for a single trait.)</li>
+       <li><b>Subjectivity in trait coding</b> — one person's "orange" is another's "brown"; scoring is not always objective.</li>
+       <li><span class="kw">Convergent evolution</span> — similar traits evolving independently can <b>mislead</b> us into thinking two species are more closely related than they are (e.g., platypus vs beaver look alike but aren't close relatives).</li></ol>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Which is a limitation of morphology-based phylogenies?",opts:["DNA is too cheap","Convergent evolution can make unrelated species look closely related","There are too many nucleotides","Morphology evolves too fast"],a:1,exp:"Convergent evolution (homoplasy) can mislead morphology-based trees."},
+     {type:"mcq",q:"Why is trait coding a limitation of morphological phylogenies?",opts:["Traits are unlimited","It can be subjective (e.g., color judged differently by different people)","It is always automated","DNA is required to see traits"],a:1,exp:"Subjectivity in coding traits (like color) is a key limitation."},
+     {type:"tf",q:"Morphological phylogenies are limited to traits that can be feasibly measured.",a:true,exp:"True — you can only use characters you can practically observe and measure, which is time-consuming."},
+     {type:"short",q:"Describe two limitations of morphology-based phylogenies.",model:"First, morphology is limited to traits that can be feasibly measured, which is time-consuming and restricts how many characters are available. Second, coding traits can be subjective — for example, different observers may score color differently. A third issue is convergent evolution, where independently evolved similar traits can mislead us into grouping unrelated species together.",pts:["Limited to measurable traits (time-consuming)","Subjectivity in trait coding","Convergent evolution misleads (homoplasy)"]}
+    ]},
+   {id:"L7T3", title:"Molecular systematics: DNA as character data", sub:"Nucleotides become the characters (slides 11–16).",
+    slides:[
+     {h:"What molecular systematics is", imgs:[c(11),c(12)], html:`
+       <p class="lead"><span class="kw">Molecular systematics</span> uses <b>DNA, mitochondrial, or chloroplast sequences</b> to infer evolutionary relationships.</p>
+       <ul><li>Characters are now <b>nucleotides</b>, not morphological traits.</li>
+       <li><b>Thousands</b> of characters can be used → greater resolution and accuracy.</li></ul>`},
+     {h:"DNA as evolutionary data", imgs:[c(13),c(15),c(16)], html:`
+       <p class="lead">Every species has a unique DNA sequence. During <b>cladogenesis</b>, lineages separate, and over time <span class="kw">mutations accumulate</span> between them.</p>
+       <div class="callout key">The <b>more similar</b> two sequences are, the <b>more recently</b> they likely shared a common ancestor. We count the number of nucleotide changes to infer relationships.</div>
+       <p>Both morphology and DNA work the same way — measuring character-state change from ancestral to derived:</p>
+       <table class="dt"><tr><th>Data</th><th>Character</th><th>States</th></tr>
+       <tr><td>Morphology</td><td>Feather color</td><td>Red or blue</td></tr>
+       <tr><td>DNA</td><td>Nucleotide position</td><td>A, T, C, G</td></tr></table>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"In molecular systematics, the 'characters' are:",opts:["Feather colors","Nucleotide positions (A, T, C, G)","Body sizes","Behaviors"],a:1,exp:"Characters are nucleotide positions; the states are A, T, C, or G."},
+     {type:"mcq",q:"If two species' DNA sequences are very similar, it suggests they:",opts:["Shared a common ancestor recently","Are unrelated","Have identical morphology","Evolved by convergence"],a:0,exp:"More similar sequences = more recently shared a common ancestor (fewer accumulated changes)."},
+     {type:"mcq",q:"An advantage of molecular over morphological data is that:",opts:["It uses fewer characters","Thousands of characters (nucleotides) can be used for greater resolution","It never changes","It requires no sequencing"],a:1,exp:"Molecular data offers thousands of characters, giving higher resolution and accuracy."},
+     {type:"short",q:"Explain how DNA is used as character data in phylogenetics.",model:"In molecular systematics, each nucleotide position in an aligned DNA sequence is treated as a character, and its state is one of the four bases (A, T, C, or G). Because mutations accumulate between lineages after they split, the number of nucleotide differences between species reflects how long ago they diverged: more similar sequences indicate a more recent common ancestor.",pts:["Character = nucleotide position; states = A/T/C/G","Mutations accumulate after lineages split","More similar sequence = more recent common ancestor","Thousands of characters → high resolution"]}
+    ]},
+   {id:"L7T4", title:"Loci; coding vs non-coding DNA", sub:"Choosing the right DNA for the question (slides 17–21).",
+    slides:[
+     {h:"Molecular locus/loci", imgs:[c(17),c(18)], html:`
+       <p class="lead">A <span class="kw">locus</span> = a specific location/position on a chromosome or in the genome; often a gene, but any defined stretch of DNA. Early molecular systematics targeted <b>universal loci</b>: <b>COI</b> (cytochrome c oxidase subunit I) for animals, <b>rbcL</b> for plants. Modern methods target hundreds of loci; each nucleotide serves as a character.</p>`},
+     {h:"Coding vs non-coding DNA", imgs:[c(19),c(20),c(21)], html:`
+       <table class="dt"><tr><th></th><th>Coding DNA</th><th>Non-coding DNA</th></tr>
+       <tr><td>Translated to protein?</td><td>Yes (enzymes, hormones)</td><td>No</td></tr>
+       <tr><td>Evolution rate</td><td><b>Slow</b> — conserved; harmful changes removed by selection</td><td><b>Fast</b> — fewer functional constraints, more mutations</td></tr>
+       <tr><td>Best for…</td><td><span class="kw">Deep / ancient</span> relationships (slow change = clear signal over long timescales)</td><td><span class="kw-2">Recent / shallow</span> relationships (more variation = better resolution among close taxa)</td></tr></table>
+       <div class="callout key">Match the DNA to the timescale: <b>coding = deep</b> (old splits), <b>non-coding = shallow</b> (recent splits, closely related species).</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"A locus is:",opts:["A type of mutation","A specific location/position on a chromosome or in the genome","A whole chromosome","A protein"],a:1,exp:"A locus = a defined location in the genome (often a gene, but any defined stretch)."},
+     {type:"mcq",q:"Coding DNA evolves slowly and is therefore best for studying:",opts:["Very recent divergences","Deep/ancient evolutionary relationships","Individual family trees","Nothing useful"],a:1,exp:"Conserved (slow-evolving) coding DNA gives a clear signal over long timescales — deep relationships."},
+     {type:"mcq",q:"To resolve relationships among very closely related species, you would prefer:",opts:["Slow-evolving coding DNA","Fast-evolving non-coding DNA","Morphology only","No DNA"],a:1,exp:"Non-coding DNA evolves faster, giving more variation and better resolution among close relatives."},
+     {type:"tf",q:"Coding DNA is conserved because harmful changes to it tend to be removed by natural selection.",a:true,exp:"True — because it makes proteins, changes are often deleterious and selected against, keeping it conserved."},
+     {type:"short",q:"Contrast coding and non-coding DNA and state which is better for deep vs shallow relationships.",model:"Coding DNA is transcribed and translated into proteins, so it is conserved and evolves slowly because harmful changes are removed by natural selection; its slow, clear signal makes it best for deep or ancient evolutionary relationships. Non-coding DNA is not translated and has fewer functional constraints, so it evolves faster and accumulates more variation, making it best for recent or shallow relationships among closely related taxa.",pts:["Coding = translated, conserved, slow → deep relationships","Non-coding = not translated, fast → shallow/recent relationships","Slow change = clear deep signal","More variation = resolution among close taxa"]}
+    ]},
+   {id:"L7T5", title:"From sample to phylogeny", sub:"The full pipeline (slides 22–31).",
+    slides:[
+     {h:"The five steps", imgs:[c(22)], html:`
+       <p class="lead">The pipeline, in order:</p>
+       <ol><li><b>Sample collection</b></li><li><b>DNA extraction</b></li><li><b>DNA sequencing</b></li><li><b>Sequence cleaning</b> (quality control + alignment)</li><li><b>Phylogenetic inference</b> — building the tree</li></ol>`},
+     {h:"Sample collection: field vs. museum", imgs:[c(23),c(25)], html:`
+       <table class="dt"><tr><th></th><th>Field-based</th><th>Museum-based</th></tr>
+       <tr><td>Pros</td><td>Fresh tissue → <b>better-quality, non-degraded DNA</b></td><td><b>Cheap, fast</b>; can sample <b>extinct/rare</b> species</td></tr>
+       <tr><td>Cons</td><td>Expensive, time-consuming, needs expert identification</td><td><b>Destructive</b> sampling; lower quality (age, specimen processing)</td></tr></table>`},
+     {h:"Extraction, sequencing & alignment", imgs:[c(26),c(27),c(28),c(30)], html:`
+       <ul><li><b>DNA extraction</b> — separating DNA from all other cellular material (lysis → binding → wash → elution → purified genomic DNA).</li>
+       <li><b>Sequencing</b> — reads the exact order of nucleotides; Next-Generation Sequencing (NGS) gives millions of reads at once (but is expensive).</li>
+       <li><b>Sequence cleaning</b> — remove low-quality reads, then <span class="kw">align</span> homologous regions across species so the <b>same nucleotide positions are compared</b>. Insertions/deletions require <b>gaps</b> so homologous nucleotides stay aligned.</li></ul>
+       <div class="callout key">The output of alignment is a <span class="kw-2">Multiple Sequence Alignment (MSA)</span> — the basis for building the tree, letting you measure character (nucleotide) change between species.</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"What is the correct order of the sample-to-phylogeny pipeline?",opts:["Sequencing → collection → extraction → alignment → tree","Collection → extraction → sequencing → cleaning/alignment → inference","Extraction → collection → tree → sequencing","Alignment → collection → extraction → sequencing"],a:1,exp:"Collect sample → extract DNA → sequence → clean/align → infer the tree."},
+     {type:"mcq",q:"A key advantage of MUSEUM-based samples over field samples is that they:",opts:["Always have the best-quality DNA","Are cheap, fast, and can include extinct or rare species","Never require permission","Yield non-degraded DNA"],a:1,exp:"Museum samples are cheap/fast and can access rare/extinct specimens, but the DNA quality is lower and sampling is destructive."},
+     {type:"mcq",q:"Sequence alignment is necessary because:",opts:["It makes sequences longer","Insertions/deletions would otherwise misalign homologous nucleotides","It removes all mutations","DNA cannot be read otherwise"],a:1,exp:"Alignment (adding gaps for indels) ensures the same homologous nucleotide positions are compared across species."},
+     {type:"mcq",q:"The output of aligning sequences, used as the basis for tree-building, is a:",opts:["Punnett square","Multiple Sequence Alignment (MSA)","Karyotype","Codon table"],a:1,exp:"A Multiple Sequence Alignment (MSA) is the aligned dataset used to build phylogenetic trees."},
+     {type:"short",q:"Compare field-based and museum-based samples for DNA extraction.",model:"Field-based samples provide fresh tissue and therefore better-quality, non-degraded DNA, but they are expensive, time-consuming, and require expert identification. Museum-based samples are cheap and fast and allow sampling of extinct or rare species, but the sampling is destructive and the DNA quality is lower because of the specimen's age and processing.",pts:["Field: fresh → better/non-degraded DNA; but costly, slow, needs ID","Museum: cheap, fast, extinct/rare species","Museum: destructive, lower-quality DNA"]}
+    ]},
+   {id:"L7T6", title:"Phylogenies are hypotheses", sub:"Best estimates, not final truth (slides 32–33).",
+    slides:[
+     {h:"A phylogeny is a hypothesis", imgs:[c(32),c(33)], html:`
+       <p class="lead">A <span class="kw">phylogeny is a hypothesis</span> that can change as we add more data and use improved statistical methods.</p>
+       <ul><li>Evolutionary history <b>cannot be observed directly</b>; we infer it from data (DNA, morphology) as evidence of change over time.</li>
+       <li><b>Different data can produce different trees</b> — e.g., a morphology tree vs a DNA tree, or a tree from 12 loci vs one from 300 loci.</li></ul>
+       <div class="callout key">A phylogeny is our <b>best estimate</b> of evolutionary relationships <b>given the data at hand</b> — not a fixed, proven fact.</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Why is a phylogeny considered a hypothesis?",opts:["It is always wrong","It is a best estimate from current data and can change with more data/better methods","It cannot be tested","It is directly observed"],a:1,exp:"Evolutionary history isn't observed directly; a phylogeny is inferred and can change as evidence improves."},
+     {type:"tf",q:"Different datasets (e.g., morphology vs DNA, or 12 vs 300 loci) can produce different phylogenetic trees.",a:true,exp:"True — trees depend on the data used, which is why a phylogeny is a hypothesis, not a fixed fact."},
+     {type:"short",q:"Explain why a phylogeny is described as a hypothesis rather than a fact.",model:"Evolutionary history happened in the past and cannot be observed directly, so we can only infer relationships from data such as DNA or morphology used as evidence of change over time. Because different datasets and methods can yield different trees, any phylogeny is our best estimate of relationships given the data currently available, and it can be revised as more or better data are added — which makes it a testable hypothesis rather than a proven fact.",pts:["History can't be observed directly — it's inferred","Different data → different trees","Best estimate given current data","Revisable as data/methods improve"]}
+    ]},
+   {id:"L7T7", title:"Applications of molecular systematics", sub:"Cryptic species, divergence dating (slides 34–42).",
+    slides:[
+     {h:"Cryptic species identification", imgs:[c(34),c(35)], html:`
+       <p class="lead"><span class="kw">Cryptic species</span> = morphologically similar species that are <b>genetically distinct</b>. Molecular data reveals this hidden biodiversity (common in fungi, insects, plants).</p>
+       <ul><li><b>Anopheles gambiae</b> complex — major malaria vectors; <b>7 cryptic species</b> found with molecular data, differing in behavior and disease transmission.</li>
+       <li><b>Astraptes fulgerator</b> — thought to be one species; COI sequencing revealed up to <b>10 cryptic species</b> feeding on different host plants.</li></ul>
+       <p>This matters for disease management, taxonomy, and biodiversity/conservation (species-richness estimates).</p>`},
+     {h:"Divergence dating", imgs:[c(37),c(39),c(40)], html:`
+       <p class="lead"><span class="kw">Divergence dating</span> estimates <b>when</b> species or lineages split in evolutionary time. It requires:</p>
+       <ul><li><b>Molecular data</b> (e.g., multiple loci)</li><li><b>Calibration points</b> (e.g., <span class="kw-2">fossils</span> of known age)</li></ul>
+       <p>It answers questions like when a lineage migrated to an area, and whether lineage evolution is linked to geologic/climatic events (Isthmus of Panama, mountain formation).</p>`},
+     {h:"Is morphology-based phylogenetics useless?", imgs:[c(42)], html:`
+       <p class="lead"><b>No!</b> Morphology is still essential for species from which we <b>cannot extract DNA</b> — especially <span class="kw">extinct lineages</span> like dinosaurs, known only from fossils.</p>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Cryptic species are:",opts:["Species that are extinct","Morphologically similar species that are genetically distinct","Species with no DNA","Species that only live underground"],a:1,exp:"Cryptic species look alike but are genetically distinct — revealed by molecular data."},
+     {type:"mcq",q:"Divergence dating requires molecular data plus:",opts:["Only morphology","Calibration points such as fossils of known age","A single gene only","No additional information"],a:1,exp:"Divergence dating needs calibration points (e.g., dated fossils) to convert genetic distance into time."},
+     {type:"mcq",q:"The Anopheles gambiae complex (7 cryptic species) is important because the species differ in:",opts:["Color only","Behavior and disease (malaria) transmission","Number of legs","Habitat temperature only"],a:1,exp:"The cryptic malaria-vector species vary in behavior and disease transmission — key for disease management."},
+     {type:"tf",q:"Morphology-based phylogenetics is useless now that we have DNA.",a:false,exp:"False — morphology is still essential for organisms we can't get DNA from, such as extinct dinosaurs known only from fossils."},
+     {type:"short",q:"Describe two applications of molecular systematics.",model:"One application is cryptic species identification: molecular data reveals morphologically similar species that are genetically distinct, uncovering hidden biodiversity — for example, the Anopheles gambiae malaria-vector complex or the Astraptes fulgerator butterflies. A second application is divergence dating, which estimates when lineages split using molecular data together with calibration points such as dated fossils, helping link evolution to geologic or climatic events.",pts:["Cryptic species = look alike, genetically distinct (hidden biodiversity)","Examples: Anopheles / Astraptes","Divergence dating = when lineages split","Needs molecular data + calibration (fossils)"]}
+    ]}
+  ]
+ };
+ window.COURSE.push(L7);
+
+ window.FLASHCARDS.L7=[
+  {f:"Molecular systematics",b:"Using DNA, mitochondrial, or chloroplast sequences to infer evolutionary relationships; characters are nucleotides."},
+  {f:"Limitations of morphology-based phylogenies",b:"(1) limited to measurable traits, (2) subjective trait coding, (3) convergent evolution can mislead."},
+  {f:"DNA as character data",b:"Character = a nucleotide position; states = A, T, C, G. Mutations accumulate between lineages after they split."},
+  {f:"More similar DNA sequences →",b:"A more recent shared common ancestor (fewer accumulated changes)."},
+  {f:"Locus",b:"A specific location/position on a chromosome or in the genome; often a gene, but any defined stretch of DNA."},
+  {f:"Universal loci (early markers)",b:"COI (cytochrome c oxidase I) for animals; rbcL for plants."},
+  {f:"Coding DNA",b:"Translated into proteins; conserved and slow-evolving (harmful changes removed by selection); best for DEEP/ancient relationships."},
+  {f:"Non-coding DNA",b:"Not translated; evolves fast (few constraints); best for RECENT/shallow relationships among close taxa."},
+  {f:"Sample-to-phylogeny pipeline",b:"Collection → DNA extraction → sequencing → sequence cleaning/alignment → phylogenetic inference (tree)."},
+  {f:"Field vs museum samples",b:"Field: fresh, better DNA, but costly/slow/needs ID. Museum: cheap, fast, extinct/rare species, but destructive & lower quality."},
+  {f:"DNA extraction",b:"Separating DNA from other cellular material (lysis → binding → wash → elution → purified genomic DNA)."},
+  {f:"NGS (Next-Generation Sequencing)",b:"Reads millions of nucleotide sequences at once; powerful but expensive."},
+  {f:"Sequence alignment",b:"Aligns homologous regions across species (adding gaps for insertions/deletions) so the same nucleotide positions are compared."},
+  {f:"Multiple Sequence Alignment (MSA)",b:"The aligned dataset; the basis for building phylogenetic trees."},
+  {f:"Phylogeny is a hypothesis",b:"Evolutionary history isn't observed directly; a tree is our best estimate from current data and can change with more data/better methods."},
+  {f:"Cryptic species",b:"Morphologically similar but genetically distinct species; revealed by molecular data (e.g., Anopheles gambiae, Astraptes fulgerator)."},
+  {f:"Divergence dating",b:"Estimates WHEN lineages split; needs molecular data + calibration points (e.g., fossils of known age)."},
+  {f:"Is morphology useless?",b:"No — still essential for organisms we can't extract DNA from, e.g., extinct lineages like dinosaurs."}
+ ];
+
+ window.OBJMASTERY.L7={
+  id:"L7OBJ", title:"🎯 Objective Mastery (exam-day)",
+  sub:"Lecture 7 objectives — taught and tested point by point.",
+  slides:[
+   {h:"Objective 1 — Limits of morphology-based phylogenies", html:`
+     <p class="lead">Three limits: (1) restricted to <b>traits you can feasibly measure</b> (very time-consuming); (2) <b>subjective coding</b> (e.g., color); (3) <b>convergent evolution</b> can make unrelated species look closely related (homoplasy).</p>`},
+   {h:"Objective 2 — DNA as character data", html:`
+     <p class="lead">Each <b>nucleotide position</b> is a character; its state is <b>A, T, C, or G</b>. Mutations accumulate after lineages split, so <b>more similar sequences = more recent common ancestor</b>. Thousands of characters give high resolution.</p>`},
+   {h:"Objective 3 — Coding vs non-coding DNA", html:`
+     <p class="lead"><b>Coding</b> = translated to protein, conserved, slow → <b>deep/ancient</b> relationships. <b>Non-coding</b> = not translated, fast-evolving → <b>recent/shallow</b> relationships among close taxa.</p>`},
+   {h:"Objective 4 — Sample-to-phylogeny process", html:`
+     <p class="lead">Collection → DNA extraction → sequencing → sequence cleaning (QC + alignment → MSA) → phylogenetic inference (build the tree, e.g., by parsimony).</p>`},
+   {h:"Objective 5 — Field vs museum samples", html:`
+     <p class="lead"><b>Field:</b> fresh tissue → better, non-degraded DNA; but expensive, slow, needs expert ID. <b>Museum:</b> cheap, fast, can access extinct/rare species; but destructive and lower-quality DNA.</p>`},
+   {h:"Objective 6 — Why a phylogeny is a hypothesis", html:`
+     <p class="lead">History can't be observed directly; we infer it from data. Different data/methods give different trees, so a phylogeny is the <b>best estimate given the data at hand</b> — revisable, testable.</p>`},
+   {h:"Objective 7 — Applications", html:`
+     <p class="lead"><b>Cryptic species ID</b> (look-alike but genetically distinct; e.g., Anopheles, Astraptes) and <b>divergence dating</b> (when lineages split; needs molecular data + fossil calibration).</p>`}
+  ],
+  quiz:[
+   {type:"mcq",q:"[Obj 1] Convergent evolution is a problem for morphological phylogenies because it:",opts:["Speeds up DNA sequencing","Makes unrelated species look closely related","Removes all traits","Requires fossils"],a:1,exp:"Independently evolved similar traits (homoplasy) can mislead grouping."},
+   {type:"short",q:"[Obj 1] Give three limitations of morphology-based phylogenies.",model:"They are limited to traits that can be feasibly measured, which is time-consuming; trait coding can be subjective, such as judging color differently; and convergent evolution can make independently evolved similar traits mislead us into grouping unrelated species together.",pts:["Limited to measurable traits","Subjective trait coding","Convergent evolution/homoplasy misleads"]},
+   {type:"mcq",q:"[Obj 2] In molecular systematics, a character and its states are:",opts:["A whole gene; on/off","A nucleotide position; A, T, C, G","A chromosome; long/short","A protein; folded/unfolded"],a:1,exp:"Character = nucleotide position; states = the four bases."},
+   {type:"tf",q:"[Obj 2] The more nucleotide differences between two species, the more recently they diverged.",a:false,exp:"False — MORE differences means MORE time since divergence; fewer differences (more similar) = more recent common ancestor."},
+   {type:"mcq",q:"[Obj 3] Slow-evolving, conserved coding DNA is best for resolving:",opts:["Very recent splits","Deep/ancient relationships","Family pedigrees","Nothing"],a:1,exp:"Its clear, slowly-changing signal suits deep relationships."},
+   {type:"mcq",q:"[Obj 3] To distinguish closely related, recently diverged species you should use:",opts:["Coding DNA (slow)","Non-coding DNA (fast, more variation)","Morphology only","A single conserved gene"],a:1,exp:"Fast-evolving non-coding DNA gives the variation needed for shallow relationships."},
+   {type:"short",q:"[Obj 3] Why is coding DNA used for deep relationships and non-coding DNA for recent ones?",model:"Coding DNA is translated into proteins and is conserved because harmful changes are removed by natural selection, so it evolves slowly and provides a clear signal over long timescales — ideal for deep, ancient relationships. Non-coding DNA is not translated and has fewer functional constraints, so it evolves faster and accumulates more variation, which gives better resolution among closely related, recently diverged species.",pts:["Coding = conserved/slow → deep signal","Non-coding = fast/variable → shallow resolution","Selection conserves coding DNA","Match DNA to the timescale"]},
+   {type:"mcq",q:"[Obj 4] The correct pipeline order is:",opts:["Extraction → collection → sequencing → tree","Collection → extraction → sequencing → cleaning/alignment → inference","Sequencing → alignment → collection → extraction","Tree → collection → extraction"],a:1,exp:"Collect → extract → sequence → clean/align (MSA) → infer tree."},
+   {type:"mcq",q:"[Obj 4] Alignment produces a Multiple Sequence Alignment, which is used to:",opts:["Extract DNA","Build the phylogenetic tree","Collect samples","Sequence DNA"],a:1,exp:"The MSA is the basis for tree-building, letting you measure nucleotide change between species."},
+   {type:"mcq",q:"[Obj 5] Which is a con of FIELD-based sampling?",opts:["Lower-quality DNA","Expensive and time-consuming, needs expert ID","Can't sample living species","Always destructive"],a:1,exp:"Field sampling gives great DNA but is costly, slow, and needs expert identification."},
+   {type:"short",q:"[Obj 5] Compare field-based and museum-based samples for DNA extraction.",model:"Field-based samples use fresh tissue and yield better-quality, non-degraded DNA, but they are expensive, time-consuming, and require expert identification. Museum-based samples are cheap and fast and allow sampling of rare or extinct species, but sampling is destructive and the DNA is lower quality due to the specimen's age and processing.",pts:["Field: fresh, high-quality DNA; costly/slow/needs ID","Museum: cheap, fast, extinct/rare species","Museum: destructive, lower-quality DNA"]},
+   {type:"tf",q:"[Obj 6] Because a phylogeny is inferred from data, adding more data can change it.",a:true,exp:"True — a phylogeny is a hypothesis and our best estimate given current data; new data can revise it."},
+   {type:"short",q:"[Obj 6] Explain why a phylogeny is a hypothesis.",model:"Evolutionary history occurred in the past and cannot be directly observed, so relationships are inferred from data such as DNA or morphology. Because different data and methods can produce different trees, a phylogeny is only our best estimate given the data at hand and can be revised as better or more data become available, making it a testable hypothesis rather than a proven fact.",pts:["History not directly observable — inferred","Different data → different trees","Best estimate given current data","Revisable/testable"]},
+   {type:"mcq",q:"[Obj 7] Molecular data revealing look-alike but genetically distinct species is called:",opts:["Divergence dating","Cryptic species identification","Convergent evolution","Alignment"],a:1,exp:"Cryptic species identification uncovers genetically distinct species hidden within a single morphology."},
+   {type:"mcq",q:"[Obj 7] Divergence dating additionally requires:",opts:["Only one nucleotide","Calibration points such as fossils","No molecular data","Museum specimens only"],a:1,exp:"Divergence dating needs molecular data plus calibration points (e.g., dated fossils)."},
+   {type:"short",q:"[Obj 7] Describe the two applications of molecular systematics covered.",model:"Cryptic species identification uses molecular data to reveal morphologically identical but genetically distinct species, uncovering hidden biodiversity, as in the Anopheles gambiae malaria-vector complex or Astraptes fulgerator butterflies. Divergence dating estimates when lineages split in time using molecular data together with calibration points such as dated fossils, and can link diversification to geologic or climatic events.",pts:["Cryptic species = look-alike, genetically distinct","Examples: Anopheles / Astraptes","Divergence dating = timing of splits","Needs molecular data + fossil calibration"]}
+  ]
+ };
+})();
