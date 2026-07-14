@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BIO 22800 — Ecology & Evolution | Exam 1 Trainer</title>
+<title>BIO 22800 — Ecology & Evolution | Final Exam Trainer</title>
 <style>
   :root{
     --bg:#0f1714;--panel:#16211c;--panel-2:#1d2b24;--line:#28392f;
@@ -277,9 +277,9 @@
   <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="logo">🌿</div>
-      <div><h1>Ecology &amp; Evolution</h1><div class="sub">BIO 22800 · Exam 1 · all 216 slides</div></div>
+      <div><h1>Ecology &amp; Evolution</h1><div class="sub">BIO 22800 · Final Exam · all lectures</div></div>
     </div>
-    <div class="examchip">📅 <b>Exam 1: June 16</b> · MCQ + True/False + Short answer · Lectures 1–4</div>
+    <div class="examchip">📅 <b>Final Exam: July 23</b> · Cumulative — focuses on Lectures 8 &amp; 9</div>
     <div class="overall">
       <div class="bar-label"><span>Overall mastery</span><span id="overallPct">0%</span></div>
       <div class="bar"><i id="overallBar"></i></div>
@@ -469,7 +469,7 @@ function submitQuiz(){
   }else if(quizState.scope.type==="exam"){
     const prev=progress.__exam||{};if(prev.bestPct==null||pct>prev.bestPct){progress.__exam={bestPct:pct};saveProgress();}
     const best=(progress.__exam&&progress.__exam.bestPct!=null)?progress.__exam.bestPct:pct;
-    const msg=pct>=80?"Exam-ready — that's a strong score across all four lectures.":pct>=50?"Getting there — note which lectures the misses came from and review those topics.":"More review needed — work through the lecture topics, then retry.";
+    const msg=pct>=80?"Exam-ready — that's a strong score across all lectures.":pct>=50?"Getting there — note which lectures the misses came from and review those topics.":"More review needed — work through the lecture topics, then retry.";
     res.innerHTML=`<div class="quiz-result"><div class="score ${cls}">${score} / ${total}</div><p>${pct}% · ${msg}</p>
       <p style="font-size:12px">Best exam score so far: ${best}%</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
@@ -517,7 +517,7 @@ function objectivesHTML(){
   }).join("");
   return `<div class="crumbs">✅ Exam objectives</div>
     <h2 class="page-title">Can you do everything on the exam?</h2>
-    <p class="obj-summary">These are the professor's own study objectives from the end of each lecture — the authoritative list of what Exam 1 expects. Tick each one once you can do it confidently. <b>${totalDone} / ${total} checked.</b></p>
+    <p class="obj-summary">These are the professor's own study objectives from the end of each lecture — the authoritative list of what the final expects. Tick each one once you can do it confidently. <b>${totalDone} / ${total} checked.</b></p>
     ${blocks}
     <div class="callout tip">Every objective here maps to a topic in the Learn tabs. If one isn't checked, open that lecture and review the matching topic.</div>`;
 }
@@ -532,7 +532,7 @@ function examSetupHTML(){
   const best=(progress.__exam&&progress.__exam.bestPct!=null)?progress.__exam.bestPct+"%":"—";
   return `<div class="crumbs">🎯 Exam simulation</div>
     <h2 class="page-title">Cumulative exam simulation</h2>
-    <p class="page-sub">A randomized mixed test drawn from all four lectures — multiple choice, true/false, and short answer, just like Exam 1. Each question is tagged with its lecture.</p>
+    <p class="page-sub">A randomized mixed test drawn from all lectures — multiple choice, true/false, and short answer, just like the final. Each question is tagged with its lecture.</p>
     <div class="card exam-setup"><h3>🎯 Build your exam</h3>
       <p>Choose how many questions (randomly selected from the full pool of ${poolN}):</p>
       <div class="opt-row">
@@ -553,7 +553,7 @@ function startExam(n){
   const m=document.getElementById("main");
   m.innerHTML=`<div class="crumbs">🎯 Exam simulation</div>
     <h2 class="page-title">Mixed exam — ${sel.length} questions</h2>
-    <p class="page-sub">Random questions from all four lectures. Answer them all, then submit for your score.</p>
+    <p class="page-sub">Random questions from across all lectures. Answer them all, then submit for your score.</p>
     ${sel.map((q,i)=>questionHTML(q,i)).join("")}
     <button class="btn wide" id="submitBtn" onclick="submitQuiz()" style="margin-top:8px">Submit exam &amp; see score</button>
     <div id="quizResult" style="margin-top:20px"></div>`;
@@ -651,9 +651,9 @@ function homeHTML(){
       <div style="font-size:11px;color:var(--ink-dim);margin-top:6px">${pct}% mastered</div></div>`}).join("");
   const totSlides=COURSE.reduce((s,l)=>s+slideCount(l),0);
   const totQ=COURSE.reduce((s,l)=>s+qCount(l),0);
-  return `<div class="hero"><h2>🌿 Your Exam 1 trainer — every slide, taught & quizzed</h2>
-    <p>All ${totSlides} lecture slides from Lectures 1–4, each shown and explained, with ${totQ} practice questions.</p>
-    <p style="margin-top:8px;font-size:13px">Exam 1 is <b>June 16</b>: multiple choice, true/false, and short answer. This site drills all three.</p>
+  return `<div class="hero"><h2>🌿 Your Final Exam trainer — every slide, taught & quizzed</h2>
+    <p>All ${totSlides} lecture slides, each shown and explained, with ${totQ} practice questions.</p>
+    <p style="margin-top:8px;font-size:13px">Final Exam is <b>July 23</b> — cumulative, focused on Lectures 8 &amp; 9. It's multiple choice, true/false, and short answer; this site drills all three.</p>
     <div class="how">
       <div class="step"><div class="n">1</div><b>See the slide</b><p>Every real lecture slide is embedded — click any image to zoom.</p></div>
       <div class="step"><div class="n">2</div><b>Learn it</b><p>Detailed teaching beneath each slide explains what to know.</p></div>
@@ -663,7 +663,7 @@ function homeHTML(){
     <div class="grid">${cards}</div>
     <h3 style="margin:24px 0 14px;font-size:17px">Then prove you know it</h3>
     <div class="grid">
-      <div class="lec-card" onclick="goExamSetup()"><div class="ic">🎯</div><h4>Exam simulation</h4><div class="meta">Randomized mixed test from all 4 lectures — MCQ, true/false &amp; short answer</div></div>
+      <div class="lec-card" onclick="goExamSetup()"><div class="ic">🎯</div><h4>Exam simulation</h4><div class="meta">Randomized mixed test from all lectures — MCQ, true/false &amp; short answer</div></div>
       <div class="lec-card" onclick="goObjectives()"><div class="ic">✅</div><h4>Objectives checklist</h4><div class="meta">Tick off every skill the professor's objectives require</div></div>
       <div class="lec-card" onclick="goReview()"><div class="ic">🔁</div><h4>Wrong-answer bank</h4><div class="meta">Re-drill every question you've missed until you've mastered it</div></div>
       <div class="lec-card" onclick="goFlashSetup()"><div class="ic">🃏</div><h4>Flashcards</h4><div class="meta">Rapid flip-card drilling of every key term and definition</div></div>
