@@ -2905,3 +2905,193 @@ Genotype frequencies: p² + 2pq + q² = 1</div>
   ]
  };
 })();
+
+/* ===================== DEFINITION DRILL =====================
+   Extra definition-based questions appended to existing topics. */
+(function(){
+ const add=(lec,top,qs)=>{
+   const l=window.COURSE.find(x=>x.id===lec); if(!l) return;
+   const t=l.topics.find(x=>x.id===top); if(!t) return;
+   qs.forEach(q=>t.quiz.push(q));
+ };
+ const D="[Definition] ";
+
+ /* ---------- L1 ---------- */
+ add("L1","L1T1",[
+  {type:"mcq",q:D+"Which is the best definition of ecology?",opts:["The classification of organisms into groups","The study of interactions between an organism and the abiotic and biotic components of its environment","The study of fossils","The study of allele frequencies"],a:1,exp:"Ecology = the study of interactions between an organism and both the nonliving (abiotic) and living (biotic) parts of its environment."},
+  {type:"short",q:D+"Define microevolution and macroevolution.",model:"Microevolution is a change in allele (gene variant) frequencies within a population over time. Macroevolution is descent with modification — large-scale evolutionary change that produces new species and higher groups over long timescales.",pts:["Micro = change in allele frequencies over time","Macro = descent with modification","Macro = large-scale, produces new species/groups"]}
+ ]);
+ add("L1","L1T2",[
+  {type:"mcq",q:D+"An ecosystem is best defined as:",opts:["All individuals of one species in an area","All the populations of many species in an area","A community together with its abiotic environment","All ecosystems on Earth"],a:2,exp:"Ecosystem = community + the abiotic (non-living) environment."},
+  {type:"mcq",q:D+"The biosphere is:",opts:["One habitat","A community of many species","The collection of all ecosystems on Earth","A single population"],a:2,exp:"The biosphere = all ecosystems on Earth combined."}
+ ]);
+ add("L1","L1T3",[
+  {type:"mcq",q:D+"A biome is best defined as:",opts:["A single population of plants","A community of organisms adapted to a characteristic set of environmental conditions","A type of soil","The geographic range of one species"],a:1,exp:"A biome = a community of organisms adapted to a characteristic set of environmental conditions (defined by climate)."}
+ ]);
+ add("L1","L1T5",[
+  {type:"short",q:D+"Define species distribution and name the three factors that determine it.",model:"Species distribution is the geographic area where individuals of a species are present. It is determined by three factors: abiotic suitability (suitable climate and physical conditions), biotic suitability (adequate resources and tolerable competitors/predators), and dispersal ability (the species could reach the area) — the A, B, and M of the BAM diagram.",pts:["Geographic area where a species is present","Abiotic suitability","Biotic suitability","Dispersal/movement"]}
+ ]);
+ add("L1","L1T7",[
+  {type:"short",q:D+"Define the fundamental niche and the realized niche.",model:"The fundamental niche is the full range of conditions a species could occupy in the absence of competition — its complete tolerances. The realized niche is the smaller portion of the fundamental niche that the species actually occupies once competition and other biotic interactions restrict it; the realized niche is always nested within the fundamental niche.",pts:["Fundamental = full tolerances without competition","Realized = actually occupied portion with competition","Realized ⊆ fundamental"]}
+ ]);
+
+ /* ---------- L2 ---------- */
+ add("L2","L2T1",[
+  {type:"mcq",q:D+"Demography is:",opts:["The study of fossils","The statistical study of population changes over time","The classification of species","A measure of diversity"],a:1,exp:"Demography = the statistical study of how populations change over time (births, deaths, migration)."}
+ ]);
+ add("L2","L2T2",[
+  {type:"mcq",q:D+"A survivorship curve is:",opts:["A plot of population size over time","A plot showing how many individuals survive at each age","A measure of carrying capacity","The rate of mutation"],a:1,exp:"A survivorship curve plots the number of individuals surviving against age."}
+ ]);
+ add("L2","L2T4",[
+  {type:"mcq",q:D+"Carrying capacity (K) is:",opts:["The birth rate minus the death rate","The maximum population size an environment can sustain","The number of offspring per female","The rate of population growth"],a:1,exp:"K = carrying capacity, the maximum population the environment can support."},
+  {type:"short",q:D+"Define r and K.",model:"r is the intrinsic rate of increase, equal to the per-capita birth rate minus the per-capita death rate (b − d); it determines whether a population grows (r>0), is stable (r=0), or declines (r<0). K is the carrying capacity — the maximum population size that the environment can sustain.",pts:["r = intrinsic rate of increase = b − d","r>0 grows, r=0 stable, r<0 declines","K = carrying capacity","K = max population the environment supports"]}
+ ]);
+ add("L2","L2T5",[
+  {type:"short",q:D+"Define density-dependent and density-independent regulation.",model:"Density-dependent regulation comes from biotic factors whose effect intensifies as the population becomes more crowded, such as competition, predation, disease, and resource limitation. Density-independent regulation comes from abiotic factors that affect the population regardless of its density, such as fires, floods, droughts, and volcanic eruptions.",pts:["Density-dependent = biotic, worsens with crowding","Examples: competition, predation, disease","Density-independent = abiotic, regardless of density","Examples: fire, flood, drought"]}
+ ]);
+ add("L2","L2T6",[
+  {type:"mcq",q:D+"A life-history strategy is:",opts:["A species' geographic range","How an organism allocates its limited energy among growth, survival, and reproduction","The number of chromosomes","A type of niche"],a:1,exp:"Life-history strategy = how limited energy is allocated among growth, survival, and reproduction, creating trade-offs."}
+ ]);
+
+ /* ---------- L3 ---------- */
+ add("L3","L3T1",[
+  {type:"mcq",q:D+"A community is:",opts:["One species in an area","A group of interacting species occurring together at the same time and place","A species plus its abiotic environment","A single trophic level"],a:1,exp:"Community = interacting species together at the same time and place."}
+ ]);
+ add("L3","L3T4",[
+  {type:"mcq",q:D+"Aposematism is:",opts:["Camouflage","The use of bright colors/patterns to warn predators that an organism is toxic or unpalatable","Mimicking a harmless species","A form of mutualism"],a:1,exp:"Aposematism = conspicuous warning coloration advertising toxicity/unpalatability."},
+  {type:"short",q:D+"Define Batesian and Müllerian mimicry.",model:"Batesian mimicry is when a harmless species resembles a toxic or unpalatable species, deceiving predators — only the model is actually dangerous. Müllerian mimicry is when multiple genuinely toxic or harmful species resemble one another, reinforcing a shared warning signal so predators learn to avoid the pattern more quickly.",pts:["Batesian: harmless mimics toxic (a bluff)","Müllerian: multiple toxic species resemble each other","Müllerian = honest, shared warning"]}
+ ]);
+ add("L3","L3T6",[
+  {type:"mcq",q:D+"Trait (character) displacement is:",opts:["Two species becoming identical","The divergence of a trait between competing species to minimize competition","The extinction of a competitor","A type of mimicry"],a:1,exp:"Trait displacement = traits diverge where competitors co-occur, reducing overlap and enabling coexistence."}
+ ]);
+ add("L3","L3T9",[
+  {type:"mcq",q:D+"Biomagnification is:",opts:["Energy increasing up the food chain","The increasing concentration of toxic substances at each successive trophic level","Populations growing exponentially","Species richness rising with area"],a:1,exp:"Biomagnification = toxin concentration increases at each higher trophic level."}
+ ]);
+ add("L3","L3T10",[
+  {type:"short",q:D+"Define disturbance and succession.",model:"A disturbance is an event that causes changes in community structure and composition, and it leads to succession. Succession is the change in species composition of a community over time; it is called primary succession when it begins where there was no soil or prior community, and secondary succession when soil remains after a community was removed.",pts:["Disturbance = event changing community structure/composition","Succession = change in species composition over time","Primary = no soil/prior community","Secondary = soil remains"]}
+ ]);
+ add("L3","L3T13",[
+  {type:"short",q:D+"Define a keystone species and a foundation species.",model:"A keystone species has an effect on its community that is disproportionately large relative to its abundance; removing it significantly alters species composition and reduces biodiversity, as with a wolf. A foundation species provides the structural and energetic basis of the food web and is often a primary producer, such as kelp in a kelp forest.",pts:["Keystone = outsized effect vs its abundance (wolf)","Removal restructures the community","Foundation = base of the food web, often a producer (kelp)"]}
+ ]);
+
+ /* ---------- L4 ---------- */
+ add("L4","L4T1",[
+  {type:"mcq",q:D+"A Species Distribution Model (SDM) is:",opts:["A map of a species' known fossils","A model that predicts where a species is likely to occur from occurrence records and environmental data","A phylogenetic tree","A measure of diversity"],a:1,exp:"An SDM relates occurrence records to environmental data to predict suitable habitat."}
+ ]);
+ add("L4","L4T2",[
+  {type:"short",q:D+"Define species richness and species evenness.",model:"Species richness is the number of unique species in a given area, with every species counting equally regardless of abundance. Species evenness describes how equally individuals are distributed among those species: high evenness means species have similar abundances, while low evenness means one or a few species dominate.",pts:["Richness = number of unique species","Every species counts equally (ignores abundance)","Evenness = how equally individuals are spread among species","High = similar abundances; low = one dominates"]}
+ ]);
+ add("L4","L4T3",[
+  {type:"mcq",q:D+"The species–area relationship states that:",opts:["Species richness falls as area increases","Species richness increases as the area surveyed increases","Area has no effect on richness","Only islands have species"],a:1,exp:"More area surveyed → more species found (the curve rises then levels off)."}
+ ]);
+ add("L4","L4T7",[
+  {type:"mcq",q:D+"Endemism refers to:",opts:["A species found on many continents","A species found naturally in only one geographic area and nowhere else","An introduced species","A species that is extinct"],a:1,exp:"Endemic = occurring naturally in only one area (e.g., Galápagos tortoise)."}
+ ]);
+ add("L4","L4T8",[
+  {type:"short",q:D+"Define alpha, beta, and gamma diversity.",model:"Alpha diversity is the species richness within a single local site. Beta diversity is the turnover between sites — the species that are not shared between them. Gamma diversity is the total species richness across all sites in a region.",pts:["Alpha = within-site (local) richness","Beta = between-site turnover / unshared species","Gamma = total regional richness"]}
+ ]);
+ add("L4","L4T10",[
+  {type:"mcq",q:D+"A biodiversity hotspot is:",opts:["The warmest place on Earth","An area exceptionally rich in species that are found nowhere else (high richness + high endemism)","Any protected park","An area with only one species"],a:1,exp:"Hotspots combine exceptional species richness with high endemism."}
+ ]);
+
+ /* ---------- L5 ---------- */
+ add("L5","L5T4",[
+  {type:"short",q:D+"Define gene, allele, genotype, and phenotype.",model:"A gene is a DNA sequence that provides the instructions for a trait. An allele is one variant of a gene. A genotype is the specific combination of alleles an organism carries. A phenotype is the observable trait of the organism, which results from the genotype together with the environment.",pts:["Gene = DNA instructions for a trait","Allele = one variant of a gene","Genotype = combination of alleles carried","Phenotype = observable trait (genotype + environment)"]}
+ ]);
+ add("L5","L5T3",[
+  {type:"mcq",q:D+"Fitness is best defined as:",opts:["Physical strength","An individual's ability to survive and reproduce, measured by reproductive success","Lifespan","Body size"],a:1,exp:"Fitness = ability to survive and reproduce; measured by reproductive success."}
+ ]);
+ add("L5","L5T7",[
+  {type:"mcq",q:D+"Genetic drift is:",opts:["The non-random selection of beneficial alleles","The random fluctuation in allele frequencies in a population","The movement of genes between populations","A change in DNA sequence"],a:1,exp:"Genetic drift = random fluctuation in allele frequencies; a chance event, strongest in small populations."},
+  {type:"short",q:D+"Define the bottleneck effect and the founder effect.",model:"Both are special cases of genetic drift that leave a random subset of the original population's alleles. The bottleneck effect occurs when a disaster kills a large, random portion of a population, leaving few survivors, as with northern elephant seals. The founder effect occurs when a small group breaks away from a larger population to start a new one, so the new population's variation reflects only its few founders.",pts:["Both are forms of genetic drift (random subset)","Bottleneck = disaster kills most of the population","Founder = small group starts a new population","Both reduce genetic diversity"]}
+ ]);
+ add("L5","L5T8",[
+  {type:"mcq",q:D+"Gene flow is:",opts:["Random changes in DNA","The movement of genes from one population to another","Mate choice based on traits","Differential survival"],a:1,exp:"Gene flow = movement of genes between populations (migration, pollen); makes populations more similar."}
+ ]);
+ add("L5","L5T10",[
+  {type:"short",q:D+"Define natural selection.",model:"Natural selection is the differential survival and reproduction of individuals due to heritable differences in phenotype. It favors alleles that improve fitness, so advantageous heritable traits become more common over generations, leading to adaptation. Unlike mutation and genetic drift, it is not a random process.",pts:["Differential survival & reproduction","Based on heritable phenotypic differences","Favors alleles that improve fitness → adaptation","Not random"]}
+ ]);
+ add("L5","L5T12",[
+  {type:"short",q:D+"Define a null model and Hardy–Weinberg equilibrium.",model:"A null model is a baseline model that assumes no biological process is shaping an observed pattern; it gives the expected result under chance so we can test whether real data differ. Hardy–Weinberg equilibrium is the null model for evolution: it describes a population that is not evolving and predicts what allele and genotype frequencies would be if no evolutionary forces were acting.",pts:["Null model = baseline assuming no process","Used to test if observed data differ from expectation","HW = null model of a NON-evolving population","Predicts frequencies if no evolutionary forces act"]}
+ ]);
+
+ /* ---------- L6 ---------- */
+ add("L6","L6T1",[
+  {type:"short",q:D+"Define macroevolution, cladogenesis, and anagenesis.",model:"Macroevolution is descent with modification — large-scale evolutionary change occurring at or above the species level over long periods. Cladogenesis is the branching of a lineage into two or more descendant lineages, which creates new species. Anagenesis is the change of characteristics within a single lineage over time, without branching.",pts:["Macroevolution = large-scale change at/above species level","Cladogenesis = branching → new species","Anagenesis = change within one lineage, no branching"]}
+ ]);
+ add("L6","L6T3",[
+  {type:"short",q:D+"Define phylogenetics, taxonomy, and systematics.",model:"Phylogenetics is dedicated to uncovering the evolutionary relationships among species or higher taxa. Taxonomy is the science of naming, describing, and organizing species. Systematics is the field of organizing and classifying species based on their evolutionary relationships.",pts:["Phylogenetics = uncovering relationships","Taxonomy = naming/describing/organizing","Systematics = classifying by evolutionary relationships"]}
+ ]);
+ add("L6","L6T6",[
+  {type:"short",q:D+"Define monophyletic, paraphyletic, and polyphyletic groups.",model:"A monophyletic group, or clade, contains a common ancestor and all of its descendants. A paraphyletic group contains a common ancestor and some but not all of its descendants, as with traditional 'reptiles' excluding birds. A polyphyletic group contains members derived from two or more ancestors but excludes their common ancestor.",pts:["Monophyletic = ancestor + ALL descendants (clade)","Paraphyletic = ancestor + SOME descendants","Polyphyletic = members from 2+ ancestors, common ancestor excluded"]}
+ ]);
+ add("L6","L6T7",[
+  {type:"short",q:D+"Define plesiomorphy, apomorphy, autapomorphy, and synapomorphy.",model:"A plesiomorphy is an ancestral character state. An apomorphy is a derived character state. An autapomorphy is a derived state unique to a single species. A synapomorphy is a derived state shared by two or more taxa, which is evidence that they form a clade.",pts:["Plesiomorphy = ancestral state","Apomorphy = derived state","Autapomorphy = derived, unique to one species","Synapomorphy = derived, shared (evidence for a clade)"]}
+ ]);
+ add("L6","L6T9",[
+  {type:"short",q:D+"Define homology, homoplasy, and convergent evolution.",model:"Homology is similarity between characters that is due to shared common ancestry. Homoplasy is similarity between characters that is not derived from a common ancestor. Convergent evolution is when different lineages independently evolve similar traits because they experience similar selective pressures, and it is the main source of homoplasy.",pts:["Homology = similarity from shared ancestry","Homoplasy = similarity NOT from a common ancestor","Convergent evolution = independent evolution under similar pressures","Convergence causes homoplasy"]}
+ ]);
+ add("L6","L6T8",[
+  {type:"mcq",q:D+"Maximum parsimony chooses the tree that:",opts:["Has the most taxa","Requires the fewest evolutionary changes","Has the longest branches","Uses the most DNA"],a:1,exp:"The most parsimonious tree requires the fewest changes (Occam's razor)."}
+ ]);
+
+ /* ---------- L7 ---------- */
+ add("L7","L7T3",[
+  {type:"mcq",q:D+"Molecular systematics is:",opts:["Classifying species by their appearance","Using DNA, mitochondrial, or chloroplast sequences to infer evolutionary relationships","Studying fossils","Measuring population size"],a:1,exp:"Molecular systematics uses sequence data (nucleotides as characters) to infer relationships."}
+ ]);
+ add("L7","L7T4",[
+  {type:"short",q:D+"Define a locus, and contrast coding and non-coding DNA.",model:"A locus is a specific location or position on a chromosome or in the genome; it often refers to a gene but can be any defined stretch of DNA. Coding DNA is transcribed and translated into proteins, so it is conserved and evolves slowly because harmful changes are removed by selection, making it useful for deep or ancient relationships. Non-coding DNA is not translated, has fewer functional constraints, and evolves faster, making it useful for recent or shallow relationships among closely related taxa.",pts:["Locus = a defined location in the genome","Coding = translated, conserved, slow → deep relationships","Non-coding = not translated, fast → recent/shallow relationships"]}
+ ]);
+ add("L7","L7T5",[
+  {type:"mcq",q:D+"A Multiple Sequence Alignment (MSA) is:",opts:["A list of species names","The aligned set of sequences used as the basis for building phylogenetic trees","A type of mutation","A fossil record"],a:1,exp:"The MSA is the aligned dataset ensuring the same homologous nucleotide positions are compared; it's the basis for tree-building."}
+ ]);
+ add("L7","L7T7",[
+  {type:"short",q:D+"Define cryptic species and divergence dating.",model:"Cryptic species are morphologically similar species that are genetically distinct; molecular data reveals them, uncovering hidden biodiversity. Divergence dating estimates when species or lineages split in evolutionary time, and it requires molecular data along with calibration points such as fossils of known age.",pts:["Cryptic species = look alike but genetically distinct","Reveals hidden biodiversity","Divergence dating = estimates WHEN lineages split","Needs molecular data + calibration (fossils)"]}
+ ]);
+
+ /* ---------- L8 (final focus) ---------- */
+ add("L8","L8T1",[
+  {type:"mcq",q:D+"Evolutionary biogeography is best defined as:",opts:["The study of fossils only","The study of species distributions in space and time in the context of evolutionary relationships","The naming of species","The measurement of population growth"],a:1,exp:"It asks why species are where they are, studying distributions in space AND time with evolutionary context."}
+ ]);
+ add("L8","L8T2",[
+  {type:"mcq",q:D+"A barrier (in biogeography) is:",opts:["A type of predator","A physical feature that limits or prevents the movement of organisms between regions","A climate zone","A kind of niche"],a:1,exp:"A barrier is a physical feature (ocean, mountain, river) that limits/prevents movement."}
+ ]);
+ add("L8","L8T4",[
+  {type:"short",q:D+"Define vicariance and dispersal.",model:"Vicariance is when a continuous population is geographically separated in place by a chance event, such as a mountain rising or a river changing course, ending with two populations that have no gene flow. Dispersal is when a group of colonists from one continuous population separates to a different geographic area, such as island colonization, also ending with two populations that have no gene flow.",pts:["Vicariance = barrier splits a population in place","Dispersal = colonists move to a new area","Both end with two populations with no gene flow"]}
+ ]);
+ add("L8","L8T5",[
+  {type:"mcq",q:D+"Ancestral area reconstruction is:",opts:["A method of dating fossils","A model that uses a phylogeny to estimate the ancestral geographic distribution at each node","A way to measure diversity","A type of barrier"],a:1,exp:"It assigns tips to areas and uses models to estimate ancestral locations at nodes, tracing movement over time."}
+ ]);
+ add("L8","L8T6",[
+  {type:"mcq",q:D+"Descriptive statistics are defined as statistics used to:",opts:["Predict future values from data","Summarize and describe data","Prove causation","Randomize samples"],a:1,exp:"Descriptive statistics summarize/describe data (patterns, trends, outliers) — they don't predict from it."},
+  {type:"short",q:D+"Define the mean and the median, and state which is affected by outliers.",model:"The mean is the sum of all values divided by the number of values, and it is sensitive to outliers because an extreme value pulls it toward itself. The median is the middle value when the data are ordered from smallest to largest, and it is resistant to outliers. Therefore the mean is used when data are similar and free of outliers, while the median is used when obvious outliers are present.",pts:["Mean = sum ÷ count","Median = middle value when ordered","Mean is affected/skewed by outliers","Median is resistant to outliers"]}
+ ]);
+ add("L8","L8T7",[
+  {type:"short",q:D+"Define range, variance, and standard deviation.",model:"The range is the difference between the largest and smallest values, giving a quick estimate of spread. The variance is the average of the squared differences from the mean, calculated as the sum of squared deviations divided by n − 1. The standard deviation is the square root of the variance and represents the average distance of observations from the mean. For all three, a larger value indicates more spread or variation in the data.",pts:["Range = largest − smallest","Variance = average squared difference from the mean (÷ n−1)","Standard deviation = square root of the variance","Larger value = more spread/variation"]}
+ ]);
+
+ /* ---------- L9 (final focus) ---------- */
+ add("L9","L9T1",[
+  {type:"short",q:D+"Define phenotypic plasticity and cryptic species, and explain why each makes defining species hard.",model:"Phenotypic plasticity is when a single species takes on different physical forms depending on environmental conditions, as in Bicyclus butterflies whose wing morphology varies with temperature; this makes one species look like several. Cryptic species are separate species that look morphologically identical but do not interbreed and are genetically distinct, as in the four Papilio butterflies; this makes several species look like one. Both show that appearance alone cannot reliably delimit species.",pts:["Plasticity = one species, many forms (environment-driven)","Makes one species look like several","Cryptic species = several species that look identical","Appearance alone is unreliable"]}
+ ]);
+ add("L9","L9T2",[
+  {type:"mcq",q:D+"The morphological species concept defines species based on:",opts:["Interbreeding","Observable physical traits","Shared ancestry","Geographic range"],a:1,exp:"The morphological concept uses observable physical traits."}
+ ]);
+ add("L9","L9T3",[
+  {type:"mcq",q:D+"The biological species concept defines species as:",opts:["Organisms that look alike","Groups of interbreeding populations that are reproductively isolated from others","Groups sharing a common ancestor","Organisms in the same habitat"],a:1,exp:"The biological concept centers on interbreeding and reproductive isolation."}
+ ]);
+ add("L9","L9T4",[
+  {type:"mcq",q:D+"The phylogenetic species concept defines a species as a group that:",opts:["Looks identical","Can interbreed","Shares a pattern of ancestry and descent and is genetically distinct","Occupies one island"],a:2,exp:"The phylogenetic concept uses shared ancestry/descent and genetic distinctness."},
+  {type:"short",q:D+"Define all three species concepts.",model:"The morphological species concept defines species based on observable physical traits. The biological species concept defines species as groups of interbreeding populations that are reproductively isolated from other such groups. The phylogenetic species concept defines a species as a group of organisms that share a pattern of ancestry and descent and are genetically distinct from other groups.",pts:["Morphological = observable physical traits","Biological = interbreeding, reproductively isolated","Phylogenetic = shared ancestry/descent, genetically distinct"]}
+ ]);
+ add("L9","L9T5",[
+  {type:"mcq",q:D+"Speciation is defined as:",opts:["The extinction of a species","The process by which populations evolve to become distinct species","A change in allele frequencies only","The naming of a species"],a:1,exp:"Speciation = populations evolving into distinct species; it links microevolution to macroevolution."},
+  {type:"short",q:D+"Define reproductive isolation and the two categories of barrier.",model:"Reproductive isolation is a mechanism that prevents reproduction or gene flow between populations, ensuring that once populations diverge they stay separate even if they come back into contact. Its barriers fall into two categories: prezygotic barriers act before fertilization, such as temporal isolation (breeding at different times) and mechanical isolation (incompatible reproductive structures); postzygotic barriers act after fertilization, such as reduced hybrid viability or fertility, as when a mule is sterile.",pts:["Mechanism preventing reproduction/gene flow","Keeps diverged populations separate on contact","Prezygotic = before fertilization (temporal, mechanical)","Postzygotic = after fertilization (sterile/inviable hybrids)"]}
+ ]);
+ add("L9","L9T6",[
+  {type:"short",q:D+"Define allopatric and sympatric speciation.",model:"Allopatric speciation occurs when populations are geographically separated by a barrier that prevents gene flow, allowing genetic and phenotypic differences to accumulate until they become distinct species; this is the same idea as vicariance. Sympatric speciation occurs within the same geographic area, without any physical separation, typically through ecological specialization or disruptive selection.",pts:["Allopatric = populations geographically separated (barrier)","Same idea as vicariance","Sympatric = within the same geographic area","Sympatric via ecological specialization/disruptive selection"]}
+ ]);
+ add("L9","L9T7",[
+  {type:"mcq",q:D+"An adaptive radiation is:",opts:["The slow change of one lineage over time","The rapid evolution of many ecologically and morphologically diverse species from a single common ancestor","The extinction of many species","A reproductive barrier"],a:1,exp:"Adaptive radiation = rapid diversification from one ancestor into many diverse species, driven by new unoccupied niches."}
+ ]);
+})();
