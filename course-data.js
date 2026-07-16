@@ -2526,3 +2526,382 @@ Genotype frequencies: p² + 2pq + q² = 1</div>
   ]
  };
 })();
+
+/* ===================== LECTURES 8 & 9 (final-exam focus) ===================== */
+(function(){
+ const P=(L,n)=>({src:"slides/"+L+"/slide-"+String(n).padStart(2,"0")+".jpg",cap:L+" · Slide "+n});
+ const c8=(n)=>P("L8",n), c9=(n)=>P("L9",n);
+
+ /* ---------------- LECTURE 8 — EVOLUTIONARY BIOGEOGRAPHY ---------------- */
+ const L8={
+  id:"L8", icon:"🌎", short:"L8 · Evolutionary Biogeography",
+  title:"Lecture 8 — Evolutionary Biogeography",
+  blurb:"How taxa are distributed in space and change over time: Wallace & Humboldt, geographic barriers, vicariance vs dispersal, ancestral area reconstruction, and descriptive statistics.",
+  objectives:[
+   "Describe Alfred Wallace's and Alexander von Humboldt's contributions to evolutionary biology",
+   "Describe how geographic barriers impact species distributions",
+   "Describe vicariance and dispersal speciation mechanisms",
+   "Interpret a phylogeny with ancestral area reconstruction",
+   "Interpret measures of center and spread and know when to use which"
+  ],
+  topics:[
+   {id:"L8T1", title:"Evolutionary biogeography & the niche", sub:"What it is; fundamental vs realized niche; BAM (slides 3–4, 25, 40).",
+    slides:[
+     {h:"What is evolutionary biogeography?", imgs:[c8(25),c8(40)], html:`
+       <p class="lead"><span class="kw">Evolutionary biogeography</span> asks <b>why species are where they are — and not somewhere else</b>. It studies species distributions in <b>space and time</b> in the context of evolutionary relationships, integrating ecology, physical geography, and evolution.</p>
+       <div class="callout key">Modern distributions reflect <b>both</b> present-day variables (the <b>BAM diagram</b>: Biotic ∩ Abiotic ∩ Movement) <b>and</b> historical events (geologic/climatic history over time).</div>`},
+     {h:"Fundamental vs. realized niche (recap)", imgs:[c8(3),c8(4)], html:`
+       <p><b>Fundamental niche</b> = the abiotic conditions a species could occupy in the <b>absence of competition</b> (full tolerances). <b>Realized niche</b> = the portion actually inhabited given <b>biotic factors and dispersal</b>. A species exists where <b>B ∩ A ∩ M</b> overlap.</p>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Evolutionary biogeography studies species distributions in:",opts:["Space only","Time only","Space and time, in the context of evolutionary relationships","The lab only"],a:2,exp:"It integrates space, time, and evolutionary history to explain why species are where they are."},
+     {type:"mcq",q:"Modern species distributions reflect:",opts:["Only present-day climate","Only historical events","Both present-day variables (BAM) and historical events","Neither"],a:2,exp:"Distributions reflect both current BAM factors and the historical/geologic record."},
+     {type:"short",q:"What question is at the heart of evolutionary biogeography, and what two kinds of factors explain distributions?",model:"Evolutionary biogeography asks why species occur where they do and not elsewhere. Distributions are explained by present-day variables — the biotic, abiotic, and movement factors of the BAM diagram — and by historical events such as past geologic and climatic changes over evolutionary time.",pts:["Why species are where they are (and not elsewhere)","Present-day factors (BAM: biotic, abiotic, movement)","Historical/geologic events over time"]}
+    ]},
+   {id:"L8T2", title:"Alfred Wallace & geographic barriers", sub:"Wallace's Line, barriers, oceans & rivers (slides 5–15).",
+    slides:[
+     {h:"Alfred Wallace (1823–1913)", imgs:[c8(5),c8(6),c8(7),c8(10)], html:`
+       <p class="lead"><span class="kw">Alfred Wallace</span> — British naturalist who independently theorized evolution by natural selection and made key observations about species distributions: they are <b>not random</b>, and environmental factors and <b>barriers</b> have big effects.</p>
+       <p><b>Wallace's Line</b> (Malay Archipelago): west of the line = Asian animals (tigers, elephants, orangutans); east = Australian animals (kangaroos/marsupials, echidnas, cassowaries). Deep water separates them.</p>
+       <div class="callout key">Wallace's insights: (1) similarity/dissimilarity of regions' inhabitants can't be explained by climate alone; (2) <b>barriers</b> (obstacles to migration) shape distributions; (3) <b>time</b> matters — present distributions reflect evolutionary and geologic history.</div>`},
+     {h:"Geographical barriers: oceans & rivers", imgs:[c8(12),c8(13),c8(14)], html:`
+       <p class="lead">A <span class="kw">barrier</span> is a physical feature that limits or prevents movement between regions.</p>
+       <ul><li><b>Oceans</b> — shape biodiversity at <b>large</b> scales (whole lineages). Madagascar, separated from the mainland by the Indian Ocean for &gt;80 My, has endemic lineages: baobabs (9 species), lemurs (100 species).</li>
+       <li><b>Rivers</b> — shape biodiversity at <b>smaller</b> scales (closely related species/populations). In the Amazon Basin, some tamarins and birds are found only north vs only south of the river.</li></ul>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Alfred Wallace is known for independently proposing natural selection and for showing that species distributions are:",opts:["Completely random","Shaped by barriers and environmental factors, not random","Determined only by climate","Unrelated to geography"],a:1,exp:"Wallace showed distributions are non-random and strongly shaped by barriers."},
+     {type:"mcq",q:"Wallace's Line separates the animals of:",opts:["North vs South America","Asia vs Australia (in the Malay Archipelago)","Africa vs Europe","Ocean vs land"],a:1,exp:"West of Wallace's Line = Asian fauna; east = Australian fauna, separated by deep water."},
+     {type:"mcq",q:"Oceans (e.g., isolating Madagascar) shape biodiversity at which scale?",opts:["Small scale, closely related populations","Large evolutionary scale, whole lineages","No scale","Only for plants"],a:1,exp:"Oceans act at large scales, isolating entire lineages (baobabs, lemurs on Madagascar). Rivers act at smaller scales."},
+     {type:"tf",q:"A river can act as a barrier separating closely related species or populations.",a:true,exp:"True — Amazon rivers separate north-only and south-only tamarins/birds; rivers shape biodiversity at smaller scales."},
+     {type:"short",q:"What is a geographic barrier, and how do oceans vs rivers differ in the scale of biodiversity they shape?",model:"A geographic barrier is a physical feature, such as an ocean, mountain, or river, that limits or prevents the movement of organisms between regions. Oceans act at large evolutionary scales, isolating entire lineages — for example, Madagascar's baobabs and lemurs. Rivers act at smaller scales, separating closely related species or populations, such as tamarins found only north or south of an Amazon river.",pts:["Barrier = feature that limits/prevents movement","Oceans → large scale, whole lineages (Madagascar)","Rivers → small scale, closely related species/populations"]}
+    ]},
+   {id:"L8T3", title:"Humboldt, climate & environmental barriers", sub:"Elevation, climate, sky islands (slides 16–24).",
+    slides:[
+     {h:"Alexander von Humboldt (1769–1859)", imgs:[c8(16),c8(19),c8(20)], html:`
+       <p class="lead"><span class="kw">Alexander von Humboldt</span> — German naturalist who explored the tropical Andes and documented patterns between species distributions, <b>climate, and elevation</b>. Different plant groups occupy different elevation bands (lowland forests → cloud forests → alpine grasslands).</p>
+       <div class="callout key">Humboldt's key idea: species distributions reflect <b>abiotic conditions</b> — species are found in places where their <b>climatic requirements are met</b> (the Abiotic circle of BAM).</div>`},
+     {h:"The environment as a barrier; sky islands", imgs:[c8(21),c8(22),c8(24)], html:`
+       <p class="lead">The environment itself can be a <span class="kw">barrier</span> — a species can't disperse if an <b>unsuitable environment lies between</b> suitable areas.</p>
+       <p><span class="kw-2">Sky islands</span>: mountaintops with suitable habitat separated by unsuitable lowlands, isolating species on the peaks (like islands in a sea of unsuitable land). Over evolutionary time, geographic and climatic barriers isolate populations → <b>divergence and speciation</b>.</p>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Alexander von Humboldt documented the relationship between species distributions and:",opts:["Predators","Climate and elevation","Gene flow","Fossils"],a:1,exp:"Humboldt linked distributions to climate and elevation in the Andes."},
+     {type:"mcq",q:"A 'sky island' is:",opts:["A floating island","A mountaintop habitat isolated by unsuitable lowlands","An oceanic island","A cloud formation"],a:1,exp:"Sky islands are mountaintop habitats separated by unsuitable lowland — species are isolated on the peaks."},
+     {type:"tf",q:"An unsuitable environment between two suitable areas can act as a barrier to dispersal.",a:true,exp:"True — the environment itself can be a barrier; species cannot disperse across unsuitable habitat (basis of sky islands)."},
+     {type:"short",q:"Contrast Wallace's and Humboldt's contributions to evolutionary biogeography.",model:"Wallace showed that species distributions are non-random and strongly shaped by barriers to movement, such as the deep water of Wallace's Line separating Asian and Australian faunas, and emphasized that time and geologic history matter. Humboldt documented how species distributions track abiotic conditions — climate and elevation — showing that species occur where their climatic requirements are met, as seen in the elevation bands of Andean plants.",pts:["Wallace: barriers shape non-random distributions (Wallace's Line)","Wallace: time/geologic history matter","Humboldt: distributions track climate & elevation","Humboldt: species where climatic requirements are met"]}
+    ]},
+   {id:"L8T4", title:"Speciation: vicariance vs. dispersal", sub:"How barriers make new species (slides 26–39).",
+    slides:[
+     {h:"Species & speciation basics", imgs:[c8(26),c8(27),c8(28)], html:`
+       <p class="lead">A <b>species</b> (for now) = a group that can interbreed and produce fertile offspring; <b>gene flow occurs within species</b>. <span class="kw">Speciation</span> = one species splitting into two (cladogenesis). It <b>requires reproductive isolation</b> — a <b>reduction in gene flow</b> between the groups — driven by natural selection, mutation, geographic isolation, etc., which lets genetic/morphological differences accumulate.</p>`},
+     {h:"Vicariance", imgs:[c8(31),c8(33)], html:`
+       <p class="lead"><span class="kw">Vicariance</span>: a <b>continuous population is split by a chance event</b> — a mountain rises, a river changes course, etc. It ends with two populations that <b>have no gene flow</b>.</p>
+       <p><b>Example:</b> the Isthmus of Panama forming split marine organisms into Atlantic vs Pacific species (fish, snapping shrimp).</p>`},
+     {h:"Dispersal", imgs:[c8(35),c8(36),c8(38)], html:`
+       <p class="lead"><span class="kw">Dispersal</span>: within one continuous population, a group of <b>colonists moves to a new area</b> (e.g., island colonization). It also ends with two populations that <b>have no gene flow</b>.</p>
+       <p><b>Example:</b> ~50 Mya a small population of monkeys rafted from Africa to South America — that single dispersal event founded all New World monkeys.</p>
+       <div class="callout key"><b>Vicariance vs dispersal:</b> in vicariance a <b>barrier appears</b> and divides a population in place; in dispersal <b>organisms move</b> across to a new area. Both end in two populations with no gene flow.</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Vicariance is when:",opts:["Colonists move to a new area","A continuous population is split by a barrier (e.g., a river changes course)","Two species merge","Gene flow increases"],a:1,exp:"Vicariance = a barrier arises and divides a once-continuous population in place."},
+     {type:"mcq",q:"Dispersal (as a speciation mechanism) is when:",opts:["A barrier splits a population in place","A group of colonists moves to a new geographic area","Populations interbreed freely","A species goes extinct"],a:1,exp:"Dispersal = organisms move to a new area (e.g., island colonization), founding an isolated population."},
+     {type:"mcq",q:"Monkeys rafting from Africa to South America ~50 Mya, founding all New World monkeys, is an example of:",opts:["Vicariance","Dispersal","Sympatry","Convergence"],a:1,exp:"A group crossed to a new area — that's dispersal."},
+     {type:"tf",q:"Both vicariance and dispersal end with two populations that have no gene flow.",a:true,exp:"True — both produce reproductively isolated populations; they differ in whether the barrier appeared or the organisms moved."},
+     {type:"short",q:"Compare vicariance and dispersal as mechanisms of speciation.",model:"In vicariance, a once-continuous population is split in place by a chance geographic event such as a mountain rising or a river changing course — the Isthmus of Panama dividing marine organisms is an example. In dispersal, a group of colonists from a continuous population moves to a new geographic area, such as monkeys rafting to South America. Both mechanisms end with two populations that no longer exchange genes, allowing them to diverge into separate species.",pts:["Vicariance = barrier splits population in place (Panama)","Dispersal = colonists move to a new area (monkeys)","Vicariance: barrier appears; dispersal: organisms move","Both → two populations, no gene flow"]}
+    ]},
+   {id:"L8T5", title:"Ancestral area reconstruction", sub:"Using phylogenies to track distributions through time (slides 41–47).",
+    slides:[
+     {h:"What it is", imgs:[c8(41),c8(42),c8(45)], html:`
+       <p class="lead"><span class="kw">Ancestral area reconstruction</span> uses a phylogeny to model how lineages <b>moved through geographic space over time</b>. You assign each tip (species) a distribution (area), and mathematical models estimate the <b>ancestral distribution of each node</b> — then you make associations with geologic/climatic events.</p>
+       <p>Example: <i>Miconia</i> (~500 species) — <b>where</b> did the lineage originate? (The northern Andes.) <b>When</b> did it disperse to other areas, and does it coincide with geologic/climatic events?</p>`},
+     {h:"Interpreting a reconstruction", imgs:[c8(47)], html:`
+       <p class="lead">On a reconstructed tree, <b>colored nodes</b> (a legend maps colors to areas, e.g., North America, South America, Caribbean) show the inferred ancestral location at each branch point. You read it to answer: where did the lineage originate, and how many times (and from where) did it disperse to a given area?</p>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Ancestral area reconstruction uses a phylogeny to estimate:",opts:["The age of the Earth","How lineages moved through geographic space over time","DNA sequences","Population size"],a:1,exp:"It reconstructs the ancestral geographic distribution at each node to trace movement over time."},
+     {type:"mcq",q:"In an ancestral area reconstruction, the colored nodes represent:",opts:["Mutations","The inferred ancestral geographic area at each branch point","Extinction events","Random noise"],a:1,exp:"Node colors (via a legend) show the inferred ancestral location, letting you trace origin and dispersals."},
+     {type:"short",q:"What is ancestral area reconstruction, and what kinds of questions does it answer?",model:"Ancestral area reconstruction is a method that uses a phylogeny, with each tip assigned to a geographic area, and mathematical models to estimate the ancestral distribution at each node. It answers where a lineage originated and when and how many times it dispersed to other areas, and lets researchers link those movements to geologic or climatic events.",pts:["Uses phylogeny + tip areas + models","Estimates ancestral distribution at each node","Answers where a lineage originated","Answers when/how it dispersed; links to geologic events"]}
+    ]},
+   {id:"L8T6", title:"Descriptive statistics & measures of center", sub:"Summarizing data; mean vs median (slides 48–56).",
+    slides:[
+     {h:"Descriptive statistics", imgs:[c8(49),c8(51)], html:`
+       <p class="lead">The world is big and observers are few, so we take <b>samples</b> to estimate the properties of a larger population.</p>
+       <ul><li><span class="kw">Descriptive statistics</span> — <b>summarize and describe</b> data (patterns, trends, outliers). They do NOT predict from it.</li>
+       <li><span class="kw-2">Inferential statistics</span> — use the sample to <b>infer</b> about the whole population (next lecture's territory).</li></ul>`},
+     {h:"Measures of center: mean & median", imgs:[c8(53),c8(54),c8(55),c8(56)], html:`
+       <p class="lead">Measures of center describe the <b>typical value</b> of a dataset.</p>
+       <ul><li><b>Mean</b> = sum ÷ count. <b>Sensitive to outliers</b> (one extreme value pulls it: 4,8,10,12,40 → mean 15.6).</li>
+       <li><b>Median</b> = the middle value when ordered. <b>Resistant to outliers</b> (that same set → median still 10).</li></ul>
+       <div class="callout key"><b>When to use which:</b> use the <b>mean</b> when data are similar and <b>free of outliers</b>; use the <b>median</b> when there are obvious outliers that would skew the mean.</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Descriptive statistics are used to:",opts:["Predict future data","Summarize and describe data","Prove causation","Replace sampling"],a:1,exp:"Descriptive statistics summarize/describe data; they do not predict from it (that's inferential statistics)."},
+     {type:"mcq",q:"Which measure of center is MOST affected by an outlier?",opts:["Median","Mean","Both equally","Neither"],a:1,exp:"The mean is pulled by extreme values; the median is resistant to outliers."},
+     {type:"mcq",q:"You have income data with a few extremely high values. Which measure of center best represents the 'typical' value?",opts:["Mean","Median","Range","Variance"],a:1,exp:"With obvious outliers, use the median — it isn't skewed by the extremes."},
+     {type:"tf",q:"Two datasets can have the same mean but different amounts of variation.",a:true,exp:"True — the mean describes center, not spread; you need measures of spread to compare variation."},
+     {type:"short",q:"Explain when you would use the mean versus the median.",model:"Use the mean when the data values are similar and free of outliers, because it uses all the values to represent the typical value. Use the median when there are obvious outliers, because the median is the middle value and is resistant to being skewed by extreme values, whereas the mean would be pulled toward the outlier.",pts:["Mean = sum/count; uses all values","Mean is skewed by outliers","Median = middle value; resistant to outliers","Use median when outliers are present"]}
+    ]},
+   {id:"L8T7", title:"Measures of spread", sub:"Range, variance, standard deviation (slides 57–66).",
+    slides:[
+     {h:"Range, variance & standard deviation", imgs:[c8(57),c8(59),c8(61),c8(65)], html:`
+       <p class="lead">Measures of spread quantify how <b>dispersed</b> the data are around the center (the amount of variation).</p>
+       <table class="dt"><tr><th>Measure</th><th>What it is</th></tr>
+       <tr><td><b>Range</b></td><td>Largest − smallest value (a quick estimate of spread)</td></tr>
+       <tr><td><b>Variance (s²)</b></td><td>Average of the squared differences from the mean: <span class="f">s² = Σ(xᵢ − x̄)² / (n−1)</span> (n−1 corrects for samples underestimating true variance)</td></tr>
+       <tr><td><b>Standard deviation</b></td><td>The <b>square root of the variance</b> — the average distance of observations from the mean</td></tr></table>
+       <div class="callout key"><b>Interpretation:</b> a <b>larger</b> range, variance, or standard deviation = <b>more spread / more variation</b> in the data. Two populations with the same mean can differ greatly in spread (e.g., means both 10, but SDs 1.58 vs 4.47 → the second is much more variable).</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"The range of a dataset is:",opts:["The middle value","The largest minus the smallest value","The square root of the variance","The average"],a:1,exp:"Range = max − min, a quick estimate of spread."},
+     {type:"mcq",q:"Standard deviation is:",opts:["The sum of all values","The square root of the variance","The most frequent value","Always zero"],a:1,exp:"Standard deviation = √variance; it measures the average distance of observations from the mean."},
+     {type:"mcq",q:"Population A has SD = 1.58 and Population B has SD = 4.47 (same mean). This tells you:",opts:["A has more variation","B has more variation / spread","They are identical","B has a higher mean"],a:1,exp:"A larger standard deviation means more spread — Population B is more variable."},
+     {type:"tf",q:"A larger variance indicates the data are more spread out around the mean.",a:true,exp:"True — variance and standard deviation both increase with more dispersion around the mean."},
+     {type:"short",q:"Two populations have the same mean but Population B has a much larger standard deviation. Interpret this.",model:"Because the two populations share the same mean, their typical values are the same. However, the larger standard deviation in Population B means its values are more spread out around the mean — it has greater variation. So even though an average individual is similar, Population B contains more variability among its members than Population A.",pts:["Same mean = same typical/center value","Larger SD = more spread/variation","B is more variable around the mean","Center and spread are different properties"]}
+    ]}
+  ]
+ };
+
+ /* ---------------- LECTURE 9 — SPECIES & SPECIATION ---------------- */
+ const L9={
+  id:"L9", icon:"🐦", short:"L9 · Species & Speciation",
+  title:"Lecture 9 — Species & Speciation",
+  blurb:"What a species is (three species concepts), why a species is a hypothesis, reproductive isolation, allopatric vs sympatric speciation, and adaptive radiations.",
+  objectives:[
+   "Explain each of the species concepts and be able to apply them appropriately",
+   "Define speciation and how it can occur",
+   "Explain why reproductive isolation is necessary for speciation",
+   "Identify and describe prezygotic and postzygotic barriers",
+   "Compare and contrast allopatric and sympatric speciation and identify examples of each",
+   "Explain what an adaptive radiation is"
+  ],
+  topics:[
+   {id:"L9T1", title:"What is a species?", sub:"Why defining a species is hard (slides 1–10).",
+    slides:[
+     {h:"Species — the basic unit", imgs:[c9(2)], html:`
+       <p class="lead">A <span class="kw">species</span> is the principle taxonomic unit for classifying life (…Genus → <b>Species</b>) and the basic unit of biodiversity, used in conservation, ecology, evolution, and taxonomy. But defining one is surprisingly hard.</p>`},
+     {h:"Why it's hard: two problems", imgs:[c9(7),c9(8),c9(9),c9(10)], html:`
+       <p class="lead">Two things break simple definitions:</p>
+       <ul><li><span class="kw">Phenotypic plasticity</span> — one species can look like several. <i>Bicyclus anynana</i> butterflies have very different wing morphs depending on temperature/precipitation, yet are <b>one species</b>.</li>
+       <li><span class="kw">Cryptic species</span> — several species can look identical. Four <i>Papilio</i> butterflies are morphologically identical but <b>don't interbreed</b> (different breeding seasons/ranges) and are genetically distinct — <b>separate species</b>.</li></ul>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"A single species that appears as several different forms due to environmental conditions shows:",opts:["Cryptic species","Phenotypic plasticity","Reproductive isolation","Convergence"],a:1,exp:"Phenotypic plasticity: one species (e.g., Bicyclus) takes different forms in different environments."},
+     {type:"mcq",q:"Several morphologically identical but genetically distinct, non-interbreeding forms are:",opts:["One species with plasticity","Cryptic species","A hybrid","An adaptive radiation"],a:1,exp:"Cryptic species look alike but are distinct species (e.g., the four Papilio)."},
+     {type:"short",q:"Why is it difficult to define a species? Give the two problems from the lecture.",model:"Defining a species is hard because appearance is unreliable. Phenotypic plasticity means a single species can look like several different forms depending on the environment, as in Bicyclus butterflies. Conversely, cryptic species are separate species that look identical yet do not interbreed and are genetically distinct, as in the four Papilio butterflies. So neither 'looks the same' nor 'looks different' reliably delimits species.",pts:["Phenotypic plasticity: one species, many forms (Bicyclus)","Cryptic species: many species, one look (Papilio)","Appearance alone is unreliable"]}
+    ]},
+   {id:"L9T2", title:"Morphological species concept", sub:"Defining species by physical traits (slides 11–17).",
+    slides:[
+     {h:"Morphological species concept", imgs:[c9(12),c9(15),c9(16),c9(17)], html:`
+       <p class="lead">The <span class="kw">Morphological Species Concept</span> defines species by <b>observable physical traits</b> (flower color, petal number, size, etc.).</p>
+       <table class="dt"><tr><th>Pros</th><th>Cons (limitations)</th></tr>
+       <tr><td>Works on <b>fossils / extinct organisms</b>; relatively easy (you need eyes, not a DNA sequencer)</td><td>Fails for <b>phenotypic plasticity</b> (would call one species three) and <b>cryptic species</b> (would call several species one)</td></tr></table>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"The Morphological Species Concept defines species by:",opts:["Ability to interbreed","Observable physical traits","DNA sequences","Geographic range"],a:1,exp:"It uses observable morphology (physical traits)."},
+     {type:"mcq",q:"A key ADVANTAGE of the morphological species concept is that it:",opts:["Works on asexual organisms","Can be applied to fossils and extinct organisms","Never misidentifies species","Uses DNA"],a:1,exp:"It can be used on fossils/extinct organisms and is relatively easy (no DNA needed)."},
+     {type:"mcq",q:"A limitation of the morphological species concept is that it struggles with:",opts:["Fossils","Phenotypic plasticity and cryptic species","Large organisms","Common species"],a:1,exp:"Plasticity (one species looks like many) and cryptic species (many look like one) both mislead it."},
+     {type:"short",q:"State the morphological species concept and one pro and one con.",model:"The morphological species concept defines species based on observable physical traits. Its advantage is that it can be applied to fossils and extinct organisms and is easy because it requires only observation rather than DNA. Its limitation is that it is misled by phenotypic plasticity, where one species looks like several, and by cryptic species, where several species look identical.",pts:["Defines species by physical traits","Pro: works on fossils/extinct; easy","Con: fooled by plasticity and cryptic species"]}
+    ]},
+   {id:"L9T3", title:"Biological species concept", sub:"Defining species by interbreeding (slides 18–24).",
+    slides:[
+     {h:"Biological species concept", imgs:[c9(18),c9(20),c9(22),c9(24)], html:`
+       <p class="lead">The <span class="kw">Biological Species Concept</span> defines species as groups of <b>interbreeding populations that are reproductively isolated</b> from others. It focuses on <b>reproductive barriers</b> (prezygotic and postzygotic) and is grounded in <b>reproductive isolation</b>, which maintains species boundaries.</p>
+       <p>It correctly handles the earlier cases: the plastic <i>Bicyclus</i> morphs all interbreed → <b>one species</b>; the identical <i>Papilio</i> don't interbreed → <b>separate species</b>.</p>
+       <table class="dt"><tr><th>Pros</th><th>Cons (limitations)</th></tr>
+       <tr><td>Grounded in the actual process (reproductive isolation) that maintains species</td><td>Can't apply to <b>asexual organisms</b> (they reproduce without mating); <b>hybridization</b> blurs the lines (horse + donkey = mule)</td></tr></table>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"The Biological Species Concept defines a species as a group that:",opts:["Looks the same","Interbreeds and is reproductively isolated from others","Shares DNA barcodes","Lives in one area"],a:1,exp:"It centers on interbreeding populations that are reproductively isolated."},
+     {type:"mcq",q:"A major limitation of the biological species concept is that it cannot be applied to:",opts:["Sexual animals","Asexual organisms","Plants that flower","Any species"],a:1,exp:"Asexual organisms reproduce without mating, so 'interbreeding' doesn't apply. Hybridization is another limitation."},
+     {type:"tf",q:"The biological species concept is grounded in reproductive isolation.",a:true,exp:"True — it is based on reproductive barriers that maintain species boundaries."},
+     {type:"short",q:"State the biological species concept and its two main limitations.",model:"The biological species concept defines species as groups of interbreeding populations that are reproductively isolated from other such groups, focusing on reproductive barriers. Its limitations are that it cannot be applied to asexual organisms, which reproduce without mating, and that hybridization between species can blur the boundaries of reproductive isolation.",pts:["Interbreeding, reproductively isolated populations","Based on reproductive barriers","Con: fails for asexual organisms","Con: hybridization blurs the lines"]}
+    ]},
+   {id:"L9T4", title:"Phylogenetic species concept & 'a species is a hypothesis'", sub:"Defining species by ancestry (slides 25–35).",
+    slides:[
+     {h:"Phylogenetic species concept", imgs:[c9(25),c9(28),c9(29),c9(30)], html:`
+       <p class="lead">The <span class="kw">Phylogenetic Species Concept</span> defines a species as a group of organisms that share a <b>pattern of ancestry and descent</b> and are <b>genetically distinct</b> from other such groups (each with a unique evolutionary trajectory).</p>
+       <table class="dt"><tr><th>Pros</th><th>Cons (limitations)</th></tr>
+       <tr><td>Works for <b>asexual organisms</b>; can detect <b>cryptic species</b></td><td>Can't apply to <b>extinct species with no DNA</b>; hard to decide <b>where to draw the line</b> for "genetically distinct" (could be 2 species or 5)</td></tr></table>`},
+     {h:"Overview & 'a species is a hypothesis'", imgs:[c9(32),c9(34)], html:`
+       <table class="dt"><tr><th>Concept</th><th>Basis</th></tr>
+       <tr><td>Morphological</td><td>Physical traits</td></tr>
+       <tr><td>Biological</td><td>Reproductive isolation (interbreeding)</td></tr>
+       <tr><td>Phylogenetic</td><td>Shared ancestry / genetic distinctness</td></tr></table>
+       <div class="callout key"><b>No single concept is the "correct" one.</b> Different species concepts are used as <b>evidence</b> for defining species — so <b>a species is itself a hypothesis</b>, which can be revised.</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"The Phylogenetic Species Concept defines a species by:",opts:["Physical appearance","Ability to interbreed","Shared ancestry and genetic distinctness","Geographic location"],a:2,exp:"It uses shared pattern of ancestry/descent and genetic distinctness."},
+     {type:"mcq",q:"An advantage of the phylogenetic species concept is that it:",opts:["Works only on living sexual species","Works for asexual organisms and can detect cryptic species","Requires no data","Never has ambiguity"],a:1,exp:"It handles asexual organisms and reveals cryptic species; but it can't be applied to extinct species lacking DNA."},
+     {type:"tf",q:"Because different species concepts can disagree, a species is best thought of as a hypothesis.",a:true,exp:"True — no concept is definitively 'correct,' so species delimitations are hypotheses that can be revised."},
+     {type:"short",q:"Briefly state the basis of each of the three species concepts, and explain why a species is called a hypothesis.",model:"The morphological species concept defines species by observable physical traits; the biological species concept defines them by interbreeding and reproductive isolation; and the phylogenetic species concept defines them by shared ancestry and genetic distinctness. Because these different concepts can lead to different conclusions and none is definitively correct, any species designation is really a hypothesis supported by a particular kind of evidence, and it can be revised as more data become available.",pts:["Morphological = physical traits","Biological = interbreeding/reproductive isolation","Phylogenetic = shared ancestry/genetic distinctness","No concept is 'correct' → species is a revisable hypothesis"]}
+    ]},
+   {id:"L9T5", title:"Speciation & reproductive isolation", sub:"Prezygotic & postzygotic barriers (slides 36–45).",
+    slides:[
+     {h:"Speciation", imgs:[c9(37),c9(39),c9(40)], html:`
+       <p class="lead"><span class="kw">Speciation</span> = the process by which <b>populations evolve to become distinct species</b>. It links <b>microevolution to macroevolution</b> and explains the diversity of life. It happens through the <b>absence of gene flow</b> between two populations, so genetic/phenotypic differences accumulate — and it can occur <b>with or without</b> geographic separation.</p>`},
+     {h:"Reproductive isolation: prezygotic vs postzygotic", imgs:[c9(41),c9(43),c9(45)], html:`
+       <p class="lead"><span class="kw">Reproductive isolation</span> is the key process: a mechanism that prevents reproduction/gene flow, keeping diverged populations separate even if they meet again.</p>
+       <table class="dt"><tr><th>Barrier</th><th>Timing</th><th>Examples</th></tr>
+       <tr><td><b>Prezygotic</b></td><td><b>Before</b> fertilization</td><td><b>Temporal</b> (reproduce at different times — <i>Mimulus</i> blooming seasons); <b>Mechanical</b> (incompatible reproductive structures — dragonfly genitalia)</td></tr>
+       <tr><td><b>Postzygotic</b></td><td><b>After</b> fertilization</td><td>Reduced hybrid viability/fertility — hybrids are inviable or <b>sterile</b> (a mule is infertile)</td></tr></table>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Why is reproductive isolation necessary for speciation?",opts:["It increases gene flow","It prevents gene flow, so diverged populations stay separate","It speeds up mutation","It merges populations"],a:1,exp:"Without reproductive isolation, gene flow would homogenize populations; isolation lets them diverge and stay distinct."},
+     {type:"mcq",q:"Two flower species blooming in different months (so they never cross-pollinate) is a ____ barrier.",opts:["Postzygotic","Prezygotic (temporal)","Mechanical only","Hybrid sterility"],a:1,exp:"Different timing prevents mating before fertilization — a prezygotic (temporal) barrier."},
+     {type:"mcq",q:"A mule being sterile is an example of a:",opts:["Prezygotic barrier","Postzygotic barrier (reduced hybrid fertility)","Temporal barrier","Mechanical barrier"],a:1,exp:"The hybrid forms but is sterile — a postzygotic barrier (acts after fertilization)."},
+     {type:"tf",q:"Prezygotic barriers act before fertilization and postzygotic barriers act after fertilization.",a:true,exp:"True — that timing is exactly how the two are distinguished."},
+     {type:"short",q:"Distinguish prezygotic and postzygotic barriers and give an example of each.",model:"Prezygotic barriers prevent mating or fertilization from happening in the first place; examples include temporal isolation, where species reproduce at different times (as in Mimulus species that bloom in different months), and mechanical isolation, where reproductive structures are incompatible (as in dragonfly genitalia). Postzygotic barriers act after fertilization, reducing the viability or fertility of hybrids; for example, a mule (horse × donkey) is sterile and cannot reproduce.",pts:["Prezygotic = before fertilization (temporal, mechanical)","Example: Mimulus blooming times / dragonfly genitalia","Postzygotic = after fertilization","Example: sterile mule (reduced hybrid fertility)"]}
+    ]},
+   {id:"L9T6", title:"Allopatric vs. sympatric speciation", sub:"With or without geographic separation (slides 46–62).",
+    slides:[
+     {h:"The two types", imgs:[c9(46),c9(48),c9(53)], html:`
+       <table class="dt"><tr><th>Type</th><th>Definition</th></tr>
+       <tr><td><b>Allopatric</b></td><td>Occurs when populations are <b>geographically separated</b> (a barrier prevents gene flow; differences accumulate → two species). <b>Same idea as vicariance.</b></td></tr>
+       <tr><td><b>Sympatric</b></td><td>Occurs <b>within the same geographic area</b> (no physical separation)</td></tr></table>`},
+     {h:"Allopatric — geographic separation (Isthmus of Panama)", imgs:[c9(56),c9(59),c9(61)], html:`
+       <p class="lead"><span class="kw">Allopatric speciation</span>: a barrier separates populations and prevents gene flow; over time genetic/phenotypic differences accumulate → two species. The <b>Isthmus of Panama</b> rising created a barrier between two oceans, driving allopatric speciation in fish, snapping shrimp, and sea anemones (Atlantic vs Pacific species).</p>`},
+     {h:"Sympatric — same area (ecological specialization)", imgs:[c9(54),c9(55),c9(62)], html:`
+       <p class="lead"><span class="kw">Sympatric speciation</span>: speciation <b>within the same area</b>, often via <b>ecological specialization</b>. <b>Disruptive selection</b> favors both extremes and selects against intermediates (e.g., mouse coat color on lava vs sand), or organisms specialize to different niches in the same place (e.g., birds specializing to different rainforest layers).</p>
+       <div class="callout key"><b>Key contrast:</b> allopatric = <b>geographically separated</b> (a barrier); sympatric = <b>same geographic area</b> (no physical barrier — divergence via ecology/disruptive selection).</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Allopatric speciation occurs when populations are:",opts:["In the same area","Geographically separated","Asexual","Identical"],a:1,exp:"Allopatric = geographic separation (the same idea as vicariance)."},
+     {type:"mcq",q:"Sympatric speciation occurs:",opts:["Across an ocean","Within the same geographic area","Only in fossils","Only via mountains"],a:1,exp:"Sympatric = within the same area, with no physical separation (e.g., via disruptive selection/ecological specialization)."},
+     {type:"mcq",q:"The Isthmus of Panama splitting marine organisms into Atlantic and Pacific species is an example of:",opts:["Sympatric speciation","Allopatric speciation","Adaptive radiation only","Hybridization"],a:1,exp:"A geographic barrier arose and separated populations — allopatric speciation (a vicariance event)."},
+     {type:"mcq",q:"Disruptive selection favoring both extremes within one population, leading to divergence in the same area, is a mechanism of:",opts:["Allopatric speciation","Sympatric speciation","Vicariance","Dispersal"],a:1,exp:"No geographic barrier is needed — divergence happens in the same area, so it's sympatric."},
+     {type:"short",q:"Compare allopatric and sympatric speciation and give an example of each.",model:"Allopatric speciation occurs when a geographic barrier separates populations and prevents gene flow, so differences accumulate until they become separate species — for example, the Isthmus of Panama splitting marine organisms into Atlantic and Pacific species. Sympatric speciation occurs within the same geographic area, without a physical barrier, often through ecological specialization or disruptive selection — for example, mice diverging by coat color on lava versus sand, or birds specializing to different rainforest layers.",pts:["Allopatric = geographic separation (= vicariance)","Example: Isthmus of Panama","Sympatric = same area, no barrier","Example: disruptive selection (lava/sand mice) or forest-layer birds"]}
+    ]},
+   {id:"L9T7", title:"Speed of speciation & adaptive radiations", sub:"Very slow to very fast (slides 63–69).",
+    slides:[
+     {h:"Speciation can be very slow… or very fast", imgs:[c9(63),c9(64),c9(65)], html:`
+       <p class="lead"><b>Very slow:</b> coelacanths (<i>Latimeria</i>) show little morphological change in 400 million years and have no sister species; <i>Ginkgo biloba</i> is the only species in its family.</p>
+       <p class="lead"><b>Very fast — adaptive radiation:</b> the <span class="kw">rapid evolution of many species from a single common ancestor</span>, associated with the <b>availability of new, unoccupied niches</b>, producing species that are <b>ecologically and morphologically diverse</b>.</p>
+       <p>Examples: Hawaiian honeycreepers and Galápagos finches (beak diversity), Andean <i>Lupinus</i> (radiated with Andes uplift).</p>`},
+     {h:"Adaptive radiation after the dinosaurs", imgs:[c9(67),c9(68)], html:`
+       <p class="lead">After the <b>K/Pg extinction</b> wiped out the dinosaurs, the newly emptied niches drove a rapid <b>mammal adaptive radiation</b> — early small, rodent-like mammals diversified into the huge range of forms (flying, swimming, running, burrowing) we see today.</p>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"An adaptive radiation is:",opts:["The slow change of one lineage","The rapid evolution of many species from a single common ancestor","The extinction of a group","A type of reproductive barrier"],a:1,exp:"Adaptive radiation = rapid diversification of many species from one ancestor, usually into new niches."},
+     {type:"mcq",q:"Adaptive radiations are typically associated with:",opts:["Loss of all niches","The availability of new, unoccupied niches","No environmental change","Reduced biodiversity"],a:1,exp:"New/unoccupied niches (e.g., after an extinction or reaching new islands) drive rapid diversification."},
+     {type:"mcq",q:"The rapid diversification of mammals after the dinosaurs went extinct illustrates:",opts:["Slow speciation","An adaptive radiation into newly available niches","Sympatric speciation only","A postzygotic barrier"],a:1,exp:"The K/Pg extinction opened niches, triggering a mammal adaptive radiation."},
+     {type:"tf",q:"Coelacanths, which changed little over 400 million years, are an example of very rapid speciation.",a:false,exp:"False — coelacanths exemplify very SLOW change (little morphological change over 400 My)."},
+     {type:"short",q:"What is an adaptive radiation, and what conditions drive it? Give an example.",model:"An adaptive radiation is the rapid evolution of many species from a single common ancestor, producing descendants that are ecologically and morphologically diverse. It is driven by the availability of new, unoccupied niches, such as after a mass extinction or upon colonizing new environments. Examples include the Galápagos finches and Hawaiian honeycreepers with their diverse beaks, and the rapid diversification of mammals into many forms after the dinosaurs went extinct.",pts:["Rapid evolution of many species from one ancestor","Produces ecological & morphological diversity","Driven by new/unoccupied niches","Example: finches/honeycreepers, or mammals after K/Pg extinction"]}
+    ]}
+  ]
+ };
+
+ window.COURSE.push(L8, L9);
+
+ /* ---------------- FLASHCARDS ---------------- */
+ window.FLASHCARDS.L8=[
+  {f:"Evolutionary biogeography",b:"Why species are where they are (and not elsewhere); distributions in space AND time, in the context of evolutionary relationships."},
+  {f:"Modern distributions reflect…",b:"Both present-day variables (BAM: Biotic ∩ Abiotic ∩ Movement) and historical/geologic events."},
+  {f:"Fundamental vs realized niche",b:"Fundamental = full tolerances without competition; realized = the part actually occupied given biotic factors & dispersal."},
+  {f:"Alfred Wallace",b:"Independently proposed natural selection; showed distributions are non-random and shaped by barriers (Wallace's Line: Asia vs Australia)."},
+  {f:"Barrier",b:"A physical feature that limits or prevents movement of organisms between regions."},
+  {f:"Oceans as barriers",b:"Shape biodiversity at LARGE scales (whole lineages) — e.g., Madagascar's endemic baobabs & lemurs (isolated >80 My)."},
+  {f:"Rivers as barriers",b:"Shape biodiversity at SMALLER scales (closely related species/populations) — e.g., Amazon tamarins north vs south of a river."},
+  {f:"Alexander von Humboldt",b:"Linked species distributions to climate and elevation (Andes); species occur where their climatic (abiotic) requirements are met."},
+  {f:"Environment as a barrier / sky islands",b:"Species can't cross unsuitable habitat; mountaintop 'sky islands' isolate species on peaks surrounded by unsuitable lowlands."},
+  {f:"Speciation (biogeography)",b:"One species splitting into two; requires reproductive isolation (a reduction/absence of gene flow)."},
+  {f:"Vicariance",b:"A continuous population is split in place by a barrier (mountain rises, river shifts) → two populations, no gene flow. E.g., Isthmus of Panama."},
+  {f:"Dispersal",b:"A group of colonists moves to a new area (island colonization) → two populations, no gene flow. E.g., monkeys rafting to South America."},
+  {f:"Vicariance vs dispersal",b:"Vicariance: the barrier appears and splits a population in place. Dispersal: the organisms move to a new area. Both → no gene flow."},
+  {f:"Ancestral area reconstruction",b:"Uses a phylogeny (tips assigned to areas) + models to estimate the ancestral location at each node — tracing where a lineage originated and dispersed."},
+  {f:"Descriptive vs inferential statistics",b:"Descriptive: summarize/describe data (patterns, outliers). Inferential: use a sample to infer about the whole population."},
+  {f:"Mean vs median",b:"Mean = sum/count, sensitive to outliers. Median = middle value, resistant to outliers. Use median when outliers are present."},
+  {f:"Range",b:"Largest − smallest value; a quick measure of spread."},
+  {f:"Variance (s²)",b:"Average of squared differences from the mean: Σ(xᵢ − x̄)²/(n−1). Larger = more spread."},
+  {f:"Standard deviation",b:"Square root of the variance; the average distance of observations from the mean. Larger = more variation."}
+ ];
+ window.FLASHCARDS.L9=[
+  {f:"Species",b:"The principle taxonomic unit and basic unit of biodiversity; hard to define because appearance is unreliable."},
+  {f:"Phenotypic plasticity (species problem)",b:"One species can look like several (e.g., Bicyclus wing morphs vary with temperature) — appearance overcounts species."},
+  {f:"Cryptic species",b:"Several species can look identical but don't interbreed and are genetically distinct (e.g., four Papilio) — appearance undercounts species."},
+  {f:"Morphological species concept",b:"Species defined by observable physical traits. Pro: works on fossils/extinct, easy. Con: fooled by plasticity & cryptic species."},
+  {f:"Biological species concept",b:"Species = interbreeding populations that are reproductively isolated. Pro: based on the real process. Con: fails for asexual organisms; hybridization blurs it."},
+  {f:"Phylogenetic species concept",b:"Species = a group sharing ancestry/descent, genetically distinct. Pro: works for asexual & cryptic species. Con: not for extinct (no DNA); where to draw the line?"},
+  {f:"A species is a hypothesis",b:"No single concept is 'correct'; different concepts are evidence, so a species is a revisable hypothesis."},
+  {f:"Speciation",b:"The process by which populations evolve into distinct species; links microevolution to macroevolution; needs absence of gene flow."},
+  {f:"Reproductive isolation",b:"A mechanism preventing reproduction/gene flow; keeps diverged populations separate even if they meet again — necessary for speciation."},
+  {f:"Prezygotic barriers",b:"Act BEFORE fertilization — temporal (different breeding times, e.g., Mimulus) and mechanical (incompatible reproductive structures)."},
+  {f:"Postzygotic barriers",b:"Act AFTER fertilization — reduced hybrid viability/fertility (e.g., a mule is sterile)."},
+  {f:"Allopatric speciation",b:"Populations geographically separated by a barrier (= vicariance) → divergence. E.g., Isthmus of Panama splitting oceans."},
+  {f:"Sympatric speciation",b:"Speciation within the same geographic area (no physical barrier), via ecological specialization / disruptive selection (lava vs sand mice)."},
+  {f:"Allopatric vs sympatric",b:"Allopatric = geographically separated (barrier). Sympatric = same area, no barrier (ecological divergence)."},
+  {f:"Very slow speciation",b:"Coelacanths (little change in 400 My, no sister species); Ginkgo biloba (only species in its family)."},
+  {f:"Adaptive radiation",b:"Rapid evolution of many ecologically & morphologically diverse species from one ancestor, driven by new unoccupied niches."},
+  {f:"Adaptive radiation examples",b:"Galápagos finches, Hawaiian honeycreepers (beak diversity), Andean Lupinus, mammals after the K/Pg (dinosaur) extinction."}
+ ];
+
+ /* ---------------- OBJECTIVE MASTERY ---------------- */
+ window.OBJMASTERY.L8={
+  id:"L8OBJ", title:"🎯 Objective Mastery (exam-day)",
+  sub:"Lecture 8 objectives — taught and tested point by point.",
+  slides:[
+   {h:"Objective 1 — Wallace & Humboldt", html:`
+     <p class="lead"><b>Wallace</b>: distributions are non-random and shaped by <b>barriers</b> (Wallace's Line: Asia vs Australia); time/geologic history matter. <b>Humboldt</b>: distributions track <b>climate and elevation</b>; species occur where their climatic (abiotic) needs are met.</p>`},
+   {h:"Objective 2 — Geographic barriers", html:`
+     <p class="lead">Barriers limit movement. <b>Oceans</b> → large-scale isolation of whole lineages (Madagascar). <b>Rivers</b> → smaller-scale splits of closely related species (Amazon). The <b>environment itself</b> can be a barrier (sky islands).</p>`},
+   {h:"Objective 3 — Vicariance vs dispersal", html:`
+     <p class="lead"><b>Vicariance</b>: a barrier appears and splits a population <b>in place</b> (Isthmus of Panama). <b>Dispersal</b>: organisms <b>move</b> to a new area (monkeys to South America). Both end with two populations that have <b>no gene flow</b>.</p>`},
+   {h:"Objective 4 — Ancestral area reconstruction", html:`
+     <p class="lead">A phylogeny with tips assigned to areas + models estimates the <b>ancestral location at each node</b>, showing where a lineage originated and when/where it dispersed (and links to geologic events).</p>`},
+   {h:"Objective 5 — Measures of center & spread", html:`
+     <p class="lead"><b>Center:</b> mean (sensitive to outliers) vs median (resistant) — use median when outliers exist. <b>Spread:</b> range, variance, standard deviation — a larger value = more variation. Same mean can hide different spread.</p>`}
+  ],
+  quiz:[
+   {type:"mcq",q:"[Obj 1] Wallace's Line marks the boundary between the animals of:",opts:["North & South America","Asia & Australia","Africa & Europe","Land & sea"],a:1,exp:"West = Asian fauna, east = Australian fauna."},
+   {type:"mcq",q:"[Obj 1] Humboldt is best known for linking species distributions to:",opts:["Predation","Climate and elevation","Gene flow","Fossils"],a:1,exp:"Humboldt connected distributions to climate and elevation in the Andes."},
+   {type:"short",q:"[Obj 1] Summarize Wallace's and Humboldt's contributions.",model:"Wallace showed that species distributions are not random but are shaped by barriers to movement, as demonstrated by Wallace's Line separating Asian and Australian faunas, and he emphasized the role of time and geologic history. Humboldt documented that species distributions track abiotic conditions, particularly climate and elevation, so species are found where their climatic requirements are met.",pts:["Wallace: barriers → non-random distributions (Wallace's Line)","Wallace: time/history matter","Humboldt: distributions track climate & elevation","Humboldt: species where climatic needs are met"]},
+   {type:"mcq",q:"[Obj 2] Oceans vs rivers as barriers differ in that oceans act at a ____ scale.",opts:["smaller","larger (whole lineages)","genetic","temporal only"],a:1,exp:"Oceans isolate whole lineages (large scale); rivers separate closely related species (smaller scale)."},
+   {type:"tf",q:"[Obj 2] An unsuitable environment between two habitats can act as a dispersal barrier (as in sky islands).",a:true,exp:"True — species can't cross unsuitable habitat; sky islands isolate species on peaks."},
+   {type:"mcq",q:"[Obj 3] A river changing course and splitting a salamander population in place is:",opts:["Dispersal","Vicariance","Sympatry","Adaptive radiation"],a:1,exp:"A barrier arose and split the population in place — vicariance."},
+   {type:"mcq",q:"[Obj 3] Island colonization by a few founders is an example of:",opts:["Vicariance","Dispersal","Hybridization","Gene flow"],a:1,exp:"Organisms moved to a new area — dispersal."},
+   {type:"short",q:"[Obj 3] Compare vicariance and dispersal.",model:"In vicariance a geographic barrier arises and splits a once-continuous population in place, as when the Isthmus of Panama divided marine populations. In dispersal, a group of colonists from a population moves to a new area, as when monkeys rafted to South America. Both mechanisms produce two populations with no gene flow, allowing them to diverge, but they differ in whether the barrier appeared or the organisms moved.",pts:["Vicariance = barrier splits population in place","Dispersal = organisms move to new area","Vicariance: barrier appears; dispersal: they move","Both → no gene flow → divergence"]},
+   {type:"mcq",q:"[Obj 4] In an ancestral area reconstruction, colored nodes indicate:",opts:["Mutations","The inferred ancestral geographic area at that branch point","Extinctions","Random error"],a:1,exp:"Node colors show the inferred ancestral location, letting you trace origin and dispersals."},
+   {type:"mcq",q:"[Obj 5] With obvious outliers in a dataset, the better measure of center is the:",opts:["Mean","Median","Range","Variance"],a:1,exp:"The median is resistant to outliers; the mean is pulled by them."},
+   {type:"mcq",q:"[Obj 5] Two populations have the same mean but Population B has a larger standard deviation. Population B has:",opts:["A higher typical value","More spread/variation","Fewer individuals","No outliers"],a:1,exp:"Same mean = same center; larger SD = more spread/variation."},
+   {type:"short",q:"[Obj 5] When should you use the mean vs the median, and what does a larger standard deviation tell you?",model:"Use the mean when the data are similar and free of outliers, and use the median when there are obvious outliers, because the median is resistant to extreme values while the mean is skewed by them. A larger standard deviation indicates the data are more spread out around the mean — that is, greater variation among the values.",pts:["Mean when no outliers; median when outliers present","Median resistant, mean skewed by outliers","Larger SD = more spread/variation around the mean"]}
+  ]
+ };
+ window.OBJMASTERY.L9={
+  id:"L9OBJ", title:"🎯 Objective Mastery (exam-day)",
+  sub:"Lecture 9 objectives — taught and tested point by point.",
+  slides:[
+   {h:"Objective 1 — The three species concepts", html:`
+     <table class="dt"><tr><th>Concept</th><th>Basis</th><th>Weakness</th></tr>
+     <tr><td>Morphological</td><td>Physical traits</td><td>Plasticity & cryptic species</td></tr>
+     <tr><td>Biological</td><td>Interbreeding / reproductive isolation</td><td>Asexual organisms; hybridization</td></tr>
+     <tr><td>Phylogenetic</td><td>Shared ancestry / genetic distinctness</td><td>Extinct (no DNA); where to draw the line</td></tr></table>
+     <p>No concept is definitively "correct" — a species is a <b>hypothesis</b>.</p>`},
+   {h:"Objective 2 — Define speciation & how it occurs", html:`
+     <p class="lead"><b>Speciation</b> = populations evolving into distinct species. It occurs through the <b>absence of gene flow</b> so differences accumulate — and can happen <b>with or without</b> geographic separation.</p>`},
+   {h:"Objective 3 — Why reproductive isolation is necessary", html:`
+     <p class="lead">Without <b>reproductive isolation</b>, gene flow would keep populations genetically mixed. Isolation stops gene flow, so diverging populations stay separate even if they meet again — a prerequisite for becoming distinct species.</p>`},
+   {h:"Objective 4 — Prezygotic vs postzygotic barriers", html:`
+     <p class="lead"><b>Prezygotic</b> (before fertilization): temporal (different times, <i>Mimulus</i>), mechanical (incompatible structures). <b>Postzygotic</b> (after fertilization): reduced hybrid viability/fertility (sterile mule).</p>`},
+   {h:"Objective 5 — Allopatric vs sympatric speciation", html:`
+     <p class="lead"><b>Allopatric</b> = geographically separated by a barrier (= vicariance; Isthmus of Panama). <b>Sympatric</b> = same area, no barrier, via ecological specialization / disruptive selection (lava vs sand mice; forest-layer birds).</p>`},
+   {h:"Objective 6 — Adaptive radiation", html:`
+     <p class="lead"><b>Adaptive radiation</b> = rapid evolution of many ecologically/morphologically diverse species from one ancestor, driven by new unoccupied niches (Galápagos finches, Hawaiian honeycreepers, mammals after the dinosaurs).</p>`}
+  ],
+  quiz:[
+   {type:"mcq",q:"[Obj 1] Which species concept can be applied to fossils?",opts:["Biological","Phylogenetic","Morphological","None"],a:2,exp:"The morphological concept uses physical traits, so it works on fossils/extinct organisms."},
+   {type:"mcq",q:"[Obj 1] Which species concept fails for asexual organisms?",opts:["Morphological","Biological","Phylogenetic","All"],a:1,exp:"The biological concept requires interbreeding, so it can't apply to asexual organisms."},
+   {type:"short",q:"[Obj 1] State the basis and one weakness of each of the three species concepts.",model:"The morphological concept defines species by physical traits; its weakness is being fooled by phenotypic plasticity and cryptic species. The biological concept defines species by interbreeding and reproductive isolation; its weakness is that it fails for asexual organisms and is blurred by hybridization. The phylogenetic concept defines species by shared ancestry and genetic distinctness; its weakness is that it can't be applied to extinct species with no DNA and it's unclear where to draw the line for 'genetically distinct.'",pts:["Morphological = traits; weak to plasticity/cryptic","Biological = interbreeding; weak for asexual/hybridization","Phylogenetic = ancestry; weak for extinct/line-drawing"]},
+   {type:"mcq",q:"[Obj 2] Speciation fundamentally requires:",opts:["Increased gene flow","The absence of gene flow between populations","Identical environments","No mutation"],a:1,exp:"Without gene flow, differences accumulate and populations diverge into species."},
+   {type:"tf",q:"[Obj 2] Speciation can occur with or without geographic separation.",a:true,exp:"True — allopatric (with separation) and sympatric (without) are both possible."},
+   {type:"mcq",q:"[Obj 3] Reproductive isolation is necessary for speciation because it:",opts:["Increases hybridization","Prevents gene flow so populations stay diverged","Speeds mutation","Merges species"],a:1,exp:"It blocks gene flow, letting diverging populations remain separate even upon contact."},
+   {type:"mcq",q:"[Obj 4] Two species that breed in different seasons are separated by a ____ barrier.",opts:["postzygotic","prezygotic (temporal)","hybrid","genetic"],a:1,exp:"Different breeding times prevent mating before fertilization — a prezygotic temporal barrier."},
+   {type:"mcq",q:"[Obj 4] A sterile hybrid (like a mule) illustrates a:",opts:["Prezygotic barrier","Postzygotic barrier","Temporal barrier","Mechanical barrier"],a:1,exp:"The hybrid forms but is sterile — a postzygotic barrier (after fertilization)."},
+   {type:"short",q:"[Obj 4] Identify and describe prezygotic and postzygotic barriers with examples.",model:"Prezygotic barriers act before fertilization to prevent mating or successful fertilization; examples are temporal isolation (species reproducing at different times, like Mimulus species blooming in different months) and mechanical isolation (incompatible reproductive structures, like dragonfly genitalia). Postzygotic barriers act after fertilization by reducing hybrid viability or fertility; for example, a mule produced from a horse and donkey is sterile.",pts:["Prezygotic = before fertilization","Temporal & mechanical examples","Postzygotic = after fertilization","Reduced hybrid viability/fertility (sterile mule)"]},
+   {type:"mcq",q:"[Obj 5] Allopatric speciation is essentially the same as:",opts:["Sympatry","Vicariance (geographic separation)","Adaptive radiation","Hybridization"],a:1,exp:"Allopatric speciation involves a geographic barrier — the same idea as vicariance."},
+   {type:"mcq",q:"[Obj 5] Disruptive selection causing divergence within one area is a mechanism of:",opts:["Allopatric speciation","Sympatric speciation","Vicariance","Dispersal"],a:1,exp:"No geographic barrier — divergence in the same area is sympatric speciation."},
+   {type:"short",q:"[Obj 5] Compare allopatric and sympatric speciation with an example of each.",model:"Allopatric speciation happens when populations are geographically separated by a barrier that prevents gene flow, allowing them to diverge; the Isthmus of Panama splitting marine organisms into Atlantic and Pacific species is an example, and this is the same as vicariance. Sympatric speciation happens within the same geographic area without a physical barrier, often through ecological specialization or disruptive selection; examples include mice diverging by coat color on lava versus sand, or birds specializing to different rainforest layers.",pts:["Allopatric = geographic separation (= vicariance); Panama","Sympatric = same area, no barrier","Sympatric via disruptive selection/ecological specialization","Example: lava/sand mice or forest-layer birds"]},
+   {type:"mcq",q:"[Obj 6] An adaptive radiation produces species that are:",opts:["All identical","Ecologically and morphologically diverse, from one ancestor","Always asexual","Reproductively identical"],a:1,exp:"Adaptive radiation = rapid diversification into ecologically/morphologically diverse species from a common ancestor."},
+   {type:"short",q:"[Obj 6] Explain what an adaptive radiation is and what triggers it, with an example.",model:"An adaptive radiation is the rapid evolution of many species from a single common ancestor, resulting in descendants that are ecologically and morphologically diverse. It is triggered by the availability of new, unoccupied niches, such as after a mass extinction or after colonizing a new environment. Examples include the Galápagos finches and Hawaiian honeycreepers, whose beaks diversified for different diets, and the rapid diversification of mammals into many forms after the dinosaurs went extinct.",pts:["Rapid evolution of many species from one ancestor","Ecologically & morphologically diverse","Triggered by new/unoccupied niches","Example: finches/honeycreepers or post-dinosaur mammals"]}
+  ]
+ };
+})();
