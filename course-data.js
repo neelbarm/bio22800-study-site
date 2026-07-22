@@ -3095,3 +3095,309 @@ Genotype frequencies: p² + 2pq + q² = 1</div>
   {type:"mcq",q:D+"An adaptive radiation is:",opts:["The slow change of one lineage over time","The rapid evolution of many ecologically and morphologically diverse species from a single common ancestor","The extinction of many species","A reproductive barrier"],a:1,exp:"Adaptive radiation = rapid diversification from one ancestor into many diverse species, driven by new unoccupied niches."}
  ]);
 })();
+
+/* ===================== FINAL REVIEW — HIGHLIGHTED PREVIOUS-LECTURE TOPICS =====================
+   Built from the professor's "What To Study From Previous Lectures" handout.
+   ONLY the highlighted bullets (L3–L7) — the material that can appear on the cumulative final. */
+(function(){
+ const P=(L,n,w)=>({src:"slides/"+L+"/slide-"+String(n).padStart(w||2,"0")+".jpg",cap:L+" · Slide "+n});
+ const s3=(n)=>P("L3",n), s4=(n)=>P("L4",n), s5=(n)=>P("L5",n,3), s6=(n)=>P("L6",n,3), s7=(n)=>P("L7",n);
+
+ const LR={
+  id:"LR", icon:"⭐", short:"⭐ Final Review (L3–L7)",
+  title:"Final Review — Highlighted Topics from Lectures 3–7",
+  blurb:"ONLY the bullet points the professor highlighted in 'What To Study From Previous Lectures' — the previous-lecture material that can appear on the cumulative final.",
+  objectives:[
+   "L3 — Define community",
+   "L3 — Identify examples of competitive exclusion and trait displacement",
+   "L3 — Compare food web vs food chain",
+   "L3 — Understand disturbance/succession patterns and the intermediate disturbance hypothesis",
+   "L4 — Define what an SDM is, explain its inputs/outputs, explain its limitation",
+   "L4 — Explain the species–area relationship and its limitations",
+   "L4 — Define endemism",
+   "L5 — Explain Lamarck's theory of 'use and disuse' and the importance of his ideas",
+   "L5 — Understand natural selection and fitness",
+   "L5 — Explain each of the five mechanisms of microevolution and identify which are random and non-random",
+   "L5 — Define what a null model is and why it is useful",
+   "L6 — Understand how to read a phylogeny",
+   "L6 — Define monophyletic, paraphyletic, and polyphyletic groups and identify them in a phylogeny",
+   "L6 — Explain why paraphyletic groups exist (i.e. reptiles)",
+   "L6 — Understand how a phylogeny is inferred from character states using Maximum Parsimony",
+   "L6 — Identify ancestral states, derived states, plesiomorphies, apomorphies, autapomorphies and synapomorphies",
+   "L6 — Define homology and homoplasy and identify them when given an example or a phylogeny",
+   "L6 — Define convergent evolution and explain its link with homoplasy",
+   "L6 — Explain the three models of evolution: phyletic gradualism, punctuated equilibria, punctuated gradualism",
+   "L7 — Describe the limitations of morphology-based phylogenies",
+   "L7 — Describe the differences in use of Coding vs Non-coding DNA in molecular systematics"
+  ],
+  topics:[
+
+   /* ---------------- L3 HIGHLIGHTS ---------------- */
+   {id:"LRT1", title:"★ Lecture 3 highlights", sub:"Community · competitive exclusion & trait displacement · food web vs chain · disturbance/succession & IDH.",
+    slides:[
+     {h:"Define community", imgs:[s3(3)], html:`
+       <p class="lead">A <span class="kw">community</span> = a group of <b>interacting species that occur together at the same time and place</b>.</p>
+       <div class="callout tip">Contrast: a <b>population</b> is one species; a <b>community</b> is many interacting species; an <b>ecosystem</b> adds the abiotic environment.</div>`},
+     {h:"Examples of competitive exclusion & trait displacement", imgs:[s3(30),s3(31),s3(33)], html:`
+       <p class="lead"><span class="kw">Competitive exclusion</span> — two species can't coexist on the exact same niche; one excludes the other.</p>
+       <ul><li><b>Example (competitive exclusion):</b> Gause's <i>Paramecium</i> — grown separately each thrives; grown together, one species outcompetes and eliminates the other. Also the chipmunks (<i>N. umbrinus</i> / <i>N. dorsalis</i>) whose elevation ranges barely overlap where both occur.</li>
+       <li><b>Example (trait displacement):</b> Darwin's finches — <i>Geospiza fuliginosa</i>'s beak depth is <b>smaller where it co-occurs</b> with the other finch species, so they use different food and can coexist.</li></ul>
+       <div class="callout key">The objective says <b>identify examples</b> — memorize the pairs: <b>Paramecium/chipmunks → competitive exclusion</b>; <b>Darwin's finch beak depth → trait displacement</b>.</div>`},
+     {h:"Food web vs food chain", imgs:[s3(41),s3(43),s3(44)], html:`
+       <table class="dt"><tr><th></th><th>Food chain</th><th>Food web</th></tr>
+       <tr><td>Structure</td><td><b>Linear</b> sequence through trophic levels</td><td><b>Nonlinear</b>, interconnected network</td></tr>
+       <tr><td>Realism</td><td>Simplified/idealized</td><td>More realistic — organisms feed at <b>more than one</b> trophic level</td></tr>
+       <tr><td>Stability</td><td>Less stable (lose a link → collapse)</td><td><b>More stable</b> — redundant pathways</td></tr></table>
+       <p>Both obey the <span class="kw">10% rule</span>: only ~10% of energy passes up each level (~90% lost as heat), so chains are short (1,000 → 100 → 10 → 1 kcal).</p>`},
+     {h:"Disturbance, succession & the IDH", imgs:[s3(48),s3(50),s3(51),s3(54)], html:`
+       <p><b>Disturbance</b> = an event that changes community structure/composition → triggers <b>succession</b> = change in species composition over time.</p>
+       <table class="dt"><tr><th>Primary succession</th><th>Secondary succession</th></tr>
+       <tr><td>No soil, no prior community (lava, new island); pioneers (lichens/mosses) build soil; <b>slow</b></td><td>Soil <b>remains</b> after a community is removed (fire, logging); <b>faster</b></td></tr></table>
+       <p>Early species are <b>r-selected</b> (small, fast-growing, great dispersers, short-lived, poor competitors); late species are <b>K-selected</b> (large, slow, long-lived, strong competitors).</p>
+       <div class="callout key"><b>Intermediate Disturbance Hypothesis:</b> diversity is <b>highest at intermediate disturbance</b>. Low disturbance → competitive exclusion (one dominant wins). High disturbance → only tough pioneers survive. Intermediate → early AND late successional species co-occur.</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"A community is defined as:",opts:["All individuals of one species in an area","A group of interacting species occurring together at the same time and place","A community plus its abiotic environment","One trophic level"],a:1,exp:"Community = interacting species, same time and place (many species)."},
+     {type:"mcq",q:"Gause's Paramecium experiment, where one species eliminates the other when grown together, is an example of:",opts:["Trait displacement","Competitive exclusion","Mutualism","Succession"],a:1,exp:"Two species on the same niche cannot coexist — competitive exclusion."},
+     {type:"mcq",q:"Darwin's finches having smaller beak depth where they co-occur with other finch species is an example of:",opts:["Competitive exclusion","Trait (character) displacement","Aposematism","Biomagnification"],a:1,exp:"Traits diverge where competitors overlap, reducing competition — trait displacement."},
+     {type:"mcq",q:"Compared with a food chain, a food web is:",opts:["Linear and less stable","Nonlinear, interconnected, and more stable","Restricted to producers","Always shorter"],a:1,exp:"Food webs are nonlinear and interconnected (organisms feed at multiple levels), making them more realistic and stable."},
+     {type:"mcq",q:"Succession that begins where soil already remains after a fire is:",opts:["Primary succession","Secondary succession","A climax community","Disturbance only"],a:1,exp:"Soil remains → secondary succession (faster than primary)."},
+     {type:"mcq",q:"The Intermediate Disturbance Hypothesis predicts diversity is highest at ____ disturbance.",opts:["zero","very low","intermediate","extremely high"],a:2,exp:"At intermediate disturbance both early- and late-successional species coexist, maximizing diversity."},
+     {type:"tf",q:"At very LOW disturbance, competitive exclusion reduces diversity.",a:true,exp:"True — without disturbance, dominant competitors exclude weaker species."},
+     {type:"short",q:"Explain the Intermediate Disturbance Hypothesis and why diversity is low at both extremes.",model:"The Intermediate Disturbance Hypothesis states that species diversity peaks at intermediate levels of disturbance. At very low disturbance, superior competitors exclude weaker species through competitive exclusion, lowering diversity. At very high disturbance, only hardy, disturbance-tolerant pioneer species can survive, also lowering diversity. At intermediate disturbance, species adapted to both early and late successional stages coexist, maximizing diversity.",pts:["Diversity peaks at intermediate disturbance","Low → competitive exclusion","High → only tough pioneers","Intermediate → early + late species coexist"]},
+     {type:"short",q:"Give one example each of competitive exclusion and trait displacement.",model:"An example of competitive exclusion is Gause's Paramecium experiment, in which two species thrive when grown separately but one always eliminates the other when grown together; the chipmunk species whose elevation ranges barely overlap where both are present is another. An example of trait displacement is Darwin's finches, where the beak depth of Geospiza fuliginosa is smaller where it co-occurs with other finch species, allowing them to use different resources and coexist.",pts:["Competitive exclusion: Gause's Paramecium (or chipmunk elevations)","One species eliminates the other on the same niche","Trait displacement: Darwin's finch beak depth","Traits diverge where species co-occur → coexistence"]}
+    ]},
+
+   /* ---------------- L4 HIGHLIGHTS ---------------- */
+   {id:"LRT2", title:"★ Lecture 4 highlights", sub:"SDMs (inputs/outputs/limitation) · species–area relationship & limits · endemism.",
+    slides:[
+     {h:"SDMs: definition, inputs, outputs, limitation", imgs:[s4(3),s4(4),s4(5)], html:`
+       <p class="lead">A <span class="kw">Species Distribution Model (SDM)</span> predicts where a species is likely to occur, by learning the relationship between known occurrences and environmental conditions.</p>
+       <table class="dt"><tr><th>Inputs</th><th>Output</th><th>Limitation</th></tr>
+       <tr><td>① Occurrence records<br>② Environmental data</td><td>A <b>habitat-suitability map</b> (probability of occurrence)</td><td>Predicts <b>suitable</b> habitat, <b>not actual occupancy</b></td></tr></table>
+       <div class="callout key">The limitation is the <b>BAM</b> idea: an SDM mostly captures the <b>Abiotic</b> circle. <b>Biotic</b> factors (competitors/predators) and <b>Movement</b> (dispersal barriers) can leave suitable habitat unoccupied.</div>`},
+     {h:"The species–area relationship & its limitations", imgs:[s4(9),s4(10),s4(11)], html:`
+       <p class="lead">The <span class="kw">species–area relationship</span>: the more area you survey, the more species you find (a curve that rises steeply then levels off).</p>
+       <p><b>Limitations (its assumptions):</b> it assumes (1) you can <b>identify all the species</b>, and (2) you actually <b>found all the species</b> present. In reality rare or cryptic species get missed.</p>`},
+     {h:"Endemism", imgs:[s4(37),s4(38)], html:`
+       <p class="lead"><span class="kw">Endemism</span> = species found <b>naturally in only one geographic area and nowhere else on Earth</b>. The area can be an island, mountain range, country, or isolated lake. Examples: Galápagos tortoise, kangaroos (Australia).</p>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"The two INPUTS to a Species Distribution Model are:",opts:["Birth and death rates","Occurrence records and environmental data","Predators and prey","Richness and evenness"],a:1,exp:"SDMs relate occurrence records to environmental data."},
+     {type:"mcq",q:"The OUTPUT of an SDM is:",opts:["A phylogenetic tree","A habitat-suitability map / probability of occurrence","A survivorship curve","A species count"],a:1,exp:"The output is a map of habitat suitability."},
+     {type:"mcq",q:"The key LIMITATION of an SDM is that it predicts:",opts:["Exact population sizes","Suitable habitat, which the species may not actually occupy","Only extinct ranges","Future evolution"],a:1,exp:"Suitable ≠ occupied — biotic interactions and dispersal barriers (BAM) can exclude the species."},
+     {type:"mcq",q:"The species–area relationship states that as area surveyed increases, species richness:",opts:["Decreases","Increases, then levels off","Stays constant","Becomes random"],a:1,exp:"More area → more species; the curve rises then plateaus."},
+     {type:"mcq",q:"Which is a LIMITATION (assumption) of the species–area relationship?",opts:["That area is always small","That you can identify and have found all species present","That species never move","That all species are equally abundant"],a:1,exp:"It assumes complete detection and correct identification — rare/cryptic species are often missed."},
+     {type:"mcq",q:"Endemism refers to a species that is:",opts:["Found on multiple continents","Found naturally in only one geographic area and nowhere else","Recently introduced","Extinct"],a:1,exp:"Endemic = naturally restricted to a single area (e.g., Galápagos tortoise)."},
+     {type:"short",q:"Define an SDM, state its inputs and output, and explain its limitation.",model:"A species distribution model predicts where a species is likely to occur by relating known occurrence records to environmental data. Its inputs are occurrence records and environmental data, and its output is a habitat-suitability map showing the probability of occurrence. Its limitation is that it predicts potentially suitable habitat — essentially the abiotic conditions — rather than actual occupancy, because biotic interactions such as competition and predation, and dispersal barriers, can prevent a species from occupying otherwise suitable areas.",pts:["Inputs: occurrence records + environmental data","Output: habitat-suitability map","Limitation: suitable ≠ occupied","Biotic factors & dispersal (BAM) can exclude it"]}
+    ]},
+
+   /* ---------------- L5 HIGHLIGHTS ---------------- */
+   {id:"LRT3", title:"★ Lecture 5 highlights", sub:"Lamarck · natural selection & fitness · the 5 mechanisms (random vs non-random) · null models.",
+    slides:[
+     {h:"Lamarck's 'use and disuse' — and why it mattered", imgs:[s5(9),s5(12),s5(13)], html:`
+       <p class="lead"><span class="kw">Jean-Baptiste Lamarck</span> proposed the first serious mechanism for species changing over time:</p>
+       <ol><li><b>Use and disuse</b> — structures used frequently become larger/stronger; unused ones deteriorate.</li>
+       <li><b>Inheritance of acquired characteristics</b> — traits gained during an individual's lifetime are passed to offspring (e.g., a giraffe stretching its neck).</li></ol>
+       <div class="callout key"><b>The importance of his ideas:</b> the <b>mechanism was wrong</b>, but Lamarck was the <b>first to propose that species change over time to adapt</b> to their environment — a foundational, highly influential idea that paved the way for Darwin.</div>`},
+     {h:"Natural selection & fitness", imgs:[s5(22),s5(25),s5(26)], html:`
+       <p class="lead"><span class="kw">Natural selection</span> = differential survival and reproduction due to <b>heritable</b> differences in phenotype. Requirements: individuals <b>vary</b>; some traits give a <b>survival/reproductive advantage</b>; those traits are <b>heritable</b>; so they become more common → adaptation. It is <b>NOT random</b>.</p>
+       <p class="lead"><span class="kw-2">Fitness</span> = an individual's <b>ability to survive and reproduce</b>, measured by <b>reproductive success</b> (its genetic contribution to the next generation).</p>`},
+     {h:"The five mechanisms — and which are random", imgs:[s5(37),s5(38)], html:`
+       <table class="dt"><tr><th>Mechanism</th><th>Random?</th><th>What it does</th></tr>
+       <tr><td><b>Mutation</b></td><td><b>RANDOM</b></td><td>Random DNA changes; the raw material — the only source of brand-new alleles</td></tr>
+       <tr><td><b>Genetic drift</b></td><td><b>RANDOM</b></td><td>Chance fluctuation in allele frequencies; strongest in small populations (bottleneck, founder effects)</td></tr>
+       <tr><td><b>Gene flow</b></td><td>Non-random</td><td>Movement of genes between populations; makes them more similar</td></tr>
+       <tr><td><b>Non-random mating</b></td><td>Non-random</td><td>Mate choice (sexual selection, inbreeding)</td></tr>
+       <tr><td><b>Natural selection</b></td><td>Non-random</td><td>Favors fitness-improving alleles → adaptation</td></tr></table>
+       <div class="callout key">Memorize: the <b>two random</b> mechanisms are <b>mutation and genetic drift</b>. Everything else is non-random.</div>`},
+     {h:"Null models — and why they're useful", imgs:[s5(82),s5(83)], html:`
+       <p class="lead">A <span class="kw">null model</span> is a baseline that assumes <b>no biological process</b> is shaping an observed pattern.</p>
+       <p><b>Why it's useful:</b> it gives the result you'd expect from chance alone, so you can <b>test whether observed data differ from random expectations</b>. If the data deviate from the null, something interesting is happening. Hardy–Weinberg equilibrium is the null model for evolution — it describes a population that is <b>NOT evolving</b>.</p>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Lamarck's theory included which mechanism?",opts:["Natural selection","Use and disuse plus inheritance of acquired characteristics","Genetic drift","Random mutation"],a:1,exp:"Lamarck proposed use/disuse and the inheritance of acquired characteristics — wrong, but foundational."},
+     {type:"short",q:"Explain Lamarck's 'use and disuse' and why his ideas were important despite being incorrect.",model:"Lamarck's theory of use and disuse proposed that body structures used frequently become larger and stronger while unused structures deteriorate, and that these acquired changes are passed on to offspring. The mechanism is incorrect because acquired traits are not heritable. His ideas were important, however, because he was the first to seriously propose that species change over time to adapt to their environment, a foundational idea that influenced later thinkers including Darwin.",pts:["Use → structures enlarge; disuse → deteriorate","Acquired traits passed to offspring (incorrect)","First to propose species change over time to adapt","Foundational/influential for Darwin"]},
+     {type:"mcq",q:"Fitness is measured by:",opts:["Body size","Reproductive success","Lifespan alone","Physical strength"],a:1,exp:"Fitness = ability to survive and reproduce, measured by reproductive success."},
+     {type:"tf",q:"Natural selection is a random process.",a:false,exp:"False — natural selection is NON-random; it favors alleles that improve fitness. Mutation and drift are the random mechanisms."},
+     {type:"mcq",q:"Which pair lists the two RANDOM mechanisms of microevolution?",opts:["Natural selection and gene flow","Mutation and genetic drift","Non-random mating and gene flow","Gene flow and natural selection"],a:1,exp:"Mutation and genetic drift are random; gene flow, non-random mating, and selection are non-random."},
+     {type:"mcq",q:"Which mechanism is the only source of brand-new alleles?",opts:["Genetic drift","Mutation","Gene flow","Natural selection"],a:1,exp:"Only mutation creates new alleles; the others act on existing variation (gene flow moves existing alleles in)."},
+     {type:"mcq",q:"A null model is used to:",opts:["Prove a hypothesis true","Provide a baseline of 'no process' so you can test whether data differ from chance","Measure fitness","Build a phylogeny"],a:1,exp:"A null model gives the chance expectation; deviations from it signal a real process."},
+     {type:"short",q:"List the five mechanisms of microevolution, label which are random, and define a null model.",model:"The five mechanisms are mutation, genetic drift, gene flow, non-random mating, and natural selection. Mutation and genetic drift are random; gene flow, non-random mating, and natural selection are non-random. A null model is a baseline model assuming no biological process is shaping a pattern, which is useful because it provides the expectation under chance alone so we can test whether observed data differ from random expectations.",pts:["Five: mutation, drift, gene flow, non-random mating, selection","Random: mutation & genetic drift","Non-random: the other three","Null model = baseline of no process, used to test against chance"]}
+    ]},
+
+   /* ---------------- L6 HIGHLIGHTS (part 1) ---------------- */
+   {id:"LRT4", title:"★ Lecture 6 highlights — trees & clades",
+    sub:"Reading a phylogeny · mono/para/polyphyletic · why paraphyletic groups exist.",
+    slides:[
+     {h:"How to read a phylogeny", imgs:[s6(31),s6(35)], html:`
+       <p class="lead">Parts of a tree: <b>tips</b> (the taxa/descendants), <b>nodes</b> (branch points = common ancestors), <b>branches</b> (lineages), and the <b>root</b> (the ancestor of everything on the tree).</p>
+       <div class="callout key">Relatedness is read by the <b>most recent common ancestor</b>: two tips sharing a more recent node are more closely related. <b>Rotating branches at a node does NOT change relationships</b> — only the branching pattern matters, not the left-to-right order of tips.</div>`},
+     {h:"Monophyletic, paraphyletic, polyphyletic", imgs:[s6(43),s6(44),s6(45),s6(46)], html:`
+       <table class="dt"><tr><th>Group</th><th>Contains</th></tr>
+       <tr><td><b>Monophyletic (a clade)</b></td><td>A common ancestor + <b>ALL</b> of its descendants</td></tr>
+       <tr><td><b>Paraphyletic</b></td><td>A common ancestor + <b>SOME but not all</b> descendants</td></tr>
+       <tr><td><b>Polyphyletic</b></td><td>Members from <b>two or more ancestors</b>, <b>excluding</b> their common ancestor</td></tr></table>
+       <p><b>To identify one on a tree:</b> find the common ancestor of the circled members, then check whether every descendant of that ancestor is included (mono), only some (para), or whether the group pulls from separate ancestors and leaves out the shared one (poly).</p>`},
+     {h:"Why paraphyletic groups exist (reptiles)", imgs:[s6(51),s6(52)], html:`
+       <p class="lead">Traditional (Linnaean) classification grouped organisms by <b>observable traits, not evolutionary history</b> — so it sometimes created groups that leave out descendants.</p>
+       <div class="callout key"><b>"Reptiles"</b> is the classic example: the traditional group includes the common ancestor and most descendants but <b>excludes birds</b>, even though birds evolved from within that same group. Including an ancestor and only <b>some</b> of its descendants = <b>paraphyletic</b>.</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"On a phylogeny, a node represents:",opts:["A living species","A common ancestor / branch point","A mutation","An extinction"],a:1,exp:"Nodes are branch points representing common ancestors."},
+     {type:"mcq",q:"Two tips are most closely related if they:",opts:["Are drawn next to each other","Share the most recent common ancestor","Have the longest branches","Are closest to the root"],a:1,exp:"Relatedness is judged by the most recent common ancestor, not drawn position."},
+     {type:"tf",q:"Rotating the branches around a node changes the evolutionary relationships shown by a tree.",a:false,exp:"False — rotation doesn't change relationships; only the branching pattern matters."},
+     {type:"mcq",q:"A group containing an ancestor and ALL of its descendants is:",opts:["Paraphyletic","Monophyletic (a clade)","Polyphyletic","Convergent"],a:1,exp:"Monophyletic = ancestor + all descendants = a clade."},
+     {type:"mcq",q:"A group containing members from two different ancestors, excluding their common ancestor, is:",opts:["Monophyletic","Paraphyletic","Polyphyletic","A clade"],a:2,exp:"Polyphyletic = multiple ancestors, common ancestor excluded."},
+     {type:"mcq",q:"Traditional 'reptiles' (excluding birds) is paraphyletic because the group includes:",opts:["Two separate ancestors","An ancestor and all descendants","An ancestor and only some of its descendants","No ancestor at all"],a:2,exp:"It omits birds, which descend from within the group — ancestor + some but not all descendants."},
+     {type:"short",q:"Define monophyletic, paraphyletic, and polyphyletic groups, and explain why paraphyletic groups like 'reptiles' exist.",model:"A monophyletic group, or clade, contains a common ancestor and all of its descendants. A paraphyletic group contains a common ancestor and some but not all of its descendants. A polyphyletic group contains members derived from two or more ancestors while excluding their common ancestor. Paraphyletic groups such as 'reptiles' exist because traditional Linnaean classification grouped organisms by shared observable traits rather than full evolutionary history, so birds were left out of the reptile group even though they descend from within it.",pts:["Mono = ancestor + ALL descendants","Para = ancestor + SOME descendants","Poly = 2+ ancestors, common ancestor excluded","Paraphyly arises from trait-based (not history-based) classification; reptiles exclude birds"]}
+    ]},
+
+   /* ---------------- L6 HIGHLIGHTS (part 2) ---------------- */
+   {id:"LRT5", title:"★ Lecture 6 highlights — parsimony, characters, homoplasy & models",
+    sub:"Maximum parsimony · ancestral/derived & the -morphies · homology vs homoplasy · convergent evolution · 3 models.",
+    slides:[
+     {h:"Ancestral vs derived states; the four '-morphies'", imgs:[s6(79),s6(82),s6(83)], html:`
+       <p class="lead">An <b>ancestral state</b> is the condition found in the common ancestor; a <b>derived state</b> evolved from it. An <b>outgroup</b> (the sister group) sets the <span class="kw">polarity</span> — states shared with the outgroup are ancestral.</p>
+       <table class="dt"><tr><th>Term</th><th>Meaning</th></tr>
+       <tr><td><b>Plesiomorphy</b></td><td>An <b>ancestral</b> character state</td></tr>
+       <tr><td><b>Apomorphy</b></td><td>A <b>derived</b> character state</td></tr>
+       <tr><td><b>Autapomorphy</b></td><td>A derived state <b>unique to ONE species</b></td></tr>
+       <tr><td><b>Synapomorphy</b></td><td>A derived state <b>SHARED across taxa</b> — evidence for a clade</td></tr></table>`},
+     {h:"Maximum parsimony", imgs:[s6(85),s6(86),s6(97)], html:`
+       <p class="lead"><span class="kw">Maximum parsimony</span> compares character states across homologous characters. States shared with the <b>outgroup</b> score as ancestral (<b>0</b>); novel states as derived (<b>1</b>) — this <b>polarizes</b> the data.</p>
+       <ul><li><b>Grouping rule:</b> <b>synapomorphies</b> (shared derived states) are evidence for common ancestry.</li>
+       <li><b>Main principle (Occam's Razor):</b> the best tree is the <b>simplest</b> — the one needing the <b>fewest evolutionary changes (lowest tree cost)</b>. In the lecture example the ABC tree cost 4 while alternatives cost 5, so ABC wins.</li></ul>`},
+     {h:"Homology, homoplasy & convergent evolution", imgs:[s6(106),s6(107),s6(115)], html:`
+       <table class="dt"><tr><th>Term</th><th>Definition</th></tr>
+       <tr><td><b>Homology</b></td><td>Similarity due to <b>shared common ancestry</b> (mammal hair; the matching limb bones across vertebrates)</td></tr>
+       <tr><td><b>Homoplasy</b></td><td>Similarity <b>NOT</b> derived from a common ancestor</td></tr>
+       <tr><td><b>Convergent evolution</b></td><td>Different lineages <b>independently</b> evolve similar traits because of <b>similar selective pressures</b></td></tr></table>
+       <div class="callout key"><b>The link:</b> convergent evolution is the <b>main cause of homoplasy</b>. Examples: echolocation in bats & dolphins; flippers in penguins, sea turtles, whales. <b>Flight in birds vs bats is homoplasious</b> (feathers vs membranes) even though the underlying arm <b>bones are homologous</b>.</div>`},
+     {h:"The three models of evolution", imgs:[s6(127),s6(128),s6(129)], html:`
+       <table class="dt"><tr><th>Model</th><th>Pattern</th></tr>
+       <tr><td><b>Phyletic gradualism</b></td><td>Slow, <b>incremental</b> change over time; not necessarily tied to speciation</td></tr>
+       <tr><td><b>Punctuated equilibria</b></td><td>Long <b>stasis</b> punctuated by rapid change, <b>WITH cladogenesis</b> (a daughter species diverges rapidly, then stays stable)</td></tr>
+       <tr><td><b>Punctuated gradualism</b></td><td>Rapid bursts of change <b>WITHOUT cladogenesis</b> (the lineage shifts quickly but doesn't necessarily split)</td></tr></table>
+       <div class="callout key">The distinguishing feature between the two punctuated models is <b>cladogenesis</b>: equilibria has it, gradualism doesn't.</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"A derived character state SHARED across taxa (evidence for a clade) is a:",opts:["Plesiomorphy","Synapomorphy","Autapomorphy","Homoplasy"],a:1,exp:"Synapomorphy = shared derived state; it groups taxa into clades."},
+     {type:"mcq",q:"A derived state unique to a single species is a(n):",opts:["Synapomorphy","Autapomorphy","Plesiomorphy","Apomorphy shared by all"],a:1,exp:"Autapomorphy = derived state found in only one species."},
+     {type:"mcq",q:"In maximum parsimony, states shared with the outgroup are scored as:",opts:["Derived (1)","Ancestral (0)","Missing","Random"],a:1,exp:"Outgroup-shared states are ancestral (0); novel states are derived (1)."},
+     {type:"mcq",q:"Under maximum parsimony, the best tree is the one that:",opts:["Includes the most taxa","Requires the fewest evolutionary changes","Has the longest branches","Uses only DNA"],a:1,exp:"Fewest steps = most parsimonious (Occam's razor)."},
+     {type:"mcq",q:"Similarity due to shared common ancestry is:",opts:["Homoplasy","Homology","Convergence","Parsimony"],a:1,exp:"Homology = similarity inherited from a shared ancestor."},
+     {type:"mcq",q:"Echolocation evolving independently in bats and dolphins is:",opts:["Homology","Homoplasy from convergent evolution","A synapomorphy uniting them","A plesiomorphy"],a:1,exp:"Independent evolution under similar pressures = convergent evolution, producing homoplasy."},
+     {type:"tf",q:"Convergent evolution is the main source of homoplasy.",a:true,exp:"True — similar selective pressures on different lineages produce similar traits not inherited from a common ancestor."},
+     {type:"mcq",q:"Long periods of stasis punctuated by rapid change WITH branching describes:",opts:["Phyletic gradualism","Punctuated equilibria","Punctuated gradualism","Anagenesis"],a:1,exp:"Punctuated equilibria = stasis + rapid change WITH cladogenesis."},
+     {type:"mcq",q:"The key difference of punctuated gradualism is that it:",opts:["Is always slower","Does NOT involve cladogenesis","Never involves change","Only occurs in plants"],a:1,exp:"Punctuated gradualism has rapid change WITHOUT cladogenesis; punctuated equilibria has cladogenesis."},
+     {type:"short",q:"Define homology, homoplasy, and convergent evolution, and explain how they are linked.",model:"Homology is similarity between characters that results from shared common ancestry, such as the matching limb bones of vertebrates. Homoplasy is similarity that is not derived from a common ancestor. Convergent evolution occurs when different lineages independently evolve similar traits because they experience similar selective pressures. They are linked because convergent evolution is the main source of homoplasy — for example, echolocation in bats and dolphins evolved independently, so it is homoplasious rather than homologous.",pts:["Homology = similarity from shared ancestry","Homoplasy = similarity NOT from common ancestor","Convergent evolution = independent evolution, similar pressures","Convergence is the main cause of homoplasy"]},
+     {type:"short",q:"Explain the three models of evolution.",model:"Phyletic gradualism describes slow, incremental change over time that is not necessarily associated with speciation. Punctuated equilibria describes long periods of stasis punctuated by bursts of rapid change that occur with cladogenesis, where a daughter species diverges rapidly and then remains stable. Punctuated gradualism describes rapid bursts of change within a lineage that occur without cladogenesis, so the lineage shifts quickly but does not necessarily split into new species.",pts:["Phyletic gradualism = slow incremental change","Punctuated equilibria = stasis + rapid change WITH cladogenesis","Punctuated gradualism = rapid change WITHOUT cladogenesis"]}
+    ]},
+
+   /* ---------------- L7 HIGHLIGHTS ---------------- */
+   {id:"LRT6", title:"★ Lecture 7 highlights", sub:"Limitations of morphology-based phylogenies · coding vs non-coding DNA.",
+    slides:[
+     {h:"Limitations of morphology-based phylogenies", imgs:[s7(9),s7(10)], html:`
+       <p class="lead">Three limitations:</p>
+       <ol><li><b>Limited to measurable traits</b> — you can only use characters you can feasibly measure (one leaf-length trait took 400+ hours across 250 species).</li>
+       <li><b>Subjectivity in trait coding</b> — one person's "orange" is another's "brown"; scoring isn't fully objective.</li>
+       <li><b>Convergent evolution</b> — independently evolved similar traits can <b>mislead</b> us into thinking two species are more closely related than they are (platypus vs beaver).</li></ol>`},
+     {h:"Coding vs non-coding DNA", imgs:[s7(19),s7(20),s7(21)], html:`
+       <table class="dt"><tr><th></th><th>Coding DNA</th><th>Non-coding DNA</th></tr>
+       <tr><td>Translated into protein?</td><td><b>Yes</b> (enzymes, hormones)</td><td><b>No</b></td></tr>
+       <tr><td>Rate of evolution</td><td><b>Slow</b> — conserved; harmful changes removed by natural selection</td><td><b>Fast</b> — fewer functional constraints, more mutations</td></tr>
+       <tr><td>Best used for…</td><td><span class="kw">Deep / ancient</span> relationships (slow change = clear signal over long timescales)</td><td><span class="kw-2">Recent / shallow</span> relationships (more variation = better resolution among close taxa)</td></tr></table>
+       <div class="callout key">Match the DNA to the timescale: <b>coding → deep/old splits</b>; <b>non-coding → recent splits between closely related species</b>.</div>`}
+    ],
+    quiz:[
+     {type:"mcq",q:"Which is a limitation of morphology-based phylogenies?",opts:["DNA is too cheap","Convergent evolution can make unrelated species appear closely related","There are too few traits in nature","Morphology cannot be observed"],a:1,exp:"Convergence (homoplasy) misleads morphological trees; the others are measurability and subjective coding."},
+     {type:"mcq",q:"Trait coding is a limitation of morphological phylogenies because it can be:",opts:["Fully automated","Subjective (e.g., different observers judge color differently)","Free of error","Determined by DNA"],a:1,exp:"Subjectivity in scoring traits like color is a key limitation."},
+     {type:"mcq",q:"Coding DNA is conserved and slow-evolving, making it best for studying:",opts:["Very recent divergences","Deep/ancient evolutionary relationships","Individual pedigrees","Nothing"],a:1,exp:"Its slow, clear signal suits deep/ancient relationships."},
+     {type:"mcq",q:"To resolve relationships among closely related, recently diverged species you would use:",opts:["Slow-evolving coding DNA","Fast-evolving non-coding DNA","Morphology only","A single conserved gene"],a:1,exp:"Non-coding DNA evolves faster, giving more variation and better resolution among close relatives."},
+     {type:"tf",q:"Coding DNA is conserved because harmful changes to it are often removed by natural selection.",a:true,exp:"True — because it codes for proteins, deleterious changes are selected against, keeping it conserved."},
+     {type:"short",q:"Describe the limitations of morphology-based phylogenies and contrast coding vs non-coding DNA.",model:"Morphology-based phylogenies are limited because they can only use traits that are feasible to measure, which is time-consuming; because trait coding can be subjective, as when different observers score color differently; and because convergent evolution can produce similar traits independently, misleading us into grouping unrelated species. Coding DNA is translated into proteins and is conserved and slow-evolving since harmful changes are removed by selection, making it best for deep or ancient relationships. Non-coding DNA is not translated, has fewer constraints, and evolves faster, making it best for recent or shallow relationships among closely related taxa.",pts:["Limited to measurable traits (time-consuming)","Subjective trait coding","Convergent evolution misleads","Coding = conserved/slow → deep; non-coding = fast → recent"]}
+    ]}
+  ]
+ };
+ window.COURSE.push(LR);
+
+ /* ---------------- FLASHCARDS ---------------- */
+ window.FLASHCARDS.LR=[
+  {f:"★ Community (L3)",b:"A group of interacting species that occur together at the same time and place."},
+  {f:"★ Competitive exclusion — example (L3)",b:"Gause's Paramecium: separately both thrive, together one eliminates the other. Also chipmunk elevation ranges barely overlapping."},
+  {f:"★ Trait displacement — example (L3)",b:"Darwin's finches: Geospiza fuliginosa's beak depth is smaller where it co-occurs with other finches → reduces competition."},
+  {f:"★ Food chain vs food web (L3)",b:"Chain = linear, simplified, less stable. Web = nonlinear, interconnected (feeding at multiple levels), more realistic and stable."},
+  {f:"★ Primary vs secondary succession (L3)",b:"Primary = no soil, no prior community (lava/new island), slow. Secondary = soil remains after disturbance (fire/logging), faster."},
+  {f:"★ Intermediate Disturbance Hypothesis (L3)",b:"Diversity peaks at INTERMEDIATE disturbance: low → competitive exclusion; high → only tough pioneers; intermediate → early + late species coexist."},
+  {f:"★ SDM — inputs/output/limitation (L4)",b:"Inputs: occurrence records + environmental data. Output: habitat-suitability map. Limitation: suitable ≠ occupied (biotic + dispersal, per BAM)."},
+  {f:"★ Species–area relationship + limits (L4)",b:"More area surveyed → more species (rises then levels off). Assumes you can identify AND have found all species."},
+  {f:"★ Endemism (L4)",b:"A species found naturally in only one geographic area and nowhere else (Galápagos tortoise, kangaroos)."},
+  {f:"★ Lamarck's use and disuse (L5)",b:"Used structures enlarge, unused deteriorate, and acquired traits are inherited. WRONG mechanism, but first to propose species change over time to adapt — foundational."},
+  {f:"★ Natural selection (L5)",b:"Differential survival/reproduction from heritable phenotypic differences; favors fitness-improving alleles → adaptation. NOT random."},
+  {f:"★ Fitness (L5)",b:"An individual's ability to survive and reproduce, measured by reproductive success."},
+  {f:"★ Five mechanisms — random vs non-random (L5)",b:"RANDOM: mutation, genetic drift. NON-RANDOM: gene flow, non-random mating, natural selection."},
+  {f:"★ Null model (L5)",b:"A baseline assuming NO biological process; gives the chance expectation so you can test whether observed data differ (e.g., Hardy–Weinberg)."},
+  {f:"★ Reading a phylogeny (L6)",b:"Tips = taxa; nodes = common ancestors; root = ancestor of all. Relatedness = most recent common ancestor. Rotating branches changes nothing."},
+  {f:"★ Mono/para/polyphyletic (L6)",b:"Mono = ancestor + ALL descendants (clade). Para = ancestor + SOME descendants. Poly = members from 2+ ancestors, common ancestor excluded."},
+  {f:"★ Why paraphyletic groups exist (L6)",b:"Traditional classification used observable traits, not evolutionary history — e.g., 'reptiles' excludes birds even though birds arose from within the group."},
+  {f:"★ Maximum parsimony (L6)",b:"Outgroup-shared = ancestral (0), novel = derived (1); synapomorphies group taxa; best tree = fewest changes (Occam's razor)."},
+  {f:"★ The four -morphies (L6)",b:"Plesiomorphy = ancestral. Apomorphy = derived. Autapomorphy = derived, unique to one species. Synapomorphy = derived, shared (clade evidence)."},
+  {f:"★ Homology vs homoplasy (L6)",b:"Homology = similarity from shared ancestry. Homoplasy = similarity NOT from a common ancestor."},
+  {f:"★ Convergent evolution & its link (L6)",b:"Different lineages independently evolve similar traits under similar selective pressures — the MAIN SOURCE of homoplasy (bat/dolphin echolocation)."},
+  {f:"★ Three models of evolution (L6)",b:"Phyletic gradualism = slow incremental. Punctuated equilibria = stasis + rapid change WITH cladogenesis. Punctuated gradualism = rapid change WITHOUT cladogenesis."},
+  {f:"★ Limits of morphology-based phylogenies (L7)",b:"(1) limited to measurable traits, (2) subjective trait coding, (3) convergent evolution misleads."},
+  {f:"★ Coding vs non-coding DNA (L7)",b:"Coding = translated, conserved, slow → DEEP/ancient relationships. Non-coding = not translated, fast → RECENT/shallow relationships."}
+ ];
+
+ /* ---------------- OBJECTIVE MASTERY (cumulative over all highlights) ---------------- */
+ window.OBJMASTERY.LR={
+  id:"LROBJ", title:"🎯 Objective Mastery (highlighted only)",
+  sub:"A cumulative exam over every highlighted previous-lecture objective (L3–L7).",
+  slides:[
+   {h:"The highlighted list at a glance", html:`
+     <p class="lead">These are the <b>only</b> previous-lecture bullets the professor highlighted — i.e. the L3–L7 material that can appear on the cumulative final.</p>
+     <table class="dt"><tr><th>Lecture</th><th>Highlighted objectives</th></tr>
+     <tr><td><b>L3</b></td><td>Define community · identify examples of competitive exclusion & trait displacement · food web vs food chain · disturbance/succession & the IDH</td></tr>
+     <tr><td><b>L4</b></td><td>Define SDM (inputs/outputs/limitation) · species–area relationship & its limitations · define endemism</td></tr>
+     <tr><td><b>L5</b></td><td>Lamarck's use & disuse + importance · natural selection & fitness · the 5 mechanisms + which are random/non-random · define a null model</td></tr>
+     <tr><td><b>L6</b></td><td>Read a phylogeny · mono/para/polyphyletic + identify · why paraphyletic groups exist · maximum parsimony · ancestral/derived + the four -morphies · homology & homoplasy · convergent evolution · the 3 models of evolution</td></tr>
+     <tr><td><b>L7</b></td><td>Limitations of morphology-based phylogenies · coding vs non-coding DNA</td></tr></table>
+     <div class="callout key">Note: the handout contains <b>no Lecture 1 or 2 section</b>, so previous-lecture material starts at Lecture 3.</div>`},
+   {h:"Highest-yield facts to have cold", html:`
+     <ul><li><b>IDH:</b> diversity peaks at intermediate disturbance (low → exclusion; high → pioneers only).</li>
+     <li><b>SDM limitation:</b> suitable ≠ occupied (biotic + dispersal).</li>
+     <li><b>Species–area limits:</b> assumes you identified AND found all species.</li>
+     <li><b>Random mechanisms:</b> mutation + genetic drift ONLY.</li>
+     <li><b>Null model:</b> baseline of no process → test against chance.</li>
+     <li><b>Reptiles = paraphyletic</b> (excludes birds) because classification used traits, not history.</li>
+     <li><b>Parsimony:</b> fewest steps wins; synapomorphies group taxa.</li>
+     <li><b>Convergence → homoplasy.</b></li>
+     <li><b>Punctuated equilibria HAS cladogenesis; punctuated gradualism does NOT.</b></li>
+     <li><b>Coding → deep; non-coding → recent.</b></li></ul>`}
+  ],
+  quiz:[
+   {type:"mcq",q:"[L3] The Intermediate Disturbance Hypothesis predicts diversity is highest at:",opts:["No disturbance","Low disturbance","Intermediate disturbance","Extreme disturbance"],a:2,exp:"Early- and late-successional species co-occur at intermediate disturbance."},
+   {type:"mcq",q:"[L3] Darwin's finch beak depth differing where species co-occur is an example of:",opts:["Competitive exclusion","Trait displacement","Succession","Biomagnification"],a:1,exp:"Trait displacement — traits diverge to reduce competition."},
+   {type:"mcq",q:"[L3] Which best describes a food web relative to a food chain?",opts:["Linear and fragile","Nonlinear, interconnected, more stable","Shorter","Limited to producers"],a:1,exp:"Webs are nonlinear/interconnected and more stable than a single chain."},
+   {type:"short",q:"[L3] Define community and give one example each of competitive exclusion and trait displacement.",model:"A community is a group of interacting species that occur together at the same time and place. An example of competitive exclusion is Gause's Paramecium experiment, where one species eliminates the other when they are grown together on the same niche. An example of trait displacement is Darwin's finches, where beak depth diverges where two finch species co-occur, letting them use different resources and coexist.",pts:["Community = interacting species, same time & place","Competitive exclusion: Paramecium (or chipmunks)","Trait displacement: Darwin's finch beak depth"]},
+   {type:"mcq",q:"[L4] The key limitation of an SDM is that it predicts:",opts:["Population size","Suitable habitat, not actual occupancy","Extinction dates","Phylogeny"],a:1,exp:"Suitable ≠ occupied — biotic interactions and dispersal (BAM) can exclude a species."},
+   {type:"mcq",q:"[L4] A limitation of the species–area relationship is the assumption that:",opts:["Area is constant","You can identify and have found all species present","Species never disperse","All species are rare"],a:1,exp:"It assumes complete detection and identification — rare/cryptic species get missed."},
+   {type:"mcq",q:"[L4] Endemism means a species is found naturally:",opts:["Everywhere","In only one geographic area and nowhere else","Only in captivity","Only in fossils"],a:1,exp:"Endemic = naturally restricted to one area."},
+   {type:"tf",q:"[L5] Lamarck's proposed mechanism was correct.",a:false,exp:"False — use/disuse and inheritance of acquired characteristics is incorrect; but his idea that species change over time was foundational."},
+   {type:"mcq",q:"[L5] Which two mechanisms of microevolution are random?",opts:["Selection and gene flow","Mutation and genetic drift","Non-random mating and selection","Gene flow and mutation"],a:1,exp:"Mutation and genetic drift are the random mechanisms."},
+   {type:"mcq",q:"[L5] Fitness is measured by:",opts:["Strength","Reproductive success","Body size","Lifespan alone"],a:1,exp:"Fitness = ability to survive and reproduce, measured by reproductive success."},
+   {type:"short",q:"[L5] Define a null model and explain why it is useful.",model:"A null model is a baseline model that assumes no biological process is shaping an observed pattern. It is useful because it provides the outcome expected from chance alone, allowing us to test whether observed data differ from random expectations; if the data deviate from the null model, it suggests a real biological process is at work. Hardy–Weinberg equilibrium is the null model for evolution, describing a population that is not evolving.",pts:["Baseline assuming no biological process","Gives the chance/random expectation","Lets you test if observed data differ","Deviation signals a real process (e.g., HW)"]},
+   {type:"mcq",q:"[L6] A group with an ancestor and only SOME of its descendants is:",opts:["Monophyletic","Paraphyletic","Polyphyletic","A clade"],a:1,exp:"Paraphyletic — e.g., traditional 'reptiles' excluding birds."},
+   {type:"mcq",q:"[L6] 'Reptiles' is paraphyletic because traditional classification was based on:",opts:["DNA","Observable traits rather than evolutionary history","Geography","Fossils only"],a:1,exp:"Trait-based (Linnaean) classification excluded birds despite their shared ancestry."},
+   {type:"mcq",q:"[L6] Under maximum parsimony, the preferred tree is the one with the:",opts:["Most steps","Fewest evolutionary changes","Most taxa","Longest branches"],a:1,exp:"Fewest changes = most parsimonious (Occam's razor)."},
+   {type:"mcq",q:"[L6] A derived character state shared by two or more taxa is a:",opts:["Plesiomorphy","Synapomorphy","Autapomorphy","Homoplasy"],a:1,exp:"Synapomorphy = shared derived state, evidence for a clade."},
+   {type:"mcq",q:"[L6] Convergent evolution is linked to homoplasy because it:",opts:["Produces similarity from shared ancestry","Produces similar traits independently, not from a common ancestor","Prevents similarity","Only affects DNA"],a:1,exp:"Convergence produces similarity NOT inherited from a common ancestor = homoplasy."},
+   {type:"mcq",q:"[L6] Which model involves rapid change WITHOUT cladogenesis?",opts:["Phyletic gradualism","Punctuated equilibria","Punctuated gradualism","None"],a:2,exp:"Punctuated gradualism = rapid change without branching; punctuated equilibria includes cladogenesis."},
+   {type:"short",q:"[L6] Define plesiomorphy, apomorphy, autapomorphy, and synapomorphy.",model:"A plesiomorphy is an ancestral character state. An apomorphy is a derived character state. An autapomorphy is a derived state that is unique to a single species. A synapomorphy is a derived state shared by two or more taxa, and it is the evidence used to group them into a clade.",pts:["Plesiomorphy = ancestral","Apomorphy = derived","Autapomorphy = derived, one species only","Synapomorphy = derived, shared → clade evidence"]},
+   {type:"mcq",q:"[L7] Which is NOT a limitation of morphology-based phylogenies?",opts:["Limited to measurable traits","Subjectivity in trait coding","Convergent evolution can mislead","It uses too many nucleotides"],a:3,exp:"Nucleotides are molecular data. The three limitations are measurability, subjectivity, and convergence."},
+   {type:"mcq",q:"[L7] Non-coding DNA is best suited for resolving:",opts:["Deep, ancient relationships","Recent, shallow relationships among close relatives","Nothing","Fossil relationships"],a:1,exp:"It evolves fast, giving variation needed for recent splits; coding DNA suits deep relationships."},
+   {type:"short",q:"[L7] Contrast coding and non-coding DNA in molecular systematics.",model:"Coding DNA is transcribed and translated into proteins, so it is conserved and evolves slowly because harmful mutations are removed by natural selection; its slow, clear signal makes it best for resolving deep or ancient evolutionary relationships. Non-coding DNA is not translated and faces fewer functional constraints, so it evolves faster and accumulates more variation, making it best for resolving recent or shallow relationships among closely related taxa.",pts:["Coding = translated, conserved, slow","Coding → deep/ancient relationships","Non-coding = not translated, fast-evolving","Non-coding → recent/shallow relationships"]}
+  ]
+ };
+})();
