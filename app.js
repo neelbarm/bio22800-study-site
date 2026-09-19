@@ -1981,3 +1981,283 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.restore();
     });
   }
+
+  /* ----------------------------------------------------------- MNEMONICS -- */
+
+  function mnemonicCardHtml(m, u, custom, idx) {
+    return '<div class="mnemo" style="' + accentStyle(u) + '">' +
+      '<div class="row between"><p class="mn-saying">' + esc(m.saying) + '</p>' +
+      (custom ? '<button class="iconbtn sm" data-mdel="' + idx + '" aria-label="Delete this mnemonic">🗑️</button>' : '') + '</div>' +
+      '<p class="mn-meaning">' + esc(m.meaning) + '</p>' +
+      '<div class="row mn-foot">' +
+      (custom ? '<span class="chip c4">mine</span>' : '') +
+      (m.lesson && lessonIndex[m.lesson] ? '<a class="chip" href="#/unit/' + esc(lessonIndex[m.lesson].unit.id) + '/learn/' + esc(m.lesson) + '">📖 ' + esc(trunc(lessonIndex[m.lesson].lesson.title, 28)) + '</a>' : '') +
+      '</div></div>';
+  }
+
+  function addMnemonicFormHtml(unitId) {
+    return '<section class="card mt"><h2>Add your own dumb saying</h2>' +
+      '<p class="small muted">The sillier the better — if it makes you laugh you will remember it.</p>' +
+      '<label class="field" for="mnSaying">The saying</label>' +
+      '<input type="text" id="mnSaying" placeholder="e.g. LARRD is always axial">' +
+      '<label class="field mt" for="mnMeaning">What it means</label>' +
+      '<textarea id="mnMeaning" rows="2" placeholder="Longitudinal, Axial, Range, Radial, Depth…"></textarea>' +
+      '<div class="row mt"><button class="btn primary" id="mnAdd" data-unit="' + escAttr(unitId) + '">Save it</button></div></section>';
+  }
+
+  function wireMnemonicForm(pane, unitId, redraw) {
+    var add = $('#mnAdd', pane);
+    if (add) add.addEventListener('click', function () {
+      var s = $('#mnSaying', pane).value.trim(), m = $('#mnMeaning', pane).value.trim();
+      if (!s) { toast('Type the saying first'); return; }
+      var list = arr(state.mnemonics[unitId]);
+      list.push({ saying: s, meaning: m || '(no explanation yet)' });
+      state.mnemonics[unitId] = list;
+      markToday(); save();
+      toast('Saved your mnemonic');
+      redraw();
+    });
+    pane.addEventListener('click', function (ev) {
+      var b = ev.target.closest ? ev.target.closest('[data-mdel]') : null;
+      if (!b) return;
+      var u2 = b.getAttribute('data-munit') || unitId;
+      var list = arr(state.mnemonics[u2]);
+      list.splice(+b.getAttribute('data-mdel'), 1);
+      state.mnemonics[u2] = list; save(); redraw();
+    });
+  }
+
+  function tabMnemonics(pane, u) {
+    function draw() {
+      var own = arr(state.mnemonics[u.id]);
+      pane.innerHTML = '<div class="mnemo-grid">' +
+        arr(u.mnemonics).map(function (m) { return mnemonicCardHtml(m, u, false); }).join('') +
+        own.map(function (m, i) { return mnemonicCardHtml(m, u, true, i); }).join('') +
+        '</div>' +
+        (!arr(u.mnemonics).length && !own.length ? emptyHtml('💬', 'No mnemonics for this unit yet.', 'Write the first one below.') : '') +
+        addMnemonicFormHtml(u.id);
+      wireMnemonicForm(pane, u.id, draw);
+    }
+    draw();
+  }
+
+  function viewMnemonics(el) {
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    function draw() {
+      var html = head('Mnemonics', 'Dumb sayings that work', 'Every mnemonic in the site, plus the ones you wrote yourself.');
+      UNITS.forEach(function (u) {
+        var own = arr(state.mnemonics[u.id]);
+        var list = arr(u.mnemonics);
+        if (!list.length && !own.length) return;
+        html += '<section class="cram-unit"><h2 class="unit-sec" style="' + accentStyle(u) + '">' +
+          '<span aria-hidden="true">' + esc(u.icon || '📘') + '</span> ' + esc(u.title) + '</h2>' +
+          '<div class="mnemo-grid">' +
+          list.map(function (m) { return mnemonicCardHtml(m, u, false); }).join('') +
+          own.map(function (m, i) { return '<div data-wrap="' + escAttr(u.id) + '">' + mnemonicCardHtml(m, u, true, i).replace('data-mdel="' + i + '"', 'data-mdel="' + i + '" data-munit="' + escAttr(u.id) + '"') + '</div>'; }).join('') +
+          '</div></section>';
+      });
+      html += addMnemonicFormHtml(UNITS[0].id);
+      el.innerHTML = html;
+      var sel = '<label class="field mt" for="mnUnit">Which unit?</label><select id="mnUnit">' +
+        UNITS.map(function (u) { return '<option value="' + escAttr(u.id) + '">' + esc(u.title) + '</option>'; }).join('') + '</select>';
+      var add = $('#mnAdd', el);
+      if (add) add.insertAdjacentHTML('beforebegin', '');
+      var form = add ? add.closest('section') : null;
+      if (form) {
+        $('#mnMeaning', form).insertAdjacentHTML('afterend', sel);
+        add.addEventListener('click', function () { }, false);
+      }
+      wireMnemonicForm(el, UNITS[0].id, draw);
+      var addBtn = $('#mnAdd', el);
+      if (addBtn) {
+        var sel2 = $('#mnUnit', el);
+        addBtn.addEventListener('click', function () {
+          /* the shared handler stored it under UNITS[0]; move it if another unit was chosen */
+          if (!sel2 || sel2.value === UNITS[0].id) return;
+          var from = arr(state.mnemonics[UNITS[0].id]);
+          var moved = from.pop();
+          if (!moved) return;
+          state.mnemonics[UNITS[0].id] = from;
+          var to = arr(state.mnemonics[sel2.value]);
+          to.push(moved); state.mnemonics[sel2.value] = to;
+          save(); draw();
+        });
+      }
+    }
+    draw();
+  }
+
+  /* --------------------------------------------------- OBJECTIVES (all) --- */
+
+  function viewObjectives(el) {
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    var all = weakObjectives();
+    var html = head('Objectives', 'Every objective, weakest first',
+      'Mastery blends your own rating with how you actually score on questions tagged to each objective.');
+    html += '<section class="card pad-sm row between mb">' +
+      '<span class="small muted">' + all.length + ' objectives · ' +
+      all.filter(function (a) { return a.m >= 75; }).length + ' solid · ' +
+      all.filter(function (a) { return a.m < 40; }).length + ' shaky</span>' +
+      '<a class="btn primary" href="#/focus/weak">🎯 Study weakest</a></section>';
+    html += all.map(function (a) {
+      return '<div class="obj-row" style="' + accentStyle(a.unit) + '">' +
+        '<div class="or-main">' +
+        '<a class="or-unit chip" href="#/unit/' + esc(a.unit.id) + '/objectives">' + esc(a.unit.icon || '📘') + ' ' + esc(trunc(a.unit.title, 24)) + '</a>' +
+        '<p class="or-text">' + esc(a.obj.text) + '</p>' +
+        barHtml(a.m, masteryTone(a.m), true) +
+        '</div>' +
+        '<div class="or-side">' +
+        '<span class="chip ' + (a.m >= 75 ? 'c3' : (a.m >= 40 ? 'c2' : 'bad')) + '">' + pct(a.m) + '%</span>' +
+        ((objQuestions[a.obj.id] || []).length ? '<a class="btn sm" href="#/focus/' + esc(a.obj.id) + '">Quiz</a>' : '') +
+        '</div></div>';
+    }).join('');
+    el.innerHTML = html;
+  }
+
+  /* --------------------------------------------------------- STUDY GROUP -- */
+
+  var groupCfg = { units: [], count: 20, mode: 'quiz' };
+
+  function viewGroup(el, r) {
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    if (!groupCfg.units.length) groupCfg.units = UNITS.map(function (u) { return u.id; });
+    var mode = r[1] === 'teach' ? 'teach' : 'quiz';
+
+    el.innerHTML = head('Study group', 'Study Group', 'For the weekend session: hand someone the laptop and let them fire questions at you.') +
+      '<nav class="tabs" aria-label="Study group modes">' +
+      '<a class="tab" href="#/group/quiz"' + (mode === 'quiz' ? ' aria-current="page"' : '') + '>🎤 Quiz a friend</a>' +
+      '<a class="tab" href="#/group/teach"' + (mode === 'teach' ? ' aria-current="page"' : '') + '>🧑‍🏫 Teach it back</a>' +
+      '</nav><div id="gPane"></div>';
+    var pane = $('#gPane', el);
+    if (mode === 'teach') groupTeach(pane); else groupQuiz(pane);
+  }
+
+  function groupTeach(pane) {
+    var pool = [];
+    UNITS.forEach(function (u) {
+      arr(u.lessons).forEach(function (l) { if (l.sayIt) pool.push({ u: u, l: l }); });
+    });
+    if (!pool.length) { pane.innerHTML = emptyHtml('🧑‍🏫', 'No teach-back prompts yet.', ''); return; }
+    var cur = null;
+
+    function pick() {
+      cur = pool[Math.floor(Math.random() * pool.length)];
+      draw(false);
+    }
+    function draw(revealed) {
+      pane.innerHTML = '<section class="big-q" style="' + accentStyle(cur.u) + '">' +
+        '<p class="eyebrow">' + esc(cur.u.title) + ' · ' + esc(cur.l.title) + '</p>' +
+        '<p class="bq-q">' + esc(cur.l.sayIt) + '</p>' +
+        (revealed ? '<div class="bq-points">' + arr(cur.l.keyPoints).map(function (k) {
+          return '<p class="bq-point">✓ ' + esc(k) + '</p>';
+        }).join('') + '</div>' : '<p class="small muted">Teach it to them out loud. Press <kbd>Space</kbd> when you are done.</p>') +
+        '</section>' +
+        '<div class="row center mt" style="justify-content:center">' +
+        (revealed ? '' : '<button class="btn primary big" id="gReveal">Show the key points</button>') +
+        '<button class="btn big" id="gNext">Another prompt →</button>' +
+        '<a class="btn ghost" href="#/unit/' + esc(cur.u.id) + '/learn/' + esc(cur.l.id) + '">Read the lesson</a></div>';
+      var rv = $('#gReveal', pane); if (rv) rv.addEventListener('click', function () { draw(true); });
+      $('#gNext', pane).addEventListener('click', pick);
+      setKeys(function (ev) {
+        if (ev.key === ' ' || ev.key === 'Spacebar') { ev.preventDefault(); if (!revealed) draw(true); else pick(); }
+        else if (ev.key === 'ArrowRight') { ev.preventDefault(); pick(); }
+      });
+    }
+    pick();
+  }
+
+  function groupQuiz(pane) {
+    var S = { items: [], i: 0, revealed: false, running: false };
+
+    function drawCfg() {
+      var pool = allQuestions.filter(function (x) { return groupCfg.units.indexOf(x.unit.id) >= 0; });
+      pane.innerHTML = '<section class="card config-card">' +
+        '<h2>Set up the round</h2>' +
+        '<div class="cfg-row"><span class="cfg-label">Units</span><div class="row" id="gUnits">' +
+        '<button type="button" class="chip" id="gAll">' + (groupCfg.units.length === UNITS.length ? 'Clear all' : 'Select all') + '</button>' +
+        UNITS.map(function (u) {
+          return '<button type="button" class="chip" data-gu="' + escAttr(u.id) + '" aria-pressed="' + (groupCfg.units.indexOf(u.id) >= 0 ? 'true' : 'false') + '">' +
+            esc(u.icon || '📘') + ' ' + esc(trunc(u.title, 22)) + '</button>';
+        }).join('') + '</div></div>' +
+        '<div class="cfg-row"><span class="cfg-label">How many</span><div class="row" id="gCount">' +
+        [10, 20, 40, 'all'].map(function (n) {
+          return '<button type="button" class="chip" data-gc="' + n + '" aria-pressed="' + (String(groupCfg.count) === String(n) ? 'true' : 'false') + '">' + (n === 'all' ? 'Everything' : n) + '</button>';
+        }).join('') + '</div></div>' +
+        '<div class="row mt"><button class="btn primary big" id="gStart">Start the round</button>' +
+        '<span class="small muted">' + pool.length + ' questions ready</span></div>' +
+        '<p class="small muted mt">In presentation mode: <kbd>Space</kbd> reveals the answer, <kbd>→</kbd> next, <kbd>←</kbd> back, <kbd>Esc</kbd> exits.</p>' +
+        '</section>';
+
+      pane.onclick = function (ev) {
+        var b = ev.target.closest ? ev.target.closest('button') : null;
+        if (!b) return;
+        if (b.id === 'gAll') {
+          groupCfg.units = groupCfg.units.length === UNITS.length ? [] : UNITS.map(function (u) { return u.id; });
+          drawCfg();
+        } else if (b.hasAttribute('data-gu')) {
+          var id = b.getAttribute('data-gu'), k = groupCfg.units.indexOf(id);
+          if (k >= 0) groupCfg.units.splice(k, 1); else groupCfg.units.push(id);
+          b.setAttribute('aria-pressed', k >= 0 ? 'false' : 'true');
+        } else if (b.hasAttribute('data-gc')) {
+          groupCfg.count = b.getAttribute('data-gc');
+          $$('#gCount button', pane).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        } else if (b.id === 'gStart') {
+          S.items = pickQuestions(allQuestions.filter(function (x) { return groupCfg.units.indexOf(x.unit.id) >= 0; }), { count: groupCfg.count });
+          if (!S.items.length) { toast('Pick at least one unit'); return; }
+          S.i = 0; S.revealed = false; S.running = true;
+          pane.onclick = null;
+          drawPresent();
+        }
+      };
+      setKeys(null);
+    }
+
+    function drawPresent() {
+      var it = S.items[S.i], q = it.q;
+      pane.innerHTML = '<div class="present" style="' + accentStyle(it.unit) + '">' +
+        '<div class="row between present-bar">' +
+        '<span class="chip">' + esc(it.unit.icon || '📘') + ' ' + esc(trunc(it.unit.title, 24)) + '</span>' +
+        '<span class="nums small muted">' + (S.i + 1) + ' / ' + S.items.length + '</span>' +
+        '<button class="btn sm ghost js-esc-close" id="gExit">Exit</button></div>' +
+        '<section class="big-q">' +
+        '<p class="bq-q">' + esc(q.q) + '</p>' +
+        (q.type === 'mc' ? '<div class="bq-choices">' + arr(q.choices).map(function (c, ci) {
+          return '<div class="bq-choice' + (S.revealed && ci === q.answer ? ' is-answer' : '') + '"><b>' + LETTERS[ci] + '.</b> ' + esc(c) + '</div>';
+        }).join('') + '</div>' : '') +
+        (S.revealed
+          ? '<p class="bq-a">' + esc(correctText(q)) + '</p><p class="bq-explain">' + esc(q.explain || '') + '</p>'
+          : '<p class="bq-hint">press <kbd>Space</kbd> to reveal</p>') +
+        '</section>' +
+        '<div class="row center present-nav" style="justify-content:center">' +
+        '<button class="btn" id="gPrev"' + (S.i === 0 ? ' disabled' : '') + '>← Back</button>' +
+        '<button class="btn primary big" id="gRev">' + (S.revealed ? 'Next question →' : 'Reveal answer') + '</button>' +
+        '<button class="btn" id="gSkip">Skip →</button></div></div>';
+
+      $('#gRev', pane).addEventListener('click', function () { if (S.revealed) next(); else { S.revealed = true; drawPresent(); } });
+      $('#gSkip', pane).addEventListener('click', next);
+      $('#gPrev', pane).addEventListener('click', prev);
+      $('#gExit', pane).addEventListener('click', function () { S.running = false; drawCfg(); });
+
+      setKeys(function (ev) {
+        if (ev.key === ' ' || ev.key === 'Spacebar') { ev.preventDefault(); if (S.revealed) next(); else { S.revealed = true; drawPresent(); } }
+        else if (ev.key === 'ArrowRight') { ev.preventDefault(); next(); }
+        else if (ev.key === 'ArrowLeft') { ev.preventDefault(); prev(); }
+      });
+    }
+    function next() {
+      if (S.i >= S.items.length - 1) { drawDone(); return; }
+      S.i++; S.revealed = false; drawPresent();
+    }
+    function prev() { if (S.i > 0) { S.i--; S.revealed = false; drawPresent(); } }
+    function drawDone() {
+      pane.innerHTML = '<section class="card center"><h2>Round finished 🎉</h2>' +
+        '<p class="muted">' + S.items.length + ' questions asked.</p>' +
+        '<div class="row center mt" style="justify-content:center">' +
+        '<button class="btn primary" id="gAgain">Another round</button>' +
+        '<a class="btn" href="#/group/teach">Teach it back instead</a></div></section>';
+      $('#gAgain', pane).addEventListener('click', drawCfg);
+      setKeys(null);
+    }
+
+    drawCfg();
+  }
