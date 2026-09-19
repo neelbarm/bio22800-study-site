@@ -1984,10 +1984,10 @@
 
   /* ----------------------------------------------------------- MNEMONICS -- */
 
-  function mnemonicCardHtml(m, u, custom, idx) {
+  function mnemonicCardHtml(m, u, custom, idx, ownerId) {
     return '<div class="mnemo" style="' + accentStyle(u) + '">' +
       '<div class="row between"><p class="mn-saying">' + esc(m.saying) + '</p>' +
-      (custom ? '<button class="iconbtn sm" data-mdel="' + idx + '" aria-label="Delete this mnemonic">🗑️</button>' : '') + '</div>' +
+      (custom ? '<button class="iconbtn sm" data-mdel="' + idx + '" data-munit="' + escAttr(ownerId || u.id) + '" aria-label="Delete this mnemonic">🗑️</button>' : '') + '</div>' +
       '<p class="mn-meaning">' + esc(m.meaning) + '</p>' +
       '<div class="row mn-foot">' +
       (custom ? '<span class="chip c4">mine</span>' : '') +
@@ -2043,46 +2043,60 @@
 
   function viewMnemonics(el) {
     if (!UNITS.length) { el.innerHTML = noContent(); return; }
+
     function draw() {
-      var html = head('Mnemonics', 'Dumb sayings that work', 'Every mnemonic in the site, plus the ones you wrote yourself.');
+      var html = head('Mnemonics', 'Dumb sayings that work',
+        'Every mnemonic in the site, plus the silly ones you invent yourself.');
+      var any = false;
       UNITS.forEach(function (u) {
         var own = arr(state.mnemonics[u.id]);
         var list = arr(u.mnemonics);
         if (!list.length && !own.length) return;
+        any = true;
         html += '<section class="cram-unit"><h2 class="unit-sec" style="' + accentStyle(u) + '">' +
           '<span aria-hidden="true">' + esc(u.icon || '📘') + '</span> ' + esc(u.title) + '</h2>' +
           '<div class="mnemo-grid">' +
           list.map(function (m) { return mnemonicCardHtml(m, u, false); }).join('') +
-          own.map(function (m, i) { return '<div data-wrap="' + escAttr(u.id) + '">' + mnemonicCardHtml(m, u, true, i).replace('data-mdel="' + i + '"', 'data-mdel="' + i + '" data-munit="' + escAttr(u.id) + '"') + '</div>'; }).join('') +
+          own.map(function (m, i) { return mnemonicCardHtml(m, u, true, i, u.id); }).join('') +
           '</div></section>';
       });
-      html += addMnemonicFormHtml(UNITS[0].id);
+      if (!any) html += emptyHtml('💬', 'No mnemonics yet.', 'Write the first one below.');
+
+      html += '<section class="card mt" id="mnForm"><h2>Add your own dumb saying</h2>' +
+        '<p class="small muted">The sillier the better — if it makes you laugh you will remember it.</p>' +
+        '<label class="field" for="mnUnit">Which unit?</label>' +
+        '<select id="mnUnit">' + UNITS.map(function (u) {
+          return '<option value="' + escAttr(u.id) + '">' + esc(u.icon || '📘') + ' ' + esc(u.title) + '</option>';
+        }).join('') + '</select>' +
+        '<label class="field mt" for="mnSaying">The saying</label>' +
+        '<input type="text" id="mnSaying" placeholder="e.g. LARRD is always axial">' +
+        '<label class="field mt" for="mnMeaning">What it means</label>' +
+        '<textarea id="mnMeaning" rows="2" placeholder="Longitudinal, Axial, Range, Radial, Depth…"></textarea>' +
+        '<div class="row mt"><button class="btn primary" id="mnAdd">Save it</button></div></section>';
+
       el.innerHTML = html;
-      var sel = '<label class="field mt" for="mnUnit">Which unit?</label><select id="mnUnit">' +
-        UNITS.map(function (u) { return '<option value="' + escAttr(u.id) + '">' + esc(u.title) + '</option>'; }).join('') + '</select>';
-      var add = $('#mnAdd', el);
-      if (add) add.insertAdjacentHTML('beforebegin', '');
-      var form = add ? add.closest('section') : null;
-      if (form) {
-        $('#mnMeaning', form).insertAdjacentHTML('afterend', sel);
-        add.addEventListener('click', function () { }, false);
-      }
-      wireMnemonicForm(el, UNITS[0].id, draw);
-      var addBtn = $('#mnAdd', el);
-      if (addBtn) {
-        var sel2 = $('#mnUnit', el);
-        addBtn.addEventListener('click', function () {
-          /* the shared handler stored it under UNITS[0]; move it if another unit was chosen */
-          if (!sel2 || sel2.value === UNITS[0].id) return;
-          var from = arr(state.mnemonics[UNITS[0].id]);
-          var moved = from.pop();
-          if (!moved) return;
-          state.mnemonics[UNITS[0].id] = from;
-          var to = arr(state.mnemonics[sel2.value]);
-          to.push(moved); state.mnemonics[sel2.value] = to;
-          save(); draw();
-        });
-      }
+
+      $('#mnAdd', el).addEventListener('click', function () {
+        var s = $('#mnSaying', el).value.trim();
+        var m = $('#mnMeaning', el).value.trim();
+        var uid = $('#mnUnit', el).value;
+        if (!s) { toast('Type the saying first'); return; }
+        var list = arr(state.mnemonics[uid]);
+        list.push({ saying: s, meaning: m || '(no explanation yet)' });
+        state.mnemonics[uid] = list;
+        markToday(); save();
+        toast('Saved your mnemonic');
+        draw();
+      });
+
+      el.addEventListener('click', function (ev) {
+        var b = ev.target.closest ? ev.target.closest('[data-mdel]') : null;
+        if (!b) return;
+        var uid = b.getAttribute('data-munit');
+        var list = arr(state.mnemonics[uid]);
+        list.splice(+b.getAttribute('data-mdel'), 1);
+        state.mnemonics[uid] = list; save(); draw();
+      });
     }
     draw();
   }
@@ -2261,3 +2275,398 @@
 
     drawCfg();
   }
+
+  /* ---------------------------------------------------------- CRAM SHEET -- */
+
+  var cramHide = false;
+
+  function viewCram(el) {
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    function draw() {
+      var html = '';
+      html += '<div class="cram-head">' + head('Cram sheet', 'Cram Sheet', 'Every formula and every number you have to know, on one page.') +
+        '<div class="row no-print">' +
+        '<button class="btn ' + (cramHide ? 'primary' : '') + '" id="hideVals" aria-pressed="' + (cramHide ? 'true' : 'false') + '">' +
+        (cramHide ? '👁 Show values' : '🙈 Hide values — test me') + '</button>' +
+        '<button class="btn" id="printCram">🖨 Print</button></div></div>';
+      if (cramHide) html += '<p class="small muted no-print">Values are blanked out. Click any blank to peek at just that one.</p>';
+
+      var any = false;
+      UNITS.forEach(function (u) {
+        var fs = arr(u.formulas), kn = arr(u.keyNumbers);
+        if (!fs.length && !kn.length) return;
+        any = true;
+        html += '<section class="cram-unit" style="' + accentStyle(u) + '">' +
+          '<h2 class="unit-sec"><span aria-hidden="true">' + esc(u.icon || '📘') + '</span> ' + esc(u.title) + '</h2>' +
+          '<div class="cram-cols">';
+        if (fs.length) {
+          html += '<div class="card pad-sm"><h3>Formulas</h3><table class="cram-table"><thead><tr><th>Name</th><th>Formula</th><th>Units</th></tr></thead><tbody>' +
+            fs.map(function (f) {
+              return '<tr><td>' + esc(f.name) + (f.note ? '<div class="small muted">' + esc(f.note) + '</div>' : '') + '</td>' +
+                '<td class="expr">' + val(f.expr) + '</td><td class="small muted">' + esc(f.units || '') + '</td></tr>';
+            }).join('') + '</tbody></table></div>';
+        }
+        if (kn.length) {
+          html += '<div class="card pad-sm"><h3>Numbers to know</h3><table class="cram-table"><tbody>' +
+            kn.map(function (k) {
+              return '<tr><td>' + esc(k.fact) + '</td><td class="expr">' + val(k.value) + '</td></tr>';
+            }).join('') + '</tbody></table></div>';
+        }
+        html += '</div></section>';
+      });
+      if (!any) html += emptyHtml('📄', 'No formulas or key numbers yet.', '');
+      el.innerHTML = html;
+
+      $('#hideVals', el).addEventListener('click', function () { cramHide = !cramHide; draw(); });
+      $('#printCram', el).addEventListener('click', function () { try { window.print(); } catch (e) { } });
+      $$('.hidden-val', el).forEach(function (s) {
+        s.addEventListener('click', function () { s.classList.toggle('shown'); });
+      });
+    }
+    function val(v) {
+      if (!cramHide) return esc(v);
+      return '<span class="hidden-val" tabindex="0" role="button" aria-label="Reveal value">' + esc(v) + '</span>';
+    }
+    draw();
+  }
+
+  /* ------------------------------------------------------------ SETTINGS -- */
+
+  function viewSettings(el) {
+    var counts = {
+      lessons: Object.keys(state.lessonsDone).length,
+      cards: Object.keys(state.cards).length,
+      questions: Object.keys(state.qstats).length,
+      missed: Object.keys(state.missed).length,
+      days: Object.keys(state.days).length
+    };
+    el.innerHTML = head('Settings', 'Settings', 'Everything is stored on this computer only — nothing is sent anywhere.') +
+      '<section class="card"><h2>Appearance</h2>' +
+      '<div class="row" id="themeRow">' +
+      [['auto', '🖥 Match my system'], ['light', '☀️ Light'], ['dark', '🌙 Dark']].map(function (t) {
+        return '<button type="button" class="chip" data-theme="' + t[0] + '" aria-pressed="' + (state.settings.theme === t[0] ? 'true' : 'false') + '">' + esc(t[1]) + '</button>';
+      }).join('') + '</div></section>' +
+
+      '<section class="card"><h2>Your name</h2>' +
+      '<p class="small muted">Only used to say hello on the home page.</p>' +
+      '<div class="ans-row"><label class="sr-only" for="nameIn">Your name</label>' +
+      '<input type="text" id="nameIn" maxlength="40" value="' + escAttr(state.settings.name || '') + '" placeholder="e.g. Sam">' +
+      '<button class="btn primary" id="saveName">Save</button></div></section>' +
+
+      '<section class="card"><h2>Your progress</h2>' +
+      '<div class="grid three">' +
+      statHtml(counts.lessons, 'lessons done', '📖') +
+      statHtml(counts.cards, 'cards seen', '🃏') +
+      statHtml(counts.questions, 'questions tried', '❓') +
+      statHtml(counts.days, 'days studied', '🔥') +
+      '</div>' +
+      '<div class="row mt">' +
+      '<button class="btn primary" id="exportBtn">⬇ Export progress</button>' +
+      '<label class="btn" for="importFile">⬆ Import progress</label>' +
+      '<input type="file" id="importFile" accept="application/json,.json" class="sr-only">' +
+      '<button class="btn bad" id="resetBtn">🗑 Reset everything</button>' +
+      '</div>' +
+      '<p class="small muted mt">Export writes a <code>.json</code> backup you can keep or move to another computer.</p>' +
+      '</section>' +
+
+      '<section class="card"><h2>About</h2>' +
+      '<p class="small muted">' + UNITS.length + ' units loaded · ' + allQuestions.length + ' questions · ' +
+      allCards().length + ' flashcards. This page works with no internet connection at all.</p></section>';
+
+    $('#themeRow', el).addEventListener('click', function (ev) {
+      var b = ev.target.closest ? ev.target.closest('[data-theme]') : null;
+      if (!b) return;
+      state.settings.theme = b.getAttribute('data-theme');
+      save(); applyTheme(); render();
+    });
+    $('#saveName', el).addEventListener('click', function () {
+      state.settings.name = $('#nameIn', el).value.trim().slice(0, 40);
+      save(); toast('Saved'); renderNav();
+    });
+    $('#exportBtn', el).addEventListener('click', function () {
+      try {
+        var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'ultrasound-progress-' + todayKey() + '.json';
+        document.body.appendChild(a); a.click();
+        setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+      } catch (e) { toast('Could not export here — try a different browser'); }
+    });
+    $('#importFile', el).addEventListener('change', function (ev) {
+      var f = ev.target.files && ev.target.files[0];
+      if (!f) return;
+      var fr = new FileReader();
+      fr.onload = function () {
+        try {
+          var o = JSON.parse(String(fr.result));
+          if (!o || typeof o !== 'object') throw new Error('bad file');
+          localStorage.setItem(KEY, JSON.stringify(o));
+          state = loadState();
+          applyTheme(); render();
+          toast('Progress imported');
+        } catch (e) { toast('That file could not be read'); }
+      };
+      fr.onerror = function () { toast('That file could not be read'); };
+      fr.readAsText(f);
+    });
+    $('#resetBtn', el).addEventListener('click', function () {
+      if (!window.confirm('Delete all your progress on this computer? This cannot be undone.')) return;
+      try { localStorage.removeItem(KEY); } catch (e) { }
+      state = defaultState();
+      applyTheme(); render();
+      toast('Everything reset');
+    });
+  }
+
+  /* -------------------------------------------------------------- SEARCH -- */
+
+  var searchIndex = null;
+
+  function stripTags(html) {
+    return String(html || '').replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/gi, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  function buildSearchIndex() {
+    var ix = [];
+    UNITS.forEach(function (u) {
+      ix.push({ kind: 'Unit', title: u.title, text: u.blurb || '', href: '#/unit/' + u.id + '/learn', unit: u });
+      arr(u.lessons).forEach(function (l) {
+        var body = stripTags(l.html);
+        ix.push({ kind: 'Lesson', title: l.title, text: body, href: '#/unit/' + u.id + '/learn/' + l.id, unit: u });
+        var re = /<span class="kw(?:-2)?">([\s\S]*?)<\/span>/g, m;
+        while ((m = re.exec(String(l.html || '')))) {
+          var term = stripTags(m[1]);
+          if (term) ix.push({ kind: 'Key term', title: term, text: l.title, href: '#/unit/' + u.id + '/learn/' + l.id, unit: u });
+        }
+      });
+      arr(u.flashcards).forEach(function (c) {
+        ix.push({ kind: 'Flashcard', title: String(c.front || ''), text: String(c.back || ''), href: '#/unit/' + u.id + '/cards', unit: u });
+      });
+      arr(u.formulas).forEach(function (f) {
+        ix.push({ kind: 'Formula', title: String(f.name || ''), text: String(f.expr || '') + ' ' + String(f.note || ''), href: '#/cram', unit: u });
+      });
+      arr(u.keyNumbers).forEach(function (k) {
+        ix.push({ kind: 'Key number', title: String(k.fact || ''), text: String(k.value || ''), href: '#/cram', unit: u });
+      });
+      arr(u.mnemonics).forEach(function (m) {
+        ix.push({ kind: 'Mnemonic', title: String(m.saying || ''), text: String(m.meaning || ''), href: '#/unit/' + u.id + '/mnemonics', unit: u });
+      });
+      arr(u.objectives).forEach(function (o) {
+        ix.push({ kind: 'Objective', title: o.text, text: '', href: '#/unit/' + u.id + '/objectives', unit: u });
+      });
+    });
+    ix.forEach(function (r) { r.hay = (r.title + ' ' + r.text).toLowerCase(); });
+    return ix;
+  }
+
+  function searchAll(q) {
+    if (!searchIndex) searchIndex = buildSearchIndex();
+    var needle = String(q || '').toLowerCase().trim();
+    if (needle.length < 2) return [];
+    var words = needle.split(/\s+/);
+    var hits = [];
+    searchIndex.forEach(function (r) {
+      var score = 0;
+      for (var i = 0; i < words.length; i++) {
+        var p = r.hay.indexOf(words[i]);
+        if (p < 0) return;
+        score += (p < 2 ? 40 : 10);
+        if (r.title.toLowerCase().indexOf(words[i]) >= 0) score += 30;
+      }
+      if (r.kind === 'Key term') score += 15;
+      if (r.kind === 'Lesson') score += 10;
+      hits.push({ r: r, score: score });
+    });
+    hits.sort(function (a, b) { return b.score - a.score; });
+    var seen = {}, out = [];
+    hits.forEach(function (h) {
+      var k = h.r.kind + '|' + h.r.title + '|' + h.r.href;
+      if (seen[k]) return;
+      seen[k] = 1; out.push(h.r);
+    });
+    return out.slice(0, 60);
+  }
+
+  function highlight(text, q) {
+    var t = String(text || '');
+    var words = String(q || '').trim().split(/\s+/).filter(function (w) { return w.length > 1; });
+    if (!words.length) return esc(trunc(t, 160));
+    var lower = t.toLowerCase(), at = -1;
+    for (var i = 0; i < words.length && at < 0; i++) at = lower.indexOf(words[i].toLowerCase());
+    var start = Math.max(0, at - 50);
+    var snippet = (start > 0 ? '…' : '') + t.slice(start, start + 170) + (t.length > start + 170 ? '…' : '');
+    var out = esc(snippet);
+    words.forEach(function (w) {
+      try {
+        out = out.replace(new RegExp('(' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<mark>$1</mark>');
+      } catch (e) { }
+    });
+    return out;
+  }
+
+  function viewSearch(el, r) {
+    var q = r.slice(1).join('/');
+    var box = $('#searchBox');
+    if (box && box.value !== q) box.value = q;
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    var results = searchAll(q);
+    var html = head('Search', q ? '“' + q + '”' : 'Search',
+      q ? results.length + ' ' + plural(results.length, 'result') + ' across ' + UNITS.length + ' units' : 'Type at least two letters to search lessons, key terms, flashcards, formulas and mnemonics.');
+    if (q && !results.length) {
+      html += emptyHtml('🔍', 'Nothing matched that.', 'Try a shorter word — “atten” finds attenuation.');
+    } else {
+      html += results.map(function (x) {
+        return '<a class="hit" href="' + escAttr(x.href) + '">' +
+          '<div class="row between"><span class="h-kind">' + esc(x.kind) + '</span>' +
+          '<span class="small muted">' + esc(x.unit.icon || '📘') + ' ' + esc(trunc(x.unit.title, 24)) + '</span></div>' +
+          '<div class="h-title">' + highlight(x.title, q) + '</div>' +
+          (x.text ? '<div class="h-sub">' + highlight(x.text, q) + '</div>' : '') +
+          '</a>';
+      }).join('');
+    }
+    el.innerHTML = html;
+  }
+
+  /* -------------------------------------------------------------- RENDER -- */
+
+  var lastPath = null;
+
+  function render() {
+    var el = $('#view');
+    if (!el) return;
+    clearTimers();
+    setKeys(null);
+    var r = route();
+    var path = r.join('/');
+
+    renderNav();
+
+    try {
+      switch (r[0]) {
+        case 'unit': viewUnit(el, r); break;
+        case 'cards': viewCards(el); break;
+        case 'test': viewTest(el); break;
+        case 'missed': viewMissed(el); break;
+        case 'objectives': viewObjectives(el); break;
+        case 'board': viewBoard(el, r); break;
+        case 'group': viewGroup(el, r); break;
+        case 'cram': viewCram(el); break;
+        case 'mnemonics': viewMnemonics(el); break;
+        case 'settings': viewSettings(el); break;
+        case 'search': viewSearch(el, r); break;
+        case 'focus': viewFocus(el, r); break;
+        default: viewHome(el); break;
+      }
+    } catch (e) {
+      if (window.console && console.error) console.error('Could not render ' + path, e);
+      el.innerHTML = head('', 'Something went wrong on this page', 'The rest of the site still works.') +
+        '<p><a class="btn primary" href="#/home">Back to home</a></p>';
+    }
+
+    el.classList.toggle('wide', r[0] === 'cram' || r[0] === 'objectives' || r[0] === 'home');
+
+    if (path !== lastPath) {
+      lastPath = path;
+      try { window.scrollTo(0, 0); } catch (e) { }
+    }
+  }
+
+  /* ---------------------------------------------------------------- shell -- */
+
+  function wireShell() {
+    var tg = $('#navToggle');
+    if (tg) tg.addEventListener('click', function () {
+      setDrawer(!$('#sidebar').classList.contains('open'));
+    });
+    var sc = $('#scrim');
+    if (sc) sc.addEventListener('click', function () { setDrawer(false); });
+
+    var th = $('#themeToggle');
+    if (th) th.addEventListener('click', cycleTheme);
+
+    var sb = $('#sidebar');
+    if (sb) sb.addEventListener('click', function (ev) {
+      var a = ev.target.closest ? ev.target.closest('a.navitem') : null;
+      if (a && isNarrow()) setDrawer(false);
+    });
+
+    var lb = $('#lightbox');
+    if (lb) lb.addEventListener('click', function (ev) {
+      if (ev.target === lb || (ev.target.closest && ev.target.closest('#lightboxClose'))) closeLightbox();
+    });
+
+    var box = $('#searchBox');
+    if (box) {
+      var t = null;
+      box.addEventListener('input', function () {
+        if (t) clearTimeout(t);
+        t = setTimeout(function () {
+          var v = box.value.trim();
+          if (v.length >= 2) replaceRoute('search/' + encodeURIComponent(v));
+          else if (route()[0] === 'search') replaceRoute('search/');
+        }, 200);
+      });
+      box.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter') {
+          ev.preventDefault();
+          var v = box.value.trim();
+          if (v) { go('search/' + encodeURIComponent(v)); box.blur(); }
+        } else if (ev.key === 'Escape') { box.value = ''; box.blur(); }
+      });
+    }
+
+    window.addEventListener('hashchange', render);
+    window.addEventListener('resize', function () { if (!isNarrow()) setDrawer(false); });
+    try {
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      var onMq = function () { if (state.settings.theme === 'auto') { /* CSS handles it */ } };
+      if (mq.addEventListener) mq.addEventListener('change', onMq);
+      else if (mq.addListener) mq.addListener(onMq);
+    } catch (e) { }
+  }
+
+  /* ----------------------------------------------------------------- boot -- */
+
+  function loadUnitFiles(done) {
+    var files = Array.isArray(window.UNIT_FILES) ? window.UNIT_FILES.slice() : [];
+    if (!files.length) { done(); return; }
+    var i = 0;
+    function next() {
+      if (i >= files.length) { done(); return; }
+      var src = files[i++];
+      if (typeof src !== 'string' || !src) { next(); return; }
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = false;
+      s.onload = function () { next(); };
+      s.onerror = function () {
+        if (window.console && console.warn) console.warn('Study site: could not load "' + src + '" — skipping it.');
+        next();
+      };
+      (document.head || document.documentElement).appendChild(s);
+    }
+    next();
+  }
+
+  function boot() {
+    state = loadState();
+    applyTheme();
+    wireShell();
+
+    loadUnitFiles(function () {
+      var raw = Array.isArray(window.UNITS) ? window.UNITS.slice() : [];
+      UNITS = raw.filter(function (u) { return u && typeof u === 'object' && u.id; })
+        .sort(function (a, b) { return (+a.order || 0) - (+b.order || 0); });
+      buildIndex();
+      searchIndex = null;
+      if (UNITS.length) markToday();
+      render();
+      document.body.classList.add('ready');
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+})();
