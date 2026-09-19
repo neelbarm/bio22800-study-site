@@ -108,3 +108,16 @@ specificity = TN/(TN+FP).
   paste into the app's "My course objectives" box.
 - Confirmation of the chapter numbering in her printing of the book (units
   are named by topic, in book order, on purpose).
+
+## UI quality bar (client requirement, added later)
+
+The client said: "It will be a webpage so UI needs to be amazing." The app
+must look designed, not just work. Non-negotiables: a deliberate type scale
+and 8px spacing grid; neutral surface system with per-unit accent colors; a
+designed dark mode; 150–200ms motion with a flashcard flip and animated
+progress; Home hero with today's plan and a unit-card grid with mastery
+rings; two-column Learn layout; large answer cards in quizzes with a results
+ring; a visible whiteboard toolbar; a full-bleed Study Group presentation
+mode; empty states with a next action; touch targets ≥ 44px; contrast
+≥ 4.5:1 in both themes; no horizontal scroll at 360px. Screenshot every page
+in both themes at 1280 and 390 and look at them before calling it done.
