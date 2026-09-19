@@ -44,7 +44,7 @@ index.html app.js styles.css   the app (see status below)
 - [x] u03 pulsed-waves
 - [x] u04 attenuation-and-interaction
 - [x] u05 transducers
-- [ ] u06 sound-beams
+- [x] u06 sound-beams
 - [x] u07 resolution
 - [x] u08 arrays-and-real-time
 - [x] u09 displays-and-instrumentation

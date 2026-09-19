@@ -554,3 +554,231 @@ window.UNITS.push({
       explain: "Interference of Huygens wavelets creates the hourglass; the shape exists even in a uniform medium with a flat element. Refraction needs an interface and an oblique angle, and attenuation weakens the whole beam rather than trimming its edges.",
       objectives: ["u06-o1", "u06-o6"], lesson: "u06-l2", level: 2 }
   ],
+
+  drills: [
+    {
+      id: "u06-d1", title: "Near-zone length from diameter and frequency", formula: "NZL (mm) = D(mm)² × f(MHz) ÷ 6", lesson: "u06-l3",
+      gen: function (rnd) {
+        var ds = [4, 5, 6, 8, 10, 12, 13, 16, 19, 20];
+        var fs = [2, 2.5, 3, 4, 5, 7.5, 10];
+        var d = ds[Math.floor(rnd() * ds.length)];
+        var f = fs[Math.floor(rnd() * fs.length)];
+        var ans = d * d * f / 6;
+        var exact = d * d / (4 * (1.54 / f));
+        return {
+          kind: "number",
+          given: "An unfocused disc transducer is " + d + " mm in diameter and operates at " + f + " MHz in soft tissue.",
+          ask: "How deep is its focus (near-zone length), in mm?",
+          answer: +ans.toFixed(2), unit: "mm", tol: +Math.max(0.5, ans * 0.08).toFixed(2),
+          steps: [
+            "Shortcut: NZL = D² × f ÷ 6, with D in mm and f in MHz",
+            "NZL = " + d + "² × " + f + " ÷ 6 = " + (d * d) + " × " + f + " ÷ 6",
+            "NZL = " + ans.toFixed(1) + " mm (about " + (ans / 10).toFixed(1) + " cm)",
+            "Long way: λ = 1.54 ÷ " + f + " = " + (1.54 / f).toFixed(3) + " mm, NZL = D² ÷ (4λ) = " + exact.toFixed(1) + " mm — same answer"
+          ]
+        };
+      }
+    },
+    {
+      id: "u06-d2", title: "Near-zone length from diameter and wavelength", formula: "NZL = D² ÷ (4λ)", lesson: "u06-l3",
+      gen: function (rnd) {
+        var ds = [4, 6, 8, 10, 12, 14, 16];
+        var lams = [0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.77];
+        var d = ds[Math.floor(rnd() * ds.length)];
+        var lam = lams[Math.floor(rnd() * lams.length)];
+        var ans = d * d / (4 * lam);
+        return {
+          kind: "number",
+          given: "A transducer with a " + d + " mm diameter produces a wavelength of " + lam + " mm.",
+          ask: "What is the near-zone length, in mm?",
+          answer: +ans.toFixed(2), unit: "mm", tol: +Math.max(0.2, ans * 0.02).toFixed(2),
+          steps: [
+            "NZL = D² ÷ (4λ)",
+            "D² = " + d + " × " + d + " = " + (d * d) + " mm²; 4λ = 4 × " + lam + " = " + (4 * lam).toFixed(2) + " mm",
+            "NZL = " + (d * d) + " ÷ " + (4 * lam).toFixed(2) + " = " + ans.toFixed(1) + " mm",
+            "Watch the 4 — dividing by λ alone gives four times too much"
+          ]
+        };
+      }
+    },
+    {
+      id: "u06-d3", title: "Near-zone length in centimetres (unit trap)", formula: "convert cm → mm, then D² × f ÷ 6", lesson: "u06-l3",
+      gen: function (rnd) {
+        var ds = [0.5, 0.6, 0.8, 1.0, 1.3, 1.6, 2.0];
+        var fs = [2, 3, 3.5, 5, 7.5];
+        var dcm = ds[Math.floor(rnd() * ds.length)];
+        var f = fs[Math.floor(rnd() * fs.length)];
+        var dmm = dcm * 10;
+        var mm = dmm * dmm * f / 6;
+        var cm = mm / 10;
+        return {
+          kind: "number",
+          given: "An unfocused transducer is " + dcm + " cm in diameter and runs at " + f + " MHz.",
+          ask: "What is the near-zone length, in cm?",
+          answer: +cm.toFixed(2), unit: "cm", tol: +Math.max(0.1, cm * 0.08).toFixed(2),
+          steps: [
+            "The shortcut needs millimetres: " + dcm + " cm = " + dmm + " mm",
+            "NZL = " + dmm + "² × " + f + " ÷ 6 = " + (dmm * dmm) + " × " + f + " ÷ 6 = " + mm.toFixed(1) + " mm",
+            "Convert back: " + mm.toFixed(1) + " mm ÷ 10 = " + cm.toFixed(1) + " cm",
+            "Skipping the conversion would be wrong by a factor of 10"
+          ]
+        };
+      }
+    },
+    {
+      id: "u06-d4", title: "Beam diameter at a stated depth", formula: "D ÷ 2 at the focus; D at 2 × NZL", lesson: "u06-l4",
+      gen: function (rnd) {
+        var ds = [6, 8, 10, 12, 14, 16, 20];
+        var fs = [2, 3, 4, 5, 7.5];
+        var d = ds[Math.floor(rnd() * ds.length)];
+        var f = fs[Math.floor(rnd() * fs.length)];
+        var nzl = +(d * d * f / 6).toFixed(0);
+        var atFocus = rnd() < 0.5;
+        var depth = atFocus ? nzl : 2 * nzl;
+        return {
+          kind: "number",
+          given: "An unfocused " + d + " mm disc transducer at " + f + " MHz has a near-zone length of about " + nzl + " mm.",
+          ask: "What is the beam diameter at a depth of " + depth + " mm, in mm?",
+          answer: atFocus ? d / 2 : d, unit: "mm", tol: 0.05,
+          steps: [
+            "Depth " + depth + " mm = " + (atFocus ? "one near-zone length, which is the focus" : "two near-zone lengths"),
+            atFocus ? "At the focus the beam is half the transducer diameter" : "At two near-zone lengths the beam is back to the transducer diameter",
+            "Beam diameter = " + (atFocus ? d + " ÷ 2 = " + (d / 2) : "" + d) + " mm",
+            "Say it: half at the focus, whole at double"
+          ]
+        };
+      }
+    },
+    {
+      id: "u06-d5", title: "What happens when the diameter changes", formula: "NZL ∝ D²; divergence ∝ λ ÷ D", lesson: "u06-l5",
+      gen: function (rnd) {
+        var props = [
+          { name: "the near-zone length (focal depth)", eff: 1, why: "NZL = D² ÷ (4λ), and D is squared" },
+          { name: "the divergence in the far zone", eff: -1, why: "spread depends on wavelength ÷ aperture, so a bigger aperture spreads less" },
+          { name: "the beam diameter at the focus", eff: 1, why: "the waist is D ÷ 2, so a bigger D gives a bigger waist" },
+          { name: "the beam diameter at the transducer face", eff: 1, why: "at the face the beam is simply as wide as the element" }
+        ];
+        var bigger = rnd() < 0.5;
+        var p = props[Math.floor(rnd() * props.length)];
+        var net = p.eff * (bigger ? 1 : -1);
+        return {
+          kind: "choice",
+          given: "The transducer diameter is " + (bigger ? "increased" : "decreased") + " while the frequency stays the same.",
+          ask: "What happens to " + p.name + "?",
+          choices: ["Increases", "Decreases", "Unchanged"],
+          answer: net > 0 ? 0 : (net < 0 ? 1 : 2),
+          steps: [
+            (bigger ? "Bigger" : "Smaller") + " aperture: " + p.why,
+            "So " + p.name + " " + (net > 0 ? "increases" : "decreases"),
+            "Remember: near-zone length and divergence always move in opposite directions"
+          ]
+        };
+      }
+    },
+    {
+      id: "u06-d6", title: "What happens when the frequency changes", formula: "λ = 1.54 ÷ f; NZL ∝ f", lesson: "u06-l6",
+      gen: function (rnd) {
+        var props = [
+          { name: "the wavelength", eff: -1, why: "λ = 1.54 ÷ f, an inverse relationship" },
+          { name: "the near-zone length (focal depth)", eff: 1, why: "λ is in the denominator of D² ÷ (4λ), so a shorter wavelength lengthens the near zone" },
+          { name: "the divergence in the far zone", eff: -1, why: "shorter wavelengths keep the wavelets in step, so the beam spreads less" },
+          { name: "the beam diameter at the focus", eff: 0, why: "for an unfocused disc the waist is always D ÷ 2, whatever the frequency" },
+          { name: "the penetration (imaging depth)", eff: -1, why: "attenuation rises with frequency — a separate effect from beam geometry" }
+        ];
+        var higher = rnd() < 0.5;
+        var p = props[Math.floor(rnd() * props.length)];
+        var net = p.eff * (higher ? 1 : -1);
+        return {
+          kind: "choice",
+          given: "The operating frequency of an unfocused disc transducer is " + (higher ? "increased" : "decreased") + " while the diameter stays the same.",
+          ask: "What happens to " + p.name + "?",
+          choices: ["Increases", "Decreases", "Unchanged"],
+          answer: net > 0 ? 0 : (net < 0 ? 1 : 2),
+          steps: [
+            (higher ? "Higher" : "Lower") + " frequency: " + p.why,
+            "So " + p.name + " " + (net > 0 ? "increases" : (net < 0 ? "decreases" : "stays the same")),
+            "Beam geometry and penetration are two different stories — keep them apart"
+          ]
+        };
+      }
+    },
+    {
+      id: "u06-d7", title: "Focused versus unfocused", formula: "focus = shallower, skinnier, sassier spread", lesson: "u06-l8",
+      gen: function (rnd) {
+        var props = [
+          { name: "the focal depth (distance to the focus)", eff: -1, why: "focusing pulls the waist closer to the transducer; it can never push it deeper" },
+          { name: "the beam diameter at the focus", eff: -1, why: "the whole point of focusing is a narrower waist than D ÷ 2" },
+          { name: "the intensity at the focus", eff: 1, why: "the same energy is squeezed through a smaller area" },
+          { name: "the divergence beyond the focus", eff: 1, why: "a tighter waist always flares faster afterwards" },
+          { name: "the beam diameter far beyond the focus", eff: 1, why: "faster divergence means a wider beam deep in the image" }
+        ];
+        var p = props[Math.floor(rnd() * props.length)];
+        return {
+          kind: "choice",
+          given: "The same transducer is used focused instead of unfocused.",
+          ask: "Compared with the unfocused beam, what happens to " + p.name + "?",
+          choices: ["Increases", "Decreases", "Unchanged"],
+          answer: p.eff > 0 ? 0 : 1,
+          steps: [
+            p.why,
+            "So " + p.name + " " + (p.eff > 0 ? "increases" : "decreases"),
+            "Focusing is a trade, not free energy: shallower focus and a narrower waist, paid for deep in the far zone"
+          ]
+        };
+      }
+    }
+  ],
+
+  whiteboard: [
+    { id: "u06-w1", prompt: "Draw the beam from an unfocused disc transducer and label every region, distance and beam width you can.", minutes: 6, lesson: "u06-l1",
+      keyPoints: [
+        "Hourglass shape: converging, waist, diverging",
+        "Near zone = Fresnel zone, from the face to the focus",
+        "Focus = focal point = narrowest point of the beam",
+        "Focal length / focal depth = distance to the focus",
+        "Focal zone = region around the focus where the beam stays narrow",
+        "Far zone = Fraunhofer zone, beyond the focus, diverging",
+        "Beam diameter = D at the face",
+        "Beam diameter = D ÷ 2 at the focus",
+        "Beam diameter = D again at 2 near-zone lengths",
+        "For an unfocused disc, NZL = focal depth",
+        "Aperture = size of the active face"
+      ] },
+    { id: "u06-w2", prompt: "Write both near-zone length formulas, the units they need, and work two examples from memory.", minutes: 6, lesson: "u06-l3",
+      keyPoints: [
+        "NZL = D² ÷ (4λ)",
+        "NZL (mm) = D(mm)² × f(MHz) ÷ 6",
+        "The 6 comes from 4 × 1.54",
+        "Units: mm and MHz in, mm out; convert cm first",
+        "λ (mm) = 1.54 ÷ f (MHz)",
+        "Example: 10 mm at 5 MHz → 100 × 5 ÷ 6 ≈ 83 mm",
+        "Example: D = 8 mm, λ = 0.4 mm → 64 ÷ 1.6 = 40 mm",
+        "Double D → NZL × 4; double f → NZL × 2"
+      ] },
+    { id: "u06-w3", prompt: "Make a two-column table: what happens to NZL, divergence, beam width at the focus and penetration when you (a) increase diameter and (b) increase frequency.", minutes: 7, lesson: "u06-l5",
+      keyPoints: [
+        "Bigger diameter → longer NZL (by the square)",
+        "Bigger diameter → less far-zone divergence",
+        "Bigger diameter → wider beam at the focus (D ÷ 2 of a bigger D)",
+        "Bigger diameter → no change in penetration",
+        "Higher frequency → shorter wavelength",
+        "Higher frequency → longer NZL (directly proportional)",
+        "Higher frequency → less divergence",
+        "Higher frequency → beam width at the focus unchanged (still D ÷ 2)",
+        "Higher frequency → less penetration (attenuation, not geometry)"
+      ] },
+    { id: "u06-w4", prompt: "Explain focusing: the three methods, which are adjustable, and everything focusing changes about the beam.", minutes: 6, lesson: "u06-l8",
+      keyPoints: [
+        "External focusing = acoustic lens on the front; fixed",
+        "Internal focusing = curved element; fixed",
+        "Electronic / phased focusing = timed delays in an array; adjustable",
+        "Outer elements fire first, centre elements last",
+        "Focusing shortens the focal depth (focus moves shallower)",
+        "Beam at the focus becomes narrower than D ÷ 2 and more intense",
+        "Divergence beyond the focus increases",
+        "Focusing is possible only within the near zone",
+        "Lateral resolution = beam width, so it is best at the focus",
+        "Multiple transmit focal zones cost frame rate"
+      ] }
+  ]
+});
