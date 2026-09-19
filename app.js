@@ -105,7 +105,8 @@
       missed: {},           // questionId -> {streak, ts}
       board: {},            // promptId -> {score, total, ts}
       mnemonics: {},        // unitId -> [{saying, meaning}]
-      days: {}              // 'YYYY-MM-DD' -> true
+      days: {},             // 'YYYY-MM-DD' -> true
+      exam: null            // {date:'YYYY-MM-DD', units:[unitId], label}
     };
   }
 
@@ -147,6 +148,38 @@
       else break;
     }
     return n;
+  }
+
+  /* ----------------------------------------------------------- exam plan -- */
+
+  function examInfo() {
+    var e = state.exam;
+    if (!e || typeof e !== 'object' || !e.date) return null;
+    var parts = String(e.date).split('-');
+    if (parts.length !== 3) return null;
+    var d = new Date(+parts[0], +parts[1] - 1, +parts[2], 23, 59, 59);
+    if (isNaN(d.getTime())) return null;
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var days = Math.round((new Date(+parts[0], +parts[1] - 1, +parts[2]).getTime() - today.getTime()) / DAY);
+    var ids = arr(e.units).filter(function (id) { return !!unitById(id); });
+    return {
+      date: e.date, label: (e.label || '').trim() || 'your exam',
+      unitIds: ids, units: ids.map(unitById).filter(Boolean),
+      days: days, past: days < 0,
+      dateText: d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })
+    };
+  }
+
+  function examScopeUnits() {
+    var e = examInfo();
+    return (e && e.units.length) ? e.units : UNITS;
+  }
+
+  function daysWord(n) {
+    if (n === 0) return 'today';
+    if (n === 1) return 'tomorrow';
+    if (n < 0) return Math.abs(n) + ' ' + plural(Math.abs(n), 'day') + ' ago';
+    return 'in ' + n + ' days';
   }
 
   /* ---------------------------------------------------------------- data -- */
