@@ -40,17 +40,17 @@ index.html app.js styles.css   the app (see status below)
 
 - [x] Contract, validator, manifest, README
 - [x] u01 math-foundations
-- [ ] u02 waves-and-parameters
+- [x] u02 waves-and-parameters
 - [x] u03 pulsed-waves
-- [ ] u04 attenuation-and-interaction
+- [x] u04 attenuation-and-interaction
 - [x] u05 transducers
 - [ ] u06 sound-beams
 - [x] u07 resolution
 - [x] u08 arrays-and-real-time
 - [x] u09 displays-and-instrumentation
-- [ ] u10 harmonics-and-contrast
+- [x] u10 harmonics-and-contrast
 - [x] u11 hemodynamics
-- [ ] u12 doppler
+- [x] u12 doppler
 - [x] u13 artifacts
 - [ ] u14 bioeffects-and-safety
 - [x] u15 qa-and-statistics

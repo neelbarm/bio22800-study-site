@@ -1394,3 +1394,590 @@
 
     draw();
   }
+
+  /* ------------------------------------------------------- quiz pickers --- */
+
+  function pickQuestions(pool, opts) {
+    var list = pool.slice();
+    if (opts.level && opts.level !== 'any') list = list.filter(function (x) { return String(x.q.level) === String(opts.level); });
+    if (opts.objs && opts.objs.length) {
+      list = list.filter(function (x) {
+        return arr(x.q.objectives).some(function (o) { return opts.objs.indexOf(o) >= 0; });
+      });
+    }
+    shuffleInPlace(list);
+    if (opts.count && opts.count !== 'all') list = list.slice(0, +opts.count);
+    return list;
+  }
+
+  function countChipsHtml(current, max) {
+    var counts = [10, 20, 40].filter(function (n) { return n < max; });
+    counts.push('all');
+    return counts.map(function (n) {
+      return '<button type="button" class="chip" data-count="' + n + '" aria-pressed="' + (String(current) === String(n) ? 'true' : 'false') + '">' +
+        (n === 'all' ? 'All ' + max : n) + '</button>';
+    }).join('');
+  }
+
+  function tabQuiz(pane, u, rest) {
+    var pool = arr(u.questions).map(function (q) { return { unit: u, q: q }; });
+    if (!pool.length) { pane.innerHTML = emptyHtml('❓', 'No questions in this unit yet.', ''); return; }
+    var cfg = { count: 10, level: 'any', objs: [] };
+
+    if (rest[0] === 'obj' && rest[1]) {
+      cfg.objs = [rest[1]];
+      cfg.count = 'all';
+      start();
+      return;
+    }
+    drawConfig();
+
+    function start() {
+      var items = pickQuestions(pool, cfg);
+      runQuiz(pane, { items: items, mode: 'learning', backHref: '#/unit/' + u.id + '/quiz', onRestart: drawConfig });
+    }
+
+    function drawConfig() {
+      var objs = arr(u.objectives);
+      pane.innerHTML = '<section class="card config-card" style="' + accentStyle(u) + '">' +
+        '<h2>Quiz yourself</h2>' +
+        '<p class="small muted">Instant feedback and an explanation after every question. Misses go to your Missed Questions bank.</p>' +
+        '<div class="cfg-row"><span class="cfg-label">How many</span><div class="row" id="countRow">' + countChipsHtml(cfg.count, pool.length) + '</div></div>' +
+        '<div class="cfg-row"><span class="cfg-label">Level</span><div class="row" id="levelRow">' +
+        [['any', 'Any level'], ['1', '1 · Recall'], ['2', '2 · Apply'], ['3', '3 · Multi-step']].map(function (l) {
+          return '<button type="button" class="chip" data-level="' + l[0] + '" aria-pressed="' + (cfg.level === l[0] ? 'true' : 'false') + '">' + esc(l[1]) + '</button>';
+        }).join('') + '</div></div>' +
+        (objs.length ? '<div class="cfg-row"><span class="cfg-label">Objectives <span class="muted small">(optional)</span></span><div class="row" id="objRow">' +
+          objs.map(function (o) {
+            return '<button type="button" class="chip" data-obj="' + escAttr(o.id) + '" aria-pressed="false" title="' + escAttr(o.text) + '">' + esc(trunc(o.text, 46)) + '</button>';
+          }).join('') + '</div></div>' : '') +
+        '<div class="row mt"><button class="btn primary big" id="startQuiz">Start quiz</button>' +
+        '<span class="small muted" id="poolNote"></span></div>' +
+        '</section>';
+
+      function updateNote() {
+        var n = pickQuestions(pool, { level: cfg.level, objs: cfg.objs, count: 'all' }).length;
+        var note = $('#poolNote', pane);
+        if (note) note.textContent = n + ' matching ' + plural(n, 'question') + ' available';
+        var sb = $('#startQuiz', pane); if (sb) sb.disabled = n === 0;
+      }
+      updateNote();
+
+      pane.addEventListener('click', function (ev) {
+        var b = ev.target.closest ? ev.target.closest('button') : null;
+        if (!b) return;
+        if (b.hasAttribute('data-count')) {
+          cfg.count = b.getAttribute('data-count');
+          $$('#countRow button', pane).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        } else if (b.hasAttribute('data-level')) {
+          cfg.level = b.getAttribute('data-level');
+          $$('#levelRow button', pane).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          updateNote();
+        } else if (b.hasAttribute('data-obj')) {
+          var id = b.getAttribute('data-obj'), k = cfg.objs.indexOf(id);
+          if (k >= 0) cfg.objs.splice(k, 1); else cfg.objs.push(id);
+          b.setAttribute('aria-pressed', k >= 0 ? 'false' : 'true');
+          updateNote();
+        } else if (b.id === 'startQuiz') { start(); }
+      });
+    }
+  }
+
+  /* -------------------------------------------- focus quiz (weakest etc) -- */
+
+  function viewFocus(el, r) {
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    var what = r[1] || 'weak';
+    var items = [];
+    var title = 'Focus quiz';
+    var sub = '';
+    if (what === 'weak') {
+      var weak = weakObjectives(6).map(function (w) { return w.obj.id; });
+      items = pickQuestions(allQuestions, { objs: weak, count: 12 });
+      title = 'Your weakest objectives';
+      sub = 'Twelve questions drawn from the six objectives you are shakiest on.';
+      if (!items.length) items = pickQuestions(allQuestions, { count: 12 });
+    } else if (objIndex[what]) {
+      items = pickQuestions(allQuestions, { objs: [what], count: 'all' });
+      title = 'Objective drill';
+      sub = objIndex[what].obj.text;
+    }
+    el.innerHTML = head('Focus', title, sub) + '<div id="fq"></div>';
+    runQuiz($('#fq', el), {
+      items: items, mode: 'learning', backHref: '#/objectives',
+      onRestart: function () { render(); }
+    });
+  }
+
+  /* ---------------------------------------------------- MISSED QUESTIONS -- */
+
+  function viewMissed(el) {
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    var bank = missedList();
+    el.innerHTML = head('Missed questions', 'Missed Questions', 'Every question you got wrong lands here. It leaves after you answer it correctly twice in a row.') +
+      '<div id="missedPane"></div>';
+    var pane = $('#missedPane', el);
+
+    if (!bank.length) {
+      pane.innerHTML = '<div class="empty"><span class="big" aria-hidden="true">✨</span><b>Nothing in the bank.</b>' +
+        '<p class="small" style="margin:8px 0 14px">Take a quiz or a practice test — anything you miss shows up here.</p>' +
+        '<a class="btn primary" href="#/test">Take a practice test</a></div>';
+      return;
+    }
+
+    var byUnitCount = {};
+    bank.forEach(function (x) { byUnitCount[x.unit.id] = (byUnitCount[x.unit.id] || 0) + 1; });
+
+    pane.innerHTML = '<section class="card pad-sm"><div class="row between">' +
+      '<div class="row">' + Object.keys(byUnitCount).map(function (k) {
+        var u = unitById(k);
+        return '<span class="chip c2">' + esc(u ? u.icon + ' ' + trunc(u.title, 22) : k) + ' ' + byUnitCount[k] + '</span>';
+      }).join('') + '</div>' +
+      '<button class="btn primary" id="drillMissed">Re-drill all ' + bank.length + '</button></div>' +
+      '<p class="small muted mt">Cleared streaks: ' + bank.filter(function (x) { return (state.missed[x.q.id] || {}).streak === 1; }).length +
+      ' of these are one correct answer away from leaving.</p></section>' +
+      '<div id="missedRun"></div>';
+
+    $('#drillMissed', pane).addEventListener('click', function () {
+      var items = shuffleInPlace(bank.slice());
+      runQuiz($('#missedRun', pane), {
+        items: items, mode: 'learning', backHref: '#/missed',
+        onRestart: function () { render(); }
+      });
+      var run = $('#missedRun', pane);
+      if (run && run.scrollIntoView) run.scrollIntoView({ block: 'start' });
+    });
+  }
+
+  /* -------------------------------------------------------- PRACTICE TEST - */
+
+  var testCfg = { units: [], count: 25, timer: 0, mode: 'exam' };
+
+  function viewTest(el) {
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    if (!testCfg.units.length) testCfg.units = UNITS.map(function (u) { return u.id; });
+    el.innerHTML = head('Practice test', 'Practice Test', 'Build a test the way your exam is built: pick units, a length, and whether you want a clock.') +
+      '<div id="testPane"></div>';
+    var pane = $('#testPane', el);
+    drawCfg();
+
+    function poolFor() {
+      return allQuestions.filter(function (x) { return testCfg.units.indexOf(x.unit.id) >= 0; });
+    }
+
+    function drawCfg() {
+      var pool = poolFor();
+      pane.innerHTML = '<section class="card config-card">' +
+        '<div class="cfg-row"><span class="cfg-label">Units</span><div class="row" id="tUnits">' +
+        '<button type="button" class="chip" id="tAll">' + (testCfg.units.length === UNITS.length ? 'Clear all' : 'Select all') + '</button>' +
+        UNITS.map(function (u) {
+          return '<button type="button" class="chip" data-tu="' + escAttr(u.id) + '" aria-pressed="' + (testCfg.units.indexOf(u.id) >= 0 ? 'true' : 'false') + '">' +
+            esc(u.icon || '📘') + ' ' + esc(trunc(u.title, 24)) + '</button>';
+        }).join('') + '</div></div>' +
+        '<div class="cfg-row"><span class="cfg-label">Questions</span><div class="row" id="tCount">' +
+        [10, 25, 50, 100, 'all'].map(function (n) {
+          return '<button type="button" class="chip" data-tc="' + n + '" aria-pressed="' + (String(testCfg.count) === String(n) ? 'true' : 'false') + '">' +
+            (n === 'all' ? 'Everything' : n) + '</button>';
+        }).join('') + '</div></div>' +
+        '<div class="cfg-row"><span class="cfg-label">Timer</span><div class="row" id="tTimer">' +
+        [[0, 'No clock'], [10, '10 min'], [20, '20 min'], [45, '45 min'], [90, '90 min']].map(function (t) {
+          return '<button type="button" class="chip" data-tt="' + t[0] + '" aria-pressed="' + (testCfg.timer === t[0] ? 'true' : 'false') + '">' + esc(t[1]) + '</button>';
+        }).join('') + '</div></div>' +
+        '<div class="cfg-row"><span class="cfg-label">Mode</span><div class="row" id="tMode">' +
+        [['exam', '🔒 Exam mode — no feedback until the end'], ['learning', '💡 Learning mode — explain each one as I go']].map(function (m) {
+          return '<button type="button" class="chip" data-tm="' + m[0] + '" aria-pressed="' + (testCfg.mode === m[0] ? 'true' : 'false') + '">' + esc(m[1]) + '</button>';
+        }).join('') + '</div></div>' +
+        '<div class="row mt"><button class="btn primary big" id="startTest">Start test</button>' +
+        '<span class="small muted" id="tNote">' + pool.length + ' questions in the pool</span></div></section>';
+
+      pane.onclick = function (ev) {
+        var b = ev.target.closest ? ev.target.closest('button') : null;
+        if (!b) return;
+        if (b.id === 'tAll') {
+          testCfg.units = testCfg.units.length === UNITS.length ? [] : UNITS.map(function (u) { return u.id; });
+          drawCfg(); return;
+        }
+        if (b.hasAttribute('data-tu')) {
+          var id = b.getAttribute('data-tu'), k = testCfg.units.indexOf(id);
+          if (k >= 0) testCfg.units.splice(k, 1); else testCfg.units.push(id);
+          b.setAttribute('aria-pressed', k >= 0 ? 'false' : 'true');
+          var note = $('#tNote', pane); if (note) note.textContent = poolFor().length + ' questions in the pool';
+        } else if (b.hasAttribute('data-tc')) {
+          testCfg.count = b.getAttribute('data-tc');
+          $$('#tCount button', pane).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        } else if (b.hasAttribute('data-tt')) {
+          testCfg.timer = +b.getAttribute('data-tt');
+          $$('#tTimer button', pane).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        } else if (b.hasAttribute('data-tm')) {
+          testCfg.mode = b.getAttribute('data-tm');
+          $$('#tMode button', pane).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        } else if (b.id === 'startTest') {
+          var items = pickQuestions(poolFor(), { count: testCfg.count });
+          if (!items.length) { toast('Pick at least one unit'); return; }
+          pane.onclick = null;
+          runQuiz(pane, {
+            items: items, mode: testCfg.mode, timerMin: testCfg.timer,
+            backHref: '#/test', onRestart: function () { render(); }
+          });
+        }
+      };
+    }
+  }
+
+  /* -------------------------------------------------------------- DRILLS -- */
+
+  function tabDrills(pane, u, rest) {
+    var drills = arr(u.drills);
+    if (!drills.length) {
+      pane.innerHTML = emptyHtml('🧮', 'No number drills in this unit.', 'This unit is more about ideas than arithmetic — try the quiz instead.') +
+        '<p class="center mt"><a class="btn primary" href="#/unit/' + esc(u.id) + '/quiz">Quiz me instead</a></p>';
+      return;
+    }
+    var chosen = rest[0] ? drills.filter(function (d) { return d.id === rest[0]; })[0] : null;
+    if (chosen) { runDrill(pane, u, chosen); return; }
+
+    pane.innerHTML = '<p class="small muted">Fresh numbers every time. Answers are checked against the drill\'s own tolerance, so sensible rounding passes.</p>' +
+      '<div class="grid two">' + drills.map(function (d) {
+        return '<a class="tile drill-tile" href="#/unit/' + esc(u.id) + '/drills/' + esc(d.id) + '" style="' + accentStyle(u) + '">' +
+          '<span class="t-icon" aria-hidden="true">🧮</span>' +
+          '<div class="t-title">' + esc(d.title) + '</div>' +
+          '<div class="formula-chip">' + esc(d.formula || '') + '</div>' +
+          (d.lesson && lessonIndex[d.lesson] ? '<div class="t-sub">📖 ' + esc(lessonIndex[d.lesson].lesson.title) + '</div>' : '') +
+          '</a>';
+      }).join('') + '</div>';
+  }
+
+  function runDrill(pane, u, d) {
+    var S = { n: 0, streak: 0, best: 0, correct: 0, asked: 0, p: null, answered: false, was: false, steps: false, given: '' };
+
+    function nextProblem() {
+      S.n++;
+      var seed = (Date.now() ^ Math.imul(S.n, 2654435761)) >>> 0;
+      var rnd = mulberry32(seed);
+      try {
+        S.p = d.gen(rnd);
+      } catch (e) {
+        S.p = null;
+        if (window.console && console.warn) console.warn('drill ' + d.id + ' failed to generate a problem:', e);
+      }
+      S.answered = false; S.was = false; S.steps = false; S.given = '';
+      draw();
+    }
+
+    function check(val) {
+      var p = S.p; if (!p || S.answered) return;
+      S.given = val;
+      S.was = (p.kind === 'choice') ? (+val === p.answer) : numIsCorrect(val, p.answer, p.tol);
+      S.answered = true; S.asked++;
+      if (S.was) { S.correct++; S.streak++; S.best = Math.max(S.best, S.streak); }
+      else S.streak = 0;
+      markToday(); save();
+      draw();
+    }
+
+    function draw() {
+      var p = S.p;
+      var html = '<div class="row between mb">' +
+        '<a class="btn sm ghost" href="#/unit/' + esc(u.id) + '/drills">← All drills</a>' +
+        '<span class="row" style="gap:6px">' +
+        '<span class="chip c2">🔥 streak ' + S.streak + '</span>' +
+        '<span class="chip">best ' + S.best + '</span>' +
+        '<span class="chip c1">' + S.correct + '/' + S.asked + '</span></span></div>';
+
+      if (!p) {
+        html += emptyHtml('⚠️', 'This drill could not build a problem.', 'Skip it for now — the rest of the site still works.');
+        pane.innerHTML = html;
+        return;
+      }
+
+      html += '<section class="card drill-card" style="' + accentStyle(u) + '">' +
+        '<div class="row between"><h2 style="margin:0">' + esc(d.title) + '</h2>' +
+        (d.formula ? '<span class="formula-chip">' + esc(d.formula) + '</span>' : '') + '</div>' +
+        '<div class="drill-given"><p class="g">' + esc(p.given) + '</p><p class="a">' + esc(p.ask) + '</p></div>';
+
+      if (p.kind === 'choice') {
+        html += '<div class="choices">' + arr(p.choices).map(function (c, i) {
+          var cls = 'choice';
+          if (S.answered) {
+            if (i === p.answer) cls += ' right';
+            else if (String(i) === String(S.given)) cls += ' wrong';
+            else cls += ' dim';
+          }
+          return '<button type="button" class="' + cls + '" data-dpick="' + i + '"' + (S.answered ? ' disabled' : '') + '>' +
+            '<span class="k">' + LETTERS[i] + '</span><span class="c-text">' + esc(c) + '</span></button>';
+        }).join('') + '</div>';
+      } else {
+        html += '<div class="ans-row"><label class="sr-only" for="drillIn">Your answer</label>' +
+          '<input type="text" inputmode="decimal" id="drillIn" autocomplete="off" placeholder="0.00"' +
+          (S.answered ? ' disabled' : '') + ' value="' + escAttr(S.answered ? S.given : '') + '">' +
+          (p.unit ? '<span class="unit">' + esc(p.unit) + '</span>' : '') +
+          (S.answered ? '' : '<button class="btn primary" id="drillCheck">Check</button>') + '</div>' +
+          (typeof p.tol === 'number' && p.tol > 0 ? '<p class="small muted" style="margin-top:6px">Within ±' + esc(String(p.tol)) + (p.unit ? ' ' + esc(p.unit) : '') + ' counts as right.</p>' : '');
+      }
+
+      if (S.answered) {
+        html += '<div class="verdict ' + (S.was ? 'right' : 'wrong') + '">' +
+          '<p class="v-head">' + (S.was ? '✓ Correct' : '✗ Not quite') + '</p>' +
+          '<p class="v-answer">Answer: <b>' + esc(p.kind === 'choice' ? String(arr(p.choices)[p.answer]) : String(p.answer) + (p.unit ? ' ' + p.unit : '')) + '</b></p></div>';
+        html += '<div class="row">' +
+          '<button class="btn" id="showSteps">' + (S.steps ? 'Hide steps' : 'Show steps') + '</button>' +
+          '<button class="btn primary" id="nextProb">Next problem →</button></div>';
+        if (S.steps) html += '<ol class="steps">' + arr(p.steps).map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>';
+      }
+
+      html += '</section>';
+      pane.innerHTML = html;
+
+      $$('[data-dpick]', pane).forEach(function (b) {
+        b.addEventListener('click', function () { check(b.getAttribute('data-dpick')); });
+      });
+      var dc = $('#drillCheck', pane);
+      if (dc) dc.addEventListener('click', function () {
+        var v = $('#drillIn', pane).value;
+        if (!String(v).trim()) { toast('Type a number first'); return; }
+        check(v);
+      });
+      var di = $('#drillIn', pane);
+      if (di) {
+        di.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); if (dc) dc.click(); } });
+        di.focus();
+      }
+      var ss = $('#showSteps', pane); if (ss) ss.addEventListener('click', function () { S.steps = !S.steps; draw(); });
+      var np = $('#nextProb', pane); if (np) np.addEventListener('click', nextProblem);
+    }
+
+    setKeys(function (ev) {
+      if (ev.key === 'ArrowRight' && S.answered) { ev.preventDefault(); nextProblem(); }
+    });
+
+    nextProblem();
+  }
+
+  /* ---------------------------------------------------------- WHITEBOARD -- */
+
+  function boardPrompts(u) {
+    var out = [];
+    arr(u.whiteboard).forEach(function (w) {
+      if (!w || !w.id) return;
+      out.push({ id: w.id, unit: u, prompt: w.prompt, keyPoints: arr(w.keyPoints), minutes: typeof w.minutes === 'number' ? w.minutes : 6, kind: 'Brain dump', lesson: w.lesson });
+    });
+    arr(u.lessons).forEach(function (l) {
+      if (!l || !l.sayIt) return;
+      out.push({ id: l.id + '::say', unit: u, prompt: l.sayIt, keyPoints: arr(l.keyPoints), minutes: 3, kind: 'Say it out loud', lesson: l.id });
+    });
+    return out;
+  }
+
+  function promptCardHtml(p) {
+    var sc = state.board[p.id];
+    return '<a class="tile board-tile" href="#/unit/' + esc(p.unit.id) + '/board/' + esc(p.id) + '" style="' + accentStyle(p.unit) + '">' +
+      '<div class="row between"><span class="chip ' + (p.kind === 'Brain dump' ? 'c2' : 'c4') + '">' + esc(p.kind) + '</span>' +
+      '<span class="chip">⏱ ' + esc(String(p.minutes)) + ' min</span></div>' +
+      '<div class="t-title" style="margin-top:10px">' + esc(p.prompt) + '</div>' +
+      '<div class="t-sub">' + esc(p.unit.title) + ' · ' + p.keyPoints.length + ' key points' +
+      (sc ? ' · last score ' + sc.score + '/' + sc.total : '') + '</div></a>';
+  }
+
+  function tabBoard(pane, u, rest) {
+    var prompts = boardPrompts(u);
+    if (!prompts.length) { pane.innerHTML = emptyHtml('🖍️', 'No whiteboard prompts in this unit yet.', ''); return; }
+    var chosen = rest[0] ? prompts.filter(function (p) { return p.id === rest[0]; })[0] : null;
+    if (chosen) { runBoard(pane, chosen, '#/unit/' + u.id + '/board'); return; }
+    pane.innerHTML = '<p class="small muted">Set the timer, say it out loud, then write and draw everything you remember. Reveal the key points last and grade yourself.</p>' +
+      '<div class="grid two">' + prompts.map(promptCardHtml).join('') + '</div>';
+  }
+
+  function viewBoard(el, r) {
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    var all = [];
+    UNITS.forEach(function (u) { all = all.concat(boardPrompts(u)); });
+    if (r[1]) {
+      var p = all.filter(function (x) { return x.id === r[1]; })[0];
+      if (p) {
+        el.innerHTML = head('Whiteboard', 'Brain dump', p.unit.title) + '<div id="bd"></div>';
+        runBoard($('#bd', el), p, '#/board');
+        return;
+      }
+    }
+    el.innerHTML = head('Whiteboard', 'Whiteboard', 'Pick a prompt, start the clock, and empty your head onto the board.') +
+      (all.length ? '<div class="grid two">' + all.map(promptCardHtml).join('') + '</div>'
+        : emptyHtml('🖍️', 'No prompts yet.', 'Whiteboard prompts live in the unit data files.'));
+  }
+
+  function runBoard(pane, p, backHref) {
+    var S = { left: p.minutes * 60, running: false, revealed: false, ticks: [] };
+
+    pane.innerHTML =
+      '<div class="row between mb"><a class="btn sm ghost" href="' + escAttr(backHref) + '">← All prompts</a>' +
+      '<span class="chip">' + esc(p.unit.icon || '📘') + ' ' + esc(trunc(p.unit.title, 24)) + '</span></div>' +
+      '<section class="card board-head" style="' + accentStyle(p.unit) + '">' +
+      '<p class="eyebrow">' + esc(p.kind) + '</p>' +
+      '<p class="board-prompt">' + esc(p.prompt) + '</p>' +
+      '<div class="row between board-timer-row">' +
+      '<div class="wb-timer nums" id="wbTimer">' + mmss(S.left) + '</div>' +
+      '<div class="row"><button class="btn primary" id="wbStart">▶ Start</button>' +
+      '<button class="btn" id="wbReset">↺ Reset</button></div></div>' +
+      '</section>' +
+      '<div class="board-grid">' +
+      '<section class="card"><h3>Write it</h3>' +
+      '<label class="sr-only" for="wbText">Everything you remember</label>' +
+      '<textarea id="wbText" class="wb-text" rows="9" placeholder="Dump everything you remember…"></textarea></section>' +
+      '<section class="card"><h3>Draw it</h3>' +
+      '<div class="wb-tools" id="wbTools">' +
+      '<span class="tool-group" role="group" aria-label="Pen colour">' +
+      ['--c1', '--c2', '--c3', '--c4', '--ink'].map(function (v, i) {
+        return '<button type="button" class="swatch" data-color="' + v + '" style="background:var(' + v + ')" aria-label="Pen colour ' + (i + 1) + '" aria-pressed="' + (i === 4 ? 'true' : 'false') + '"></button>';
+      }).join('') + '</span>' +
+      '<span class="tool-group" role="group" aria-label="Pen size">' +
+      [2, 4, 8].map(function (w, i) {
+        return '<button type="button" class="sizebtn" data-size="' + w + '" aria-label="Pen size ' + (i + 1) + '" aria-pressed="' + (i === 1 ? 'true' : 'false') + '"><span style="width:' + (w + 4) + 'px;height:' + (w + 4) + 'px"></span></button>';
+      }).join('') + '</span>' +
+      '<button type="button" class="btn sm" id="wbEraser" aria-pressed="false">🧽 Eraser</button>' +
+      '<button type="button" class="btn sm" id="wbClear">Clear</button>' +
+      '</div>' +
+      '<div class="canvas-wrap"><canvas id="wbCanvas" aria-label="Drawing area"></canvas></div>' +
+      '</section></div>' +
+      '<div class="row center mt" style="justify-content:center">' +
+      '<button class="btn primary big" id="wbDone">✅ Done — show me the key points</button></div>' +
+      '<div id="wbReveal" class="mt"></div>';
+
+    /* timer */
+    var tEl = $('#wbTimer', pane);
+    function tick() {
+      if (!S.running) return;
+      S.left--;
+      tEl.textContent = mmss(S.left);
+      tEl.classList.toggle('low', S.left <= 30);
+      if (S.left <= 0) { S.running = false; $('#wbStart', pane).textContent = '▶ Start'; toast('Time! Now check yourself.'); }
+    }
+    addTimer(setInterval(tick, 1000));
+    $('#wbStart', pane).addEventListener('click', function () {
+      S.running = !S.running;
+      this.textContent = S.running ? '⏸ Pause' : '▶ Start';
+    });
+    $('#wbReset', pane).addEventListener('click', function () {
+      S.left = p.minutes * 60; S.running = false;
+      tEl.textContent = mmss(S.left); tEl.classList.remove('low');
+      $('#wbStart', pane).textContent = '▶ Start';
+    });
+
+    setupCanvas(pane);
+
+    $('#wbDone', pane).addEventListener('click', function () {
+      S.running = false;
+      $('#wbStart', pane).textContent = '▶ Start';
+      var box = $('#wbReveal', pane);
+      box.innerHTML = '<section class="card"><h2>How did you do?</h2>' +
+        '<p class="small muted">Tick every point you actually wrote or said. Be strict — this is the score that tells you what to restudy.</p>' +
+        tickListHtml(p.keyPoints, 'wb-' + p.id) +
+        '<div class="row mt"><button class="btn primary" id="wbSave">Save my score</button>' +
+        '<span class="small muted" id="wbCount">0 / ' + p.keyPoints.length + '</span></div></section>';
+      box.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+        cb.addEventListener('change', updateCount);
+      });
+      function updateCount() {
+        var n = box.querySelectorAll('input[type=checkbox]:checked').length;
+        $('#wbCount', box).textContent = n + ' / ' + p.keyPoints.length;
+      }
+      $('#wbSave', box).addEventListener('click', function () {
+        var n = box.querySelectorAll('input[type=checkbox]:checked').length;
+        state.board[p.id] = { score: n, total: p.keyPoints.length, ts: Date.now() };
+        markToday(); save();
+        toast('Saved: ' + n + ' / ' + p.keyPoints.length);
+      });
+      if (box.scrollIntoView) box.scrollIntoView({ block: 'start' });
+    });
+  }
+
+  function setupCanvas(pane) {
+    var canvas = $('#wbCanvas', pane);
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var pen = { color: '--ink', size: 4, erasing: false };
+    var drawing = false, last = null;
+
+    function cssVal(name) {
+      try { return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#333'; }
+      catch (e) { return '#333'; }
+    }
+    function sizeCanvas() {
+      var dpr = window.devicePixelRatio || 1;
+      var w = canvas.clientWidth || 600, h = canvas.clientHeight || 340;
+      var old = null;
+      try { if (canvas.width && canvas.height) old = ctx.getImageData(0, 0, canvas.width, canvas.height); } catch (e) { }
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      if (old) { try { ctx.putImageData(old, 0, 0); } catch (e) { } }
+    }
+    sizeCanvas();
+    var ro = null;
+    try {
+      if (window.ResizeObserver) { ro = new ResizeObserver(function () { sizeCanvas(); }); ro.observe(canvas); }
+    } catch (e) { }
+
+    function pos(ev) {
+      var r = canvas.getBoundingClientRect();
+      return { x: ev.clientX - r.left, y: ev.clientY - r.top };
+    }
+    function start(ev) {
+      drawing = true; last = pos(ev);
+      try { canvas.setPointerCapture(ev.pointerId); } catch (e) { }
+      stroke(last, last);
+      ev.preventDefault();
+    }
+    function move(ev) {
+      if (!drawing) return;
+      var p = pos(ev); stroke(last, p); last = p;
+      ev.preventDefault();
+    }
+    function end(ev) { drawing = false; last = null; }
+    function stroke(a, b) {
+      ctx.save();
+      ctx.globalCompositeOperation = pen.erasing ? 'destination-out' : 'source-over';
+      ctx.strokeStyle = pen.erasing ? 'rgba(0,0,0,1)' : cssVal(pen.color);
+      ctx.lineWidth = pen.erasing ? pen.size * 4 : pen.size;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.restore();
+    }
+
+    if (window.PointerEvent) {
+      canvas.addEventListener('pointerdown', start);
+      canvas.addEventListener('pointermove', move);
+      canvas.addEventListener('pointerup', end);
+      canvas.addEventListener('pointercancel', end);
+      canvas.addEventListener('pointerleave', end);
+    } else {
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', end);
+      canvas.addEventListener('touchstart', function (e) { if (e.touches[0]) start(e.touches[0]); });
+      canvas.addEventListener('touchmove', function (e) { if (e.touches[0]) { move(e.touches[0]); e.preventDefault(); } });
+      canvas.addEventListener('touchend', end);
+    }
+
+    $$('.swatch', pane).forEach(function (b) {
+      b.addEventListener('click', function () {
+        pen.color = b.getAttribute('data-color'); pen.erasing = false;
+        $$('.swatch', pane).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        $('#wbEraser', pane).setAttribute('aria-pressed', 'false');
+      });
+    });
+    $$('.sizebtn', pane).forEach(function (b) {
+      b.addEventListener('click', function () {
+        pen.size = +b.getAttribute('data-size');
+        $$('.sizebtn', pane).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      });
+    });
+    var er = $('#wbEraser', pane);
+    if (er) er.addEventListener('click', function () {
+      pen.erasing = !pen.erasing;
+      er.setAttribute('aria-pressed', pen.erasing ? 'true' : 'false');
+      if (pen.erasing) $$('.swatch', pane).forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+    });
+    var cl = $('#wbClear', pane);
+    if (cl) cl.addEventListener('click', function () {
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.restore();
+    });
+  }

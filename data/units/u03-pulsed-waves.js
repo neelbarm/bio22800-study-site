@@ -603,7 +603,7 @@ window.UNITS.push({
             "period (µs) = 1 ÷ f (MHz) = 1 ÷ " + f + " = " + period.toFixed(3) + " µs",
             "PD = # cycles × period = " + cycles + " × " + period.toFixed(3),
             "PD = " + pd.toFixed(3) + " µs",
-            "Sanity check: typical pulse durations are 0.5–3 µs, and only the source can change this."
+            "Sanity check: pulse durations are typically 0.5–3 µs (high-frequency probes sit at the short end), and only the source can change this."
           ]
         };
       }
@@ -611,8 +611,8 @@ window.UNITS.push({
     {
       id: "u03-d2", title: "Spatial pulse length from cycles and wavelength", formula: "SPL = # cycles × wavelength; λ (mm) = 1.54 ÷ f (MHz)", lesson: "u03-l3",
       gen: function (rnd) {
-        var cycles = [2, 3, 4, 5][Math.floor(rnd() * 4)];
-        var f = [2, 2.5, 3.5, 5, 7, 10][Math.floor(rnd() * 6)];
+        var cycles = [2, 3, 4][Math.floor(rnd() * 3)];
+        var f = [3, 3.5, 5, 6, 7.5, 10][Math.floor(rnd() * 6)];
         var lambda = 1.54 / f;
         var spl = cycles * lambda;
         return {
@@ -667,8 +667,8 @@ window.UNITS.push({
     {
       id: "u03-d4", title: "Duty factor from PD and PRP", formula: "DF (%) = PD ÷ PRP × 100", lesson: "u03-l6",
       gen: function (rnd) {
-        var pd = [0.5, 1, 1.5, 2, 2.5, 3][Math.floor(rnd() * 6)];
-        var prp = [100, 130, 200, 250, 400, 500][Math.floor(rnd() * 6)];
+        var pd = [0.5, 1, 1.5, 2][Math.floor(rnd() * 4)];
+        var prp = [200, 250, 400, 500, 650, 1000][Math.floor(rnd() * 6)];
         var df = pd / prp * 100;
         return {
           kind: "number",
@@ -679,7 +679,7 @@ window.UNITS.push({
             "Both are times in the same units, so they divide cleanly.",
             "DF = PD ÷ PRP × 100 = " + pd + " ÷ " + prp + " × 100",
             "DF = " + df.toFixed(3) + " %",
-            "Imaging duty factors live between 0.1 % and 1 %; CW is 100 %."
+            "Imaging duty factors usually live between 0.1 % and 1 %; CW is 100 %."
           ]
         };
       }

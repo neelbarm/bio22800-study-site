@@ -655,7 +655,19 @@ window.UNITS.push({
         var digits = [1.5, 2, 2.5, 3.5, 4, 5, 6, 7.5, 8, 9][Math.floor(rnd() * 10)];
         var exp = [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6][Math.floor(rnd() * 10)];
         var val = digits * Math.pow(10, exp);
-        var shown = exp < 0 ? val.toFixed(-exp + 1) : String(Math.round(val));
+        var shown;
+        if (exp < 0) {
+          shown = val.toFixed(-exp + 1);
+        } else {
+          shown = String(Math.round(val));
+          var out = "", n = 0;
+          for (var k = shown.length - 1; k >= 0; k--) {
+            out = shown.charAt(k) + out;
+            n++;
+            if (n % 3 === 0 && k > 0) { out = "," + out; }
+          }
+          shown = out;
+        }
         return {
           kind: "number",
           given: "the number " + shown,
