@@ -59,6 +59,7 @@ Unit order follows the book. Chapter numbers are **not** put in unit titles;
 | u13 | artifacts                | Artifacts                          | assumptions the machine makes, reverberation, comet tail, ring-down, shadowing, edge shadowing, enhancement, mirror image, refraction/lateral displacement, side/grating lobes, speed error/propagation speed error, range ambiguity, multipath, slice thickness, Doppler artifacts (aliasing, mirror/crosstalk, clutter), how to recognize and fix each |
 | u14 | bioeffects-and-safety    | Bioeffects, Intensities & Safety   | intensity types (SPTP, SPTA, SATA, etc.), pulse average vs temporal average, duty factor link, thermal mechanisms and thermal index (TIS/TIB/TIC), mechanical effects, cavitation (stable/transient), mechanical index, output display standard, ALARA, in vitro/in vivo, epidemiology, AIUM statements, hydrophone and measurement basics |
 | u15 | qa-and-statistics        | Quality Assurance & Statistics     | preventive maintenance, phantoms (tissue-equivalent, Doppler, slice thickness), QA tests (axial/lateral resolution, dead zone, registration, sensitivity, uniformity, depth calibration), what a test phantom checks, AIUM 100 mm phantom, sensitivity, specificity, accuracy, positive/negative predictive value, calibration basics |
+| u16 | putting-it-together      | Putting It Together: The Master Relationships | cross-unit synthesis: the frequency trade-off chain (frequency → wavelength, period, attenuation, penetration, axial & lateral resolution, near-zone length, Doppler shift, MI), the depth chain (depth → PRP, PRF, duty factor, frame rate, Nyquist, aliasing), the "who controls what" master table (source / medium / sonographer), the master units-and-typical-values table, all formulas on one page with a worked example each, the "if X goes up, what happens to everything else" reasoning method, exam-day strategy for objective-based tests; questions are multi-step and cross-unit |
 
 ## 3. Unit file schema
 
@@ -202,6 +203,7 @@ Allowed classes:
 - `<div class="callout warn">…</div>` a common mistake / exam trap.
 - `<div class="formula">λ = c ÷ f</div>` a formula on its own line.
 - `<table class="dt">` a compact data table.
+- `<div class="steps">` a worked example: an `<ol>` of steps from given values to the answer. Every formula in a unit gets at least one worked example in a lesson.
 
 Write for a smart adult who has never seen the material and learns visually:
 concrete mental pictures ("imagine…"), everyday analogies, then the precise

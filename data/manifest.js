@@ -14,5 +14,6 @@ window.UNIT_FILES = [
   "data/units/u12-doppler.js",
   "data/units/u13-artifacts.js",
   "data/units/u14-bioeffects-and-safety.js",
-  "data/units/u15-qa-and-statistics.js"
+  "data/units/u15-qa-and-statistics.js",
+  "data/units/u16-putting-it-together.js"
 ];

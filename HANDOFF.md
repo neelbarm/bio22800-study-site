@@ -52,9 +52,11 @@ index.html app.js styles.css   the app (see status below)
 - [x] u11 hemodynamics
 - [x] u12 doppler
 - [x] u13 artifacts
-- [ ] u14 bioeffects-and-safety
+- [x] u14 bioeffects-and-safety
 - [x] u15 qa-and-statistics
-- [ ] App shell: index.html + app.js + styles.css implementing SPEC §8
+- [ ] u16 putting-it-together (cross-unit synthesis; added to manifest)
+- [ ] App shell: index.html + app.js + styles.css implementing SPEC §8, plus the Exam Planner (next exam date + units drive Home's daily plan)
+- [ ] Content audit pass on every unit (see 'Quality layer' below)
 - [ ] `node tools/validate.js` prints OK for all 15 units
 - [ ] `NODE_PATH=/opt/node22/lib/node_modules node tools/qa.js` runs with
       0 console errors at 1280 px and at `W=390`
@@ -121,3 +123,23 @@ ring; a visible whiteboard toolbar; a full-bleed Study Group presentation
 mode; empty states with a next action; touch targets ≥ 44px; contrast
 ≥ 4.5:1 in both themes; no horizontal scroll at 360px. Screenshot every page
 in both themes at 1280 and 390 and look at them before calling it done.
+
+## Quality layer (client: "truly make sure this helps her learn everything for this course")
+
+After all units validate, run an independent audit of every unit (delegated
+4 units per auditor). Each auditor must, for its units:
+1. Check every question's answer key and every explanation for physics
+   correctness; fix errors in place.
+2. Remove ambiguity: no mc question may have two defensible answers; short
+   answers must accept every reasonable spelling/abbreviation.
+3. Make sure every formula in `formulas[]` has a worked example in a lesson
+   (`<div class="steps"><ol>…</ol></div>`) and a drill; add them if missing.
+4. Make sure every objective can be fully answered from its lessons alone
+   (no question relies on facts the lessons never state); patch lessons.
+5. Render every SVG diagram to PNG (Playwright, `NODE_PATH=/opt/node22/lib/node_modules`)
+   and look at a contact sheet; fix overlapping labels, unreadable text, or
+   diagrams that do not show the idea.
+6. Re-run `node tools/validate.js` → OK, and commit.
+u16 "Putting It Together" is the synthesis unit: master relationship chains,
+who-controls-what table, all formulas with worked examples, cross-unit
+multi-step questions and mixed drills.
