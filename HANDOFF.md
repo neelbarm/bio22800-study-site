@@ -43,15 +43,15 @@ index.html app.js styles.css   the app (see status below)
 - [ ] u02 waves-and-parameters
 - [x] u03 pulsed-waves
 - [ ] u04 attenuation-and-interaction
-- [ ] u05 transducers
+- [x] u05 transducers
 - [ ] u06 sound-beams
 - [x] u07 resolution
 - [ ] u08 arrays-and-real-time
-- [ ] u09 displays-and-instrumentation
+- [x] u09 displays-and-instrumentation
 - [ ] u10 harmonics-and-contrast
 - [x] u11 hemodynamics
 - [ ] u12 doppler
-- [ ] u13 artifacts
+- [x] u13 artifacts
 - [ ] u14 bioeffects-and-safety
 - [x] u15 qa-and-statistics
 - [ ] App shell: index.html + app.js + styles.css implementing SPEC §8
