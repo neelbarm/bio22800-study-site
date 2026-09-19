@@ -46,7 +46,7 @@ index.html app.js styles.css   the app (see status below)
 - [x] u05 transducers
 - [ ] u06 sound-beams
 - [x] u07 resolution
-- [ ] u08 arrays-and-real-time
+- [x] u08 arrays-and-real-time
 - [x] u09 displays-and-instrumentation
 - [ ] u10 harmonics-and-contrast
 - [x] u11 hemodynamics
