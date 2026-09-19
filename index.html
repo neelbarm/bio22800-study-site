@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ultrasound Physics — Study Site</title>
+<meta name="description" content="Offline study site for ultrasound physics: lessons, flashcards, quizzes, drills, whiteboard practice and a cram sheet.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>%F0%9F%94%8A</text></svg>">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <button class="iconbtn hamburger" id="navToggle" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">
+    <span class="bars" aria-hidden="true"></span>
+  </button>
+  <a class="brand" href="#/home">
+    <span class="brand-mark" aria-hidden="true">🔊</span>
+    <span class="brand-text"><b>Ultrasound Physics</b><small>study site</small></span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <button class="iconbtn" id="themeToggle" aria-label="Switch colour theme" title="Switch colour theme">🌗</button>
+</header>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<nav class="sidebar" id="sidebar" aria-label="Main navigation">
+  <div class="search-wrap">
+    <label class="sr-only" for="searchBox">Search lessons, terms, flashcards and formulas</label>
+    <input id="searchBox" class="search" type="search" placeholder="Search everything…" autocomplete="off" spellcheck="false">
+  </div>
+  <div id="navList" class="navlist"></div>
+</nav>
+
+<main id="main" class="main" tabindex="-1">
+  <div id="view" class="view"></div>
+</main>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Enlarged diagram">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close diagram">✕</button>
+  <div class="lightbox-inner"><div id="lightboxArt" class="lightbox-art"></div><p id="lightboxCap" class="lightbox-cap"></p></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="data/manifest.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
