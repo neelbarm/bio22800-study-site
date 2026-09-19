@@ -16,4 +16,9 @@ Release branch: `claude/ecstatic-hawking-3hc6l5`
 
 ### Deployment
 
-Deployment commit and production URL will be recorded after the production deployment is verified.
+- Deployed code commit: `dafe84e`
+- Production URL: <https://ultrasound-physics-study.vercel.app>
+- Immutable deployment: <https://ultrasound-physics-study-2w77qf81h-neelbarmecha5-8782s-projects.vercel.app>
+- Vercel deployment: `dpl_8JVkTavARyX2buvLaTmJ5rV6fCWe` (`READY`, production)
+
+Live verification returned HTTP 200, loaded exactly 16 units, saved and reloaded an exam plan with two selected units, rendered the mobile Home page without horizontal overflow, and produced no browser console or page errors.

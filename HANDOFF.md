@@ -79,3 +79,8 @@ diagram QA completed 298 theme renders with zero text bounds failures, and
 desktop/mobile browser regression passed all 18 routes in both themes.
 Deployment details are recorded in `docs/release.md`. Do not merge the PR or
 mark it ready without a separate request.
+
+Production is live at <https://ultrasound-physics-study.vercel.app> from code
+commit `dafe84e`. The production smoke test returned HTTP 200, loaded all 16
+units, persisted and reloaded the exam planner, passed the mobile Home layout
+check, and reported no browser console or page errors.
