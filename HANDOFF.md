@@ -39,21 +39,21 @@ index.html app.js styles.css   the app (see status below)
 ## Status checklist — update this file as you go
 
 - [x] Contract, validator, manifest, README
-- [ ] u01 math-foundations
+- [x] u01 math-foundations
 - [ ] u02 waves-and-parameters
-- [ ] u03 pulsed-waves
+- [x] u03 pulsed-waves
 - [ ] u04 attenuation-and-interaction
 - [ ] u05 transducers
 - [ ] u06 sound-beams
-- [ ] u07 resolution
+- [x] u07 resolution
 - [ ] u08 arrays-and-real-time
 - [ ] u09 displays-and-instrumentation
 - [ ] u10 harmonics-and-contrast
-- [ ] u11 hemodynamics
+- [x] u11 hemodynamics
 - [ ] u12 doppler
 - [ ] u13 artifacts
 - [ ] u14 bioeffects-and-safety
-- [ ] u15 qa-and-statistics
+- [x] u15 qa-and-statistics
 - [ ] App shell: index.html + app.js + styles.css implementing SPEC §8
 - [ ] `node tools/validate.js` prints OK for all 15 units
 - [ ] `NODE_PATH=/opt/node22/lib/node_modules node tools/qa.js` runs with
