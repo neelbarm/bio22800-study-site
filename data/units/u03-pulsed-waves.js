@@ -78,7 +78,7 @@ window.UNITS.push({
       diagrams: [
         { svg: `<svg viewBox="0 0 600 260" role="img"><title>A three-cycle pulse on a time axis with brackets showing one period and the whole pulse duration</title>
 <line x1="40" y1="120" x2="570" y2="120" stroke="var(--muted)" stroke-dasharray="5 5"/>
-<path d="M120 120 q20 -40 40 0 t40 0 t40 0 t40 0 t40 0" fill="none" stroke="var(--c1)" stroke-width="3"/>
+<path d="M120 120 q20 -40 40 0 t40 0 t40 0 t40 0 t40 0 t40 0" fill="none" stroke="var(--c1)" stroke-width="3"/>
 <line x1="120" y1="55" x2="200" y2="55" stroke="var(--c2)" stroke-width="2"/>
 <line x1="120" y1="50" x2="120" y2="60" stroke="var(--c2)" stroke-width="2"/>
 <line x1="200" y1="50" x2="200" y2="60" stroke="var(--c2)" stroke-width="2"/>
@@ -118,7 +118,7 @@ window.UNITS.push({
       diagrams: [
         { svg: `<svg viewBox="0 0 600 250" role="img"><title>A three-cycle pulse drawn on a distance axis, with one wavelength and the whole spatial pulse length marked</title>
 <line x1="40" y1="110" x2="570" y2="110" stroke="var(--muted)" stroke-dasharray="5 5"/>
-<path d="M120 110 q20 -38 40 0 t40 0 t40 0 t40 0 t40 0" fill="none" stroke="var(--c1)" stroke-width="3"/>
+<path d="M120 110 q20 -38 40 0 t40 0 t40 0 t40 0 t40 0 t40 0" fill="none" stroke="var(--c1)" stroke-width="3"/>
 <line x1="120" y1="50" x2="200" y2="50" stroke="var(--c2)" stroke-width="2"/>
 <line x1="120" y1="45" x2="120" y2="55" stroke="var(--c2)" stroke-width="2"/>
 <line x1="200" y1="45" x2="200" y2="55" stroke="var(--c2)" stroke-width="2"/>
@@ -190,6 +190,7 @@ window.UNITS.push({
 <div class="formula">PRF (Hz) ≈ 77,000 ÷ imaging depth (cm)</div>
 <p>Example: imaging at 10 cm. PRP = 13 × 10 = <b>130 µs</b>, and PRF ≈ 77,000 ÷ 10 ≈ <b>7,700 Hz</b>. Going out to 20 cm doubles PRP to 260 µs and halves PRF to about 3,850 Hz. Working backwards is just as easy: a PRP of 65 µs means 65 ÷ 13 = 5 cm of depth.</p>
 <div class="callout key">13 µs per cm, round trip. 6.5 µs per cm, one way. PRP = 13 × depth (cm). PRF ≈ 77,000 ÷ depth (cm).</div>
+<div class="steps"><ol><li>At 5 MHz, period = 1 ÷ 5 = 0.20 µs and wavelength = 1.54 ÷ 5 = 0.308 mm.</li><li>For 3 cycles, PD = 3 × 0.20 = 0.60 µs and SPL = 3 × 0.308 = 0.924 mm.</li><li>At 10 cm, PRP = 13 × 10 = 130 µs and PRF ≈ 7,692 Hz.</li><li>DF = 0.60 ÷ 130 × 100 ≈ 0.46%.</li><li>Axial resolution = 0.924 ÷ 2 = 0.462 mm.</li><li>For 5 MHz and 2.5 MHz bandwidth, Q = 5 ÷ 2.5 = 2.</li></ol></div>
 <div class="callout tip">Unlucky 13: every centimeter you go down and back costs you 13 microseconds.</div>`,
       diagrams: [
         { svg: `<svg viewBox="0 0 600 300" role="img"><title>A probe on the skin with echoes returning from 1, 5 and 10 centimeters, labeled with 13, 65 and 130 microseconds round trip</title>
@@ -273,7 +274,8 @@ window.UNITS.push({
 <text x="20" y="30" fill="currentColor" font-size="16">No damping: long ring-down</text>
 <line x1="30" y1="85" x2="570" y2="85" stroke="var(--muted)" stroke-dasharray="5 5"/>
 <path d="M60 85 q10 -34 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="var(--c2)" stroke-width="3"/>
-<text x="300" y="60" fill="var(--muted)" font-size="15">long PD, long SPL, narrow bandwidth, high Q</text>
+<text x="300" y="55" fill="var(--muted)" font-size="15">long PD and SPL</text>
+<text x="300" y="76" fill="var(--muted)" font-size="15">narrow bandwidth, high Q</text>
 <text x="20" y="175" fill="currentColor" font-size="16">Heavy damping: 2 cycles and done</text>
 <line x1="30" y1="230" x2="570" y2="230" stroke="var(--muted)" stroke-dasharray="5 5"/>
 <path d="M60 230 q10 -34 20 0 t20 0 t20 0 t20 0" fill="none" stroke="var(--c3)" stroke-width="3"/>
@@ -305,9 +307,9 @@ window.UNITS.push({
 <tr><td>Spatial pulse length</td><td>mm</td><td>0.1–1 mm</td><td>source and medium</td><td>no</td></tr>
 <tr><td>PRP</td><td>µs–ms</td><td>100 µs–1 ms</td><td>machine (depth)</td><td>yes, via depth</td></tr>
 <tr><td>PRF</td><td>Hz</td><td>1–10 kHz</td><td>machine (depth)</td><td>yes, via depth</td></tr>
-<tr><td>Duty factor</td><td>% (unitless)</td><td>0.1–1 %</td><td>machine (depth)</td><td>yes, via depth</td></tr></table>
-<div class="callout key">The sonographer has exactly one door into this unit: the depth control. Everything else comes from the transducer she picked up.</div>
-<div class="callout warn">Two favorite traps: (1) changing depth does NOT change PD or SPL; (2) changing frequency does NOT change PRP, PRF, or duty factor.</div>`,
+<tr><td>Duty factor</td><td>% (unitless)</td><td>0.1–1 %</td><td>PD and PRP</td><td>yes, via depth or probe choice</td></tr></table>
+<div class="callout key">Depth changes the listening interval. Probe choice changes the pulse itself. Duty factor responds to either one because DF = PD ÷ PRP.</div>
+<div class="callout warn">Two favorite traps: (1) changing depth does NOT change PD or SPL; (2) changing frequency does NOT change PRP or PRF, but it does change PD and therefore duty factor when cycle count is fixed.</div>`,
       diagrams: [
         { svg: `<svg viewBox="0 0 600 270" role="img"><title>Two cause and effect chains: increasing depth raises PRP and lowers PRF and duty factor; raising frequency shortens period and wavelength and so shortens PD and SPL</title>
 <text x="20" y="30" fill="currentColor" font-size="16">Depth chain — the console knob</text>
@@ -329,11 +331,11 @@ window.UNITS.push({
       sayIt: "Out loud: recite the depth chain and the frequency chain, then say which parameters the sonographer cannot touch at all.",
       keyPoints: [
         "↑ depth → ↑ PRP → ↓ PRF → ↓ duty factor; PD and SPL unaffected",
-        "↑ frequency → ↓ period and wavelength → ↓ PD and SPL; PRP, PRF, DF unaffected",
+        "↑ frequency → ↓ period and wavelength → ↓ PD and SPL; PRP and PRF unaffected; DF decreases because PD decreases",
         "Source only: pulse duration",
         "Source and medium: spatial pulse length",
-        "Machine (via depth): PRP, PRF, duty factor",
-        "Depth is the sonographer's only control in this unit"
+        "Machine (via depth): PRP and PRF; duty factor depends on both PD and PRP",
+        "Depth changes PRP/PRF; choosing a different probe can change PD/SPL and therefore duty factor"
       ]
     }
   ],
@@ -346,7 +348,7 @@ window.UNITS.push({
     { saying: "Deep venue, slow beat", meaning: "Image deeper and the machine has to wait longer between pulses: PRP goes up, so PRF (the beat) goes down, and so does duty factor.", lesson: "u03-l5" },
     { saying: "Duty factor = talking ÷ the whole day", meaning: "DF = PD ÷ PRP × 100. Time spent talking divided by the whole send-and-listen cycle — about 1 % for imaging, 100 % for CW.", lesson: "u03-l6" },
     { saying: "Damp it: Short pulse, Wide band, Low Q", meaning: "Damping shortens PD and SPL, widens the bandwidth, lowers the Q-factor, improves axial resolution, and costs you amplitude.", lesson: "u03-l7" },
-    { saying: "The sonographer only opens one door: DEPTH", meaning: "PD and SPL are locked inside the transducer. The only pulsed-wave parameters the sonographer can change are PRP, PRF and duty factor — and only by changing imaging depth.", lesson: "u03-l8" },
+    { saying: "Depth sets the beat; the probe sets the burst", meaning: "Depth sets PRP and PRF. Probe frequency and damping set PD and SPL. Duty factor depends on both PD and PRP.", lesson: "u03-l8" },
     { saying: "CW is 100 % Committed to Working", meaning: "Continuous wave never stops transmitting, so its duty factor is 100 % — and that is exactly why it cannot tell you depth.", lesson: "u03-l1" }
   ],
 
@@ -406,14 +408,14 @@ window.UNITS.push({
     { front: "Increase imaging depth → PRF and duty factor?", back: "Both decrease", lesson: "u03-l6" },
     { front: "Increase imaging depth → PD and SPL?", back: "No change — depth cannot touch the pulse itself", lesson: "u03-l8" },
     { front: "Increase frequency → PD and SPL?", back: "Both decrease (shorter period, shorter wavelength)", lesson: "u03-l8" },
-    { front: "Increase frequency → PRP, PRF, duty factor?", back: "No change — those come from depth only", lesson: "u03-l8" },
+    { front: "Increase frequency at fixed depth and cycle count → PRP, PRF, duty factor?", back: "PRP and PRF unchanged; PD shortens, so duty factor decreases", lesson: "u03-l8" },
     { front: "Damping", back: "Backing material behind the PZT that stops ring-down after 2–3 cycles", lesson: "u03-l7" },
     { front: "Five effects of damping", back: "↓ PD, ↓ SPL, ↑ bandwidth, ↓ Q-factor, ↑ axial resolution (and ↓ sensitivity)", lesson: "u03-l7" },
     { front: "Q-factor formula", back: "Q = main frequency ÷ bandwidth; heavy damping → low Q", lesson: "u03-l7" },
     { front: "How many active elements does CW need?", back: "Two — one transmits continuously, one receives continuously", lesson: "u03-l1" },
     { front: "Why can't CW give depth information?", back: "It never stops transmitting, so there is no echo travel time to measure", lesson: "u03-l1" },
     { front: "Typical cycles in an imaging pulse", back: "2–3 (pulsed Doppler uses longer pulses, about 5–30)", lesson: "u03-l2" },
-    { front: "Which parameters can the sonographer change in this unit?", back: "PRP, PRF and duty factor — only by changing imaging depth", lesson: "u03-l8" },
+    { front: "What does depth change, and what can probe choice change?", back: "Depth changes PRP/PRF; probe choice can change PD/SPL; duty factor responds to PD or PRP", lesson: "u03-l8" },
     { front: "Wavelength in soft tissue", back: "λ (mm) = 1.54 ÷ frequency (MHz)", lesson: "u03-l3" },
     { front: "Period from frequency", back: "period (µs) = 1 ÷ frequency (MHz)", lesson: "u03-l2" }
   ],
@@ -484,7 +486,7 @@ window.UNITS.push({
       explain: "True — PRF = 1 ÷ PRP. Because they are reciprocals they always move in opposite directions: anything that lengthens PRP lowers PRF.",
       objectives: ["u03-o4"], lesson: "u03-l4", level: 1 },
     { id: "u03-q15", type: "short", q: "What is the unit of pulse repetition frequency?",
-      answer: "hertz", accept: ["hz", "hertz", "khz", "kilohertz", "per second", "pulses per second", "1/s"],
+      answer: "hertz", accept: ["hz", "hertz", "per second", "pulses per second", "1/s"],
       explain: "PRF counts events per second, so the unit is hertz (imaging values are usually quoted in kHz: 1–10 kHz). Microseconds would be the unit of PRP, the reciprocal quantity.",
       objectives: ["u03-o4"], lesson: "u03-l4", level: 1 },
     { id: "u03-q16", type: "mc", q: "A system is imaging to a depth of 15 cm. What is the shortest usable pulse repetition period?",
@@ -543,9 +545,9 @@ window.UNITS.push({
       explain: "Axial resolution = SPL ÷ 2, and damping shortens SPL, so axial resolution improves. Damping does not change PRF (that is depth's job) or beam width (that is aperture and focusing), and it lowers — not raises — amplitude.",
       objectives: ["u03-o7", "u03-o3"], lesson: "u03-l7", level: 2 },
     { id: "u03-q28", type: "mc", q: "A sonographer switches from a 3 MHz probe to a 6 MHz probe, all else equal. Which quantity decreases?",
-      choices: ["Pulse repetition period", "Pulse repetition frequency", "Spatial pulse length", "Duty factor"],
-      answer: 2,
-      explain: "Doubling frequency halves both the period and the wavelength, so PD and SPL are both cut in half. PRP, PRF and duty factor are set by imaging depth, which did not change — that is what makes them tempting but wrong.",
+      choices: ["Pulse repetition period", "Pulse repetition frequency", "Spatial pulse length", "Both spatial pulse length and duty factor"],
+      answer: 3,
+      explain: "Doubling frequency halves period and wavelength, so at the same cycle count both PD and SPL are halved. Depth is unchanged, so PRP and PRF stay fixed; DF = PD ÷ PRP therefore also halves.",
       objectives: ["u03-o6"], lesson: "u03-l8", level: 3 },
     { id: "u03-q29", type: "mc", q: "Which pulsed-wave parameter can the sonographer actually change during a scan?",
       choices: ["Pulse duration", "Spatial pulse length", "Pulse repetition frequency", "Number of cycles per pulse"],
@@ -746,13 +748,13 @@ window.UNITS.push({
       }
     },
     {
-      id: "u03-d7", title: "What happens when frequency changes?", formula: "↑ f → ↓ period, ↓ λ → ↓ PD, ↓ SPL (PRP, PRF, DF unchanged)", lesson: "u03-l8",
+      id: "u03-d7", title: "What happens when frequency changes?", formula: "↑ f → ↓ period, ↓ λ → ↓ PD, ↓ SPL, ↓ DF (PRP and PRF unchanged)", lesson: "u03-l8",
       gen: function (rnd) {
         var higher = rnd() < 0.5;
         var params = ["the pulse duration", "the spatial pulse length", "the period", "the wavelength", "the pulse repetition frequency", "the duty factor"];
         var i = Math.floor(rnd() * params.length);
         var p = params[i];
-        var ans = (i <= 3) ? (higher ? 1 : 0) : 2;
+        var ans = (i <= 3 || i === 5) ? (higher ? 1 : 0) : 2;
         return {
           kind: "choice",
           given: "The sonographer swaps to a probe with a " + (higher ? "higher" : "lower") + " frequency, keeping the same imaging depth and the same number of cycles per pulse.",
@@ -762,10 +764,20 @@ window.UNITS.push({
           steps: [
             (higher ? "Higher" : "Lower") + " frequency → period and wavelength move the opposite way (both are inversely related to frequency).",
             "PD = cycles × period and SPL = cycles × wavelength, so both follow the period and wavelength.",
-            "PRP, PRF and duty factor are set by imaging depth, which did not change.",
-            "Answer: " + (i <= 3 ? (higher ? "decreases" : "increases") : "stays the same") + "."
+            "PRP and PRF are fixed by depth. Duty factor follows PD because DF = PD ÷ PRP.",
+            "Answer: " + ((i <= 3 || i === 5) ? (higher ? "decreases" : "increases") : "stays the same") + "."
           ]
         };
+      }
+    },
+    {
+      id: "u03-d8", title: "Axial resolution and Q-factor", formula: "axial resolution = SPL ÷ 2; Q = main frequency ÷ bandwidth", lesson: "u03-l7",
+      gen: function (rnd) {
+        var askAxial = rnd() < 0.5;
+        var x = [0.4, 0.6, 0.8, 1, 1.2][Math.floor(rnd() * 5)];
+        var f = [3, 4, 5, 6, 8][Math.floor(rnd() * 5)];
+        var bw = [1, 2, 2.5, 3, 4][Math.floor(rnd() * 5)];
+        return askAxial ? { kind: "number", given: "SPL = " + x + " mm", ask: "What is axial resolution, in mm?", answer: x / 2, unit: "mm", tol: 0.01, steps: ["Axial resolution = SPL ÷ 2", "= " + x + " ÷ 2 = " + (x / 2) + " mm"] } : { kind: "number", given: "Main frequency = " + f + " MHz, bandwidth = " + bw + " MHz", ask: "What is Q-factor?", answer: +(f / bw).toFixed(3), unit: "", tol: 0.02, steps: ["Q = main frequency ÷ bandwidth", "= " + f + " ÷ " + bw + " = " + (f / bw).toFixed(2)] };
       }
     }
   ],
@@ -781,7 +793,7 @@ window.UNITS.push({
         "Duty factor = PD ÷ PRP × 100; unitless %; 0.1–1 %; machine via depth; yes, via depth",
         "CW duty factor = 100 %; frozen system = 0 %",
         "Axial resolution = SPL ÷ 2 — the reason SPL matters",
-        "Depth is the sonographer's only control over any of these"
+        "Depth is the console control; choosing another probe can also change PD, SPL and duty factor"
       ]
     },
     {
@@ -804,7 +816,7 @@ window.UNITS.push({
         "In the depth chain, PD and SPL do not move",
         "Frequency chain: ↑ frequency → ↓ period → ↓ PD",
         "Frequency chain: ↑ frequency → ↓ wavelength → ↓ SPL → better axial resolution",
-        "In the frequency chain, PRP, PRF and duty factor do not move",
+        "In the frequency chain, PRP and PRF do not move; duty factor follows PD",
         "Higher frequency also means less penetration (attenuation rises with frequency)",
         "Damping chain: ↑ damping → fewer cycles → ↓ PD and ↓ SPL, ↑ bandwidth, ↓ Q"
       ]

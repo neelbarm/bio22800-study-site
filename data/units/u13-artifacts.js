@@ -79,7 +79,7 @@ window.UNITS.push({
 <p><span class="kw">Comet tail</span> is reverberation on a small scale: a small, very strong reflector (a surgical clip, a metal IUD, a shotgun pellet, cholesterol crystals in the gallbladder wall) rings between its own front and back surfaces. The reverberations are so closely spaced they merge into a short, tapering bright tail that fades with depth.</p>
 <p><span class="kw">Ring-down</span> comes from a <b>gas bubble</b> collection that resonates and radiates sound continuously back at the probe. On screen: a solid, bright, <b>continuous</b> line or streak that can run to the bottom of the image without tapering.</p>
 <div class="callout tip">Metal makes a comet; gas rings a bell. Comet tail tapers and fades; ring-down is a continuous unbroken stripe.</div>
-<div class="callout key">Fixes (sonographer): change the scanning angle or window so the two surfaces are no longer parallel to the beam, move the focus, lower the output/gain, and use <span class="kw-2">tissue harmonics</span> or <span class="kw-2">spatial compounding</span>, both of which suppress reverberation clutter well.</div>`,
+<div class="callout key">Reverberation favors two strong surfaces roughly parallel to each other and near perpendicular to the beam. Change angle/window to break that geometry; harmonics or compounding can reduce the clutter.</div>`,
       diagrams: [
         {
           svg: `<svg viewBox="0 0 600 270" role="img"><title>Sound bouncing between two parallel reflectors, and the equally spaced ladder it draws on the image</title>
@@ -171,7 +171,7 @@ window.UNITS.push({
 <ellipse cx="465" cy="120" rx="44" ry="16" fill="var(--c2)"/>
 <rect x="421" y="136" width="88" height="96" fill="var(--ink)"/>
 <text x="424" y="192" fill="var(--paper)" font-size="15">shadow</text>
-<text x="360" y="252" fill="currentColor" font-size="15">dark band, same width, to the bottom</text>
+<text x="335" y="252" fill="currentColor" font-size="14">dark band follows stone to bottom</text>
 </svg>`,
           caption: "Attenuation shadowing: high attenuation or a huge mismatch leaves an under-amplified dark band beneath."
         },
@@ -227,11 +227,11 @@ window.UNITS.push({
 <line x1="150" y1="58" x2="150" y2="230" stroke="var(--c1)" stroke-width="5"/>
 <line x1="70" y1="58" x2="70" y2="230" stroke="var(--c2)" stroke-width="2" stroke-dasharray="5 6"/>
 <line x1="230" y1="58" x2="230" y2="230" stroke="var(--c2)" stroke-width="2" stroke-dasharray="5 6"/>
-<text x="16" y="250" fill="currentColor" font-size="15">centre line keeps its energy; side lines attenuate</text>
+<text x="16" y="250" fill="currentColor" font-size="14">centre line keeps energy; side lines attenuate</text>
 <circle cx="465" cy="120" r="44" fill="none" stroke="var(--muted)" stroke-width="2"/>
 <rect x="421" y="166" width="88" height="66" fill="var(--c4)"/>
 <text x="424" y="206" fill="var(--paper)" font-size="15">bright</text>
-<text x="360" y="250" fill="currentColor" font-size="15">over-amplified column = enhancement</text>
+<text x="370" y="250" fill="currentColor" font-size="14">bright column = enhancement</text>
 </svg>`,
           caption: "Enhancement: low attenuation through fluid plus a standard TGC ramp equals too much gain beneath."
         },
@@ -273,10 +273,10 @@ window.UNITS.push({
       objectives: ["u13-o5", "u13-o1", "u13-o11"],
       html: `<p class="lead">Put a strong, smooth reflector in the path and the beam takes a detour — the machine, believing in straight lines, draws a copy of the anatomy on the far side of the mirror.</p>
 <p>Think of a hallway mirror. Your brain places the reflected lamp "behind" the mirror, at the same distance on the other side, because light appears to come from there. Ultrasound does the same thing with a highly reflective, curved, smooth interface — most famously the <span class="kw">diaphragm</span> (soft tissue to aerated lung).</p>
-<p>The pulse goes down, hits a hepatic vessel, bounces onward to the diaphragm, reflects, comes back via the vessel and home. That path is longer than a direct round trip, so the extra time is drawn as extra depth. The result is a <span class="kw">mirror image</span>: a duplicate of the liver and its vessels placed <b>deeper than the real structure and on the far side of the mirror</b> — apparently inside the chest. The copy is equidistant beyond the reflector, and it is always weaker than the original.</p>
+<p>The indirect path is longer than a direct round trip, so extra time is drawn as extra depth. In the classic planar geometry the duplicate appears on the far side of the reflector at an equal apparent distance and is commonly weaker, but strength and exact position vary with geometry.</p>
 <p>Mirroring also happens at the bladder wall, at the pleura (a mirrored liver above the diaphragm), and in spectral Doppler, where a strong signal appears as a symmetrical mirror below the baseline (see the Doppler lesson).</p>
 <div class="callout tip">The diaphragm is a funhouse mirror: the twin is always deeper, always beyond the mirror, and always dimmer.</div>
-<div class="callout key">Confirm and fix: change the beam angle or use a different acoustic window (intercostal instead of subcostal, for instance). A true lesion stays put and keeps its shape; a mirror twin shifts, distorts, or vanishes. Lowering overall gain and lowering output also reduce it, since the mirror path is weak to begin with.</div>
+<div class="callout key">Confirm by comparing expected anatomy and reflector geometry across windows and planes. A mirror twin often shifts, distorts or vanishes, while real anatomy remains anatomically consistent—not necessarily at the same screen coordinate.</div>
 <div class="callout warn">Do not confuse mirror image with reverberation. Reverberation copies are equally spaced <i>along the same line</i>; a mirror image is one duplicate reflected <i>across</i> a strong interface, with the geometry flipped.</div>`,
       diagrams: [
         {
@@ -296,9 +296,9 @@ window.UNITS.push({
 <circle cx="466" cy="104" r="14" fill="var(--c2)"/>
 <text x="486" y="100" fill="currentColor" font-size="15">real</text>
 <line x1="400" y1="150" x2="580" y2="176" stroke="var(--muted)" stroke-width="4"/>
-<circle cx="480" cy="216" r="14" fill="none" stroke="var(--c4)" stroke-width="3"/>
-<text x="500" y="222" fill="currentColor" font-size="15">twin: deeper, beyond</text>
-<text x="360" y="252" fill="var(--muted)" font-size="15">equal distance on the far side, dimmer</text>
+<circle cx="540" cy="202" r="14" fill="none" stroke="var(--c4)" stroke-width="3"/>
+<text x="365" y="225" fill="currentColor" font-size="14">weaker twin beyond mirror</text>
+<text x="365" y="252" fill="var(--muted)" font-size="14">classic: equal distance beyond</text>
 </svg>`,
           caption: "Mirror image: extra travel time is drawn as extra depth, so the copy lands beyond the reflector."
         }
@@ -318,9 +318,10 @@ window.UNITS.push({
       title: "Refraction: lateral displacement and duplication",
       objectives: ["u13-o6", "u13-o1", "u13-o11"],
       html: `<p class="lead">Refraction bends the beam sideways, so structures are drawn in the wrong lateral position — sometimes twice.</p>
-<p>Refraction needs <b>two conditions at once</b>: <span class="kw">oblique incidence</span> (the beam strikes the boundary at anything other than 90°) and <span class="kw">different propagation speeds</span> on the two sides. Miss either one and the beam goes straight on. The amount of bending follows <span class="kw-2">Snell's law</span>: sin(transmission angle) ÷ sin(incidence angle) = speed 2 ÷ speed 1.</p>
+<p>Refraction needs oblique incidence and different propagation speeds. In Snell's law both angles are measured from the <b>normal</b>: normal incidence is 0° from the normal, equivalent to 90° to the boundary surface.</p>
 <p>The machine draws every echo along the straight line it thinks it sent. If the beam actually bent 5° to the left before hitting a vessel, the vessel is painted 5° to the right of where it lives — <span class="kw">lateral displacement</span>. Nothing looks obviously wrong; the anatomy is just in the wrong place, which is why refraction quietly ruins measurements.</p>
-<p>The classic version is <b>side-by-side duplication</b>. Scanning transversely in the upper abdomen through the rectus abdominis muscles or the fat–muscle boundary, part of the beam bends one way and part goes straight, so one aorta is shown as two aortas next to each other, or a single gestational sac appears twinned. Duplication from refraction is always <b>side by side at the same depth</b>, never one above the other.</p>
+<p>The classic version is side-by-side duplication, often at similar depth, but exact apparent depth and position depend on the refracted paths.</p>
+<div class="steps"><ol><li>For θi=30°, c₁=1,540 and c₂=1,000 m/s: sinθt=(1,000/1,540)×0.5=0.325.</li><li>θt=asin(0.325)≈19° from the normal.</li><li>If the computed sine exceeds 1, no transmitted refracted angle exists for that geometry.</li></ol></div>
 <div class="callout tip">Refraction duplicates <i>sideways</i>; mirror image duplicates <i>deeper</i>. Same word, different direction.</div>
 <div class="callout key">Fix: move the transducer, angle it so the beam meets the interface closer to 90°, or scan from a midline/longitudinal approach that avoids the muscle boundary. Spatial compounding can also blunt refraction duplication. Refraction disappears at normal (perpendicular) incidence.</div>
 <div class="callout warn">A common exam trap: refraction requires a speed difference, not an impedance difference. Two media can have identical impedances and still refract if their speeds differ.</div>`,
@@ -343,7 +344,7 @@ window.UNITS.push({
 <rect x="430" y="40" width="60" height="16" fill="none" stroke="var(--muted)" stroke-width="2"/>
 <circle cx="430" cy="196" r="13" fill="var(--c4)"/>
 <circle cx="500" cy="196" r="13" fill="none" stroke="var(--c4)" stroke-width="3"/>
-<text x="360" y="236" fill="currentColor" font-size="15">two vessels, side by side, same depth</text>
+<text x="335" y="236" fill="currentColor" font-size="14">side-by-side duplicate</text>
 </svg>`,
           caption: "Refraction duplication: copies sit beside each other at the same depth, unlike a mirror image."
         }
@@ -364,8 +365,8 @@ window.UNITS.push({
       title: "Side lobes and grating lobes",
       objectives: ["u13-o7", "u13-o1", "u13-o11"],
       html: `<p class="lead">Not all the energy leaves the transducer down the middle. Whatever sneaks out sideways comes home and gets drawn as if it were on the main axis.</p>
-<p>A vibrating crystal does not radiate a perfect pencil. Radial expansion of the element throws small amounts of energy off to the sides: <span class="kw">side lobes</span>, which occur with <b>any</b> transducer, including single-element ones. In an <b>array</b>, the elements are separate sources firing in step; at certain angles their wavelets add up again, producing extra beams off to the sides called <span class="kw">grating lobes</span>. Grating lobes exist only in arrays, and they are stronger than side lobes.</p>
-<p>The machine has one rule for placing an echo: it came from the main axis, at a depth set by the time. So a lobe echo from a bright structure 30° off to the side (bowel gas, a rib, a needle, the bladder wall) is painted right in the middle of the image at the corresponding depth. Because lobe energy is small — typically around 1% of main-beam amplitude — you notice it only where the image should be black: pseudo-sludge in the gallbladder, false debris in the bladder, a curved line arcing through an anechoic space.</p>
+<p>A finite aperture produces off-axis side lobes through diffraction and interference. Arrays can also form grating lobes when regularly spaced elements reinforce at off-axis angles. Their relative strengths depend on aperture, pitch, steering, frequency and apodization; grating lobes are not universally stronger.</p>
+<p>The machine places these off-axis echoes on the main axis. Lobe levels vary by design, so avoid a fixed percentage; weak lobes become conspicuous against anechoic spaces.</p>
 <div class="callout tip">Side lobes are solo (any transducer, even one crystal); grating lobes gang up (arrays only, because there are many elements).</div>
 <div class="callout key">Designers reduce them with <span class="kw-2">apodization</span> (driving the outer elements more weakly), <span class="kw-2">subdicing</span> (cutting each element into smaller pieces so the spacing is less than a wavelength), and keeping element spacing small. You reduce their visible effect by lowering gain/output, changing the angle, and using harmonics — harmonic energy builds up only where intensity is high, that is, on the main axis.</div>`,
       diagrams: [
@@ -382,13 +383,13 @@ window.UNITS.push({
 <text x="20" y="200" fill="var(--c2)" font-size="15">lobe</text>
 <text x="252" y="200" fill="var(--c2)" font-size="15">lobe</text>
 <rect x="250" y="176" width="30" height="10" fill="var(--c4)"/>
-<text x="196" y="230" fill="currentColor" font-size="15">bright off-axis target (gas, rib)</text>
+<text x="20" y="232" fill="currentColor" font-size="14">off-axis target (gas/rib) is bright</text>
 <rect x="430" y="44" width="56" height="16" fill="none" stroke="var(--muted)" stroke-width="2"/>
 <circle cx="458" cy="150" r="52" fill="none" stroke="var(--muted)" stroke-width="2"/>
 <text x="404" y="110" fill="var(--muted)" font-size="15">anechoic area</text>
 <rect x="444" y="176" width="30" height="10" fill="var(--c4)"/>
 <text x="490" y="186" fill="currentColor" font-size="15">drawn on axis</text>
-<text x="360" y="236" fill="currentColor" font-size="15">false sludge/debris in black spaces</text>
+<text x="360" y="232" fill="currentColor" font-size="14">fake debris in anechoic spaces</text>
 </svg>`,
           caption: "Lobe artifact: off-axis echoes are displayed on the main axis, so they show up where the image should be black."
         }
@@ -437,7 +438,7 @@ window.UNITS.push({
 <circle cx="448" cy="180" r="11" fill="var(--c4)"/>
 <text x="466" y="184" fill="currentColor" font-size="15">true</text>
 <circle cx="448" cy="134" r="11" fill="none" stroke="var(--c4)" stroke-width="3"/>
-<text x="466" y="138" fill="currentColor" font-size="15">displayed (too shallow)</text>
+<text x="425" y="138" fill="currentColor" font-size="14">displayed shallow</text>
 <text x="20" y="234" fill="currentColor" font-size="15">echo late = drawn deeper</text>
 <text x="330" y="234" fill="currentColor" font-size="15">echo early = drawn shallower</text>
 </svg>`,
@@ -521,11 +522,11 @@ window.UNITS.push({
       title: "Doppler artifacts and the fix toolbox",
       objectives: ["u13-o10", "u13-o11"],
       html: `<p class="lead">Doppler has its own family of lies, and almost all of them are cured by one of seven moves.</p>
-<p><span class="kw">Aliasing</span> — the only artifact unique to pulsed systems. When the Doppler shift exceeds the <span class="kw-2">Nyquist limit</span> (PRF ÷ 2), the display wraps: spectral peaks cut off and reappear below the baseline, and colour flips to the opposite colour in the middle of a vessel. Fixes: raise the PRF/scale, shift the baseline, lower the operating frequency, use a shallower depth, increase the Doppler angle (smaller shift), or switch to CW, which cannot alias.</p>
+<p><span class="kw">Aliasing</span> occurs in pulsed sampling above PRF/2. Raise PRF/scale, lower frequency or depth, or use CW. Baseline shift only reallocates display range and does not change Nyquist; maintain an acceptable angle rather than steering toward 90°.</p>
 <p><span class="kw">Doppler mirror image (crosstalk)</span> — a symmetrical copy of the spectrum on the other side of the baseline. Two causes: too much Doppler gain, or a beam-to-flow angle near 90°, where the machine cannot decide on direction. Fixes: lower Doppler gain, change the angle away from 90°, and reduce output.</p>
 <p><span class="kw">Clutter and flash</span> — big, low-frequency signals from moving walls, cardiac pulsation, breathing, or transducer motion, splashing colour across the image. Fixes: raise the wall filter, lower colour gain, ask the patient to hold still and breathe out, and hold the probe steady.</p>
 <p><span class="kw">Twinkling</span> — a rapidly changing mosaic of colour behind a strongly reflective rough surface such as a kidney stone. It is an artifact, and it is useful: it helps you find stones.</p>
-<div class="callout key">The seven-move toolbox for any artifact: change the <b>angle</b>, change the <b>window</b>, change the <b>transducer/frequency</b>, change the <b>gain/output</b>, change <b>PRF or depth</b>, turn on <b>harmonics</b>, turn on <b>spatial compounding</b>. And always re-scan in a second plane: if it moves when you move, it is a lie.</div>
+<div class="callout key">Compare multiple planes and windows with expected anatomy and artifact physics. Real anatomy also changes appearance and screen position as the scan plane moves, so motion alone does not prove an artifact.</div>
 <div class="callout warn">Careful with compounding: it beautifully removes reverberation clutter and edge shadows, but it can also erase the posterior shadow you needed to call a stone.</div>`,
       diagrams: [
         {
@@ -543,7 +544,7 @@ window.UNITS.push({
 <line x1="340" y1="200" x2="380" y2="160" stroke="var(--c2)" stroke-width="3"/>
 <line x1="380" y1="160" x2="420" y2="200" stroke="var(--c2)" stroke-width="3"/>
 <line x1="420" y1="60" x2="460" y2="130" stroke="var(--c2)" stroke-width="3"/>
-<text x="330" y="234" fill="var(--c2)" font-size="15">peak cut off and wrapped below the baseline</text>
+<text x="315" y="234" fill="var(--c2)" font-size="14">peak wraps below baseline</text>
 <text x="300" y="44" fill="currentColor" font-size="15">shift exceeds PRF/2</text>
 </svg>`,
           caption: "Aliasing: shifts above the Nyquist limit (PRF ÷ 2) wrap to the other side of the baseline."
@@ -641,7 +642,7 @@ window.UNITS.push({
 
   questions: [
     { id: "u13-q1", type: "mc", q: "Which of these is NOT one of the assumptions the imaging system makes when it places an echo on the screen?", choices: ["Sound travels in a straight line", "Echoes come only from the beam's main axis", "Sound travels at 1,540 m/s in every tissue", "Some echoes arrive from off-axis lobes and must be repositioned"], answer: 3, explain: "The machine assumes the opposite: that every echo came from the main axis, which is exactly why lobe echoes get painted on axis. The first three are genuine assumptions. The tempting distractor is 'echoes come only from the main axis' — that IS an assumption, so it is not the answer.", objectives: ["u13-o1"], lesson: "u13-l1", level: 1 },
-    { id: "u13-q2", type: "mc", q: "A structure is displayed deeper than it truly lies. Which assumption was violated?", choices: ["Sound travels at exactly 1,540 m/s", "Attenuation is uniform", "Echoes come from the main axis", "Each echo belongs to the most recent pulse"], answer: 0, explain: "A slower-than-assumed medium (fat, 1,450 m/s) delays the echo and the machine converts extra time into extra depth. Uniform attenuation controls brightness, not position, so it changes how bright a region looks (shadow/enhancement) rather than where it is drawn.", objectives: ["u13-o1", "u13-o8"], lesson: "u13-l1", level: 2 },
+    { id: "u13-q2", type: "mc", q: "Along an otherwise straight path through uniformly slower-than-assumed tissue, a structure is displayed too deep. Which assumption failed?", choices: ["Sound travels at 1,540 m/s", "Attenuation is uniform", "Echoes come from the main axis", "Each echo belongs to the newest pulse"], answer: 0, explain:"The slower speed delays the echo. Specifying a straight uniform path removes multipath and other possible causes of excess travel time.",objectives:["u13-o1","u13-o8"],lesson:"u13-l1",level:2 },
     { id: "u13-q3", type: "mc", q: "Equally spaced bright lines, each dimmer than the one above it, run down the image from a metallic needle. What is this?", choices: ["Reverberation", "Mirror image", "Side lobe artifact", "Range ambiguity"], answer: 0, explain: "Equal spacing along one line plus progressive dimming is the signature of reverberation between two strong parallel reflectors. Mirror image gives one duplicate across an interface, not a repeating ladder.", objectives: ["u13-o2"], lesson: "u13-l2", level: 1 },
     { id: "u13-q4", type: "mc", q: "A surgical clip produces a short, closely spaced, tapering bright tail. A pocket of bowel gas produces an unbroken bright stripe to the bottom of the image. Which pair of names is correct?", choices: ["Clip = ring-down; gas = comet tail", "Clip = comet tail; gas = ring-down", "Both are comet tail", "Both are ring-down"], answer: 1, explain: "Comet tail is dense reverberation inside a small strong reflector (metal, crystals) and tapers; ring-down is gas resonating and radiating continuously, so it does not taper. The reversed pairing is the classic trap — remember 'metal makes a comet, gas rings a bell.'", objectives: ["u13-o2"], lesson: "u13-l2", level: 2 },
     { id: "u13-q5", type: "mc", q: "Which single change is most likely to reduce reverberation between the probe face and a flat anterior wall?", choices: ["Increase overall gain", "Change the scanning angle or window so the surfaces are no longer parallel to the beam", "Increase the PRF", "Decrease the displayed depth"], answer: 1, explain: "Reverberation needs two parallel reflectors perpendicular to the beam; breaking that geometry breaks the ladder. Increasing gain makes the artifact more obvious, not less, and PRF/depth changes affect range ambiguity, not reverberation.", objectives: ["u13-o2", "u13-o11"], lesson: "u13-l2", level: 2 },
@@ -860,7 +861,7 @@ window.UNITS.push({
       }
     },
     {
-      id: "u13-d5",
+      id: "u13-d7",
       title: "Maximum unambiguous depth from PRF",
       formula: "depth (cm) ≈ 77,000 ÷ PRF (Hz)",
       lesson: "u13-l9",
@@ -883,7 +884,8 @@ window.UNITS.push({
           ]
         };
       }
-    }
+    },
+    { id:"u13-d5",title:"Artifact equation mixer",formula:"range, speed error, max depth, Nyquist, spacing",lesson:"u13-l9",gen:function(rnd){var mode=Math.floor(rnd()*4);if(mode===0){var t=[65,130,195][Math.floor(rnd()*3)],d=1.54*t/2;return {kind:"number",given:"Round-trip time="+t+" µs",ask:"Displayed depth?",answer:d,unit:"mm",tol:0.2,steps:["depth=1.54×time÷2","=1.54×"+t+"÷2","="+d+" mm"]};}if(mode===1){var prf=[5000,7000,10000][Math.floor(rnd()*3)],d=77000/prf;return {kind:"number",given:"PRF="+prf+" Hz",ask:"Maximum unambiguous depth?",answer:+d.toFixed(2),unit:"cm",tol:0.1,steps:["depth≈77000/PRF","=77000/"+prf,"="+d.toFixed(2)+" cm"]};}if(mode===2){var trueD=[50,80,100][Math.floor(rnd()*3)],c=[1450,1480,1600][Math.floor(rnd()*3)],shown=trueD*1540/c;return {kind:"number",given:"True depth="+trueD+" mm, actual speed="+c+" m/s",ask:"Displayed depth?",answer:+shown.toFixed(2),unit:"mm",tol:0.2,steps:["displayed=true×1540/actual","="+trueD+"×1540/"+c,"="+shown.toFixed(2)+" mm"]};}var pr=[4,6,8,10][Math.floor(rnd()*4)],ny=pr/2;return {kind:"number",given:"PRF="+pr+" kHz",ask:"Nyquist limit?",answer:ny,unit:"kHz",tol:0.05,steps:["Nyquist=PRF/2","="+pr+"/2","="+ny+" kHz"]};} }
   ],
 
   whiteboard: [

@@ -60,7 +60,10 @@ window.UNITS.push({
 <line x1="415" y1="228" x2="415" y2="252" stroke="var(--c4)"/>
 <line x1="465" y1="228" x2="465" y2="252" stroke="var(--c4)"/>
 <line x1="515" y1="228" x2="515" y2="252" stroke="var(--c4)"/>
-<text x="360" y="272" fill="currentColor" font-size="16">frame  frame  frame  frame</text>
+<text x="345" y="272" fill="currentColor" font-size="14">F1</text>
+<text x="400" y="272" fill="currentColor" font-size="14">F2</text>
+<text x="455" y="272" fill="currentColor" font-size="14">F3</text>
+<text x="510" y="272" fill="currentColor" font-size="14">F4</text>
 </svg>`, caption: "Four report cards: length of the pulse, width of the beam, thickness of the slice, and frames per second." }
       ],
       sayIt: "Say out loud, without looking: name the four kinds of resolution, the direction each one measures, and for each one whether a big or small number is good.",
@@ -315,12 +318,13 @@ window.UNITS.push({
 <path d="M120 60 L120 230 L200 280 L200 110" fill="none" stroke="var(--c1)"/>
 <path d="M200 280 L500 260 L500 90" fill="none" stroke="var(--c1)"/>
 <text x="230" y="40" fill="currentColor" font-size="16">the slab of sound (scan plane)</text>
-<line x1="520" y1="90" x2="520" y2="260" stroke="var(--c2)"/>
-<text x="530" y="170" fill="currentColor" font-size="16">slice</text>
-<text x="530" y="192" fill="currentColor" font-size="16">thickness</text>
+<line x1="120" y1="48" x2="200" y2="98" stroke="var(--c2)" stroke-width="3"/>
+<line x1="120" y1="42" x2="120" y2="54" stroke="var(--c2)" stroke-width="3"/>
+<line x1="200" y1="92" x2="200" y2="104" stroke="var(--c2)" stroke-width="3"/>
+<text x="22" y="38" fill="currentColor" font-size="16">out-of-plane thickness</text>
 <circle cx="330" cy="175" r="30" fill="none" stroke="var(--c3)"/>
 <text x="250" y="240" fill="currentColor" font-size="16">small cyst half inside the slab</text>
-<text x="20" y="290" fill="currentColor" font-size="16">-&gt; its echoes get averaged in: cyst looks filled</text>
+<text x="20" y="290" fill="currentColor" font-size="16">surrounding tissue echoes average in: cyst looks filled</text>
 </svg>`, caption: "Elevational resolution is the thickness of the slab; a thick slab fills small cysts with false echoes." }
       ],
       sayIt: "Say out loud: what is elevational resolution, what determines it, why can't you adjust it, and what two array designs improve it?",
@@ -401,7 +405,8 @@ window.UNITS.push({
 <tr><td>Temporal</td><td>frame rate</td><td>↓ depth, ↓ lines, 1 focus</td><td>field of view, lateral detail</td></tr>
 </table>
 <div class="callout key">There is no free improvement. Every gain in one resolution is paid for in penetration, field of view, or frame rate.</div>
-<div class="callout tip">Clinical instinct to build: a fetal heart in motion → protect <b>temporal</b> (shallow, narrow, one focus). A small superficial mass → protect <b>axial and lateral</b> (high frequency, focus on it, accept a slower frame rate).</div>`,
+<div class="callout tip">Clinical instinct to build: a fetal heart in motion → protect <b>temporal</b> (shallow, narrow, one focus). A small superficial mass → protect <b>axial and lateral</b> (high frequency, focus on it, accept a slower frame rate).</div>
+<div class="steps"><ol><li>For 3 cycles at 5 MHz, λ = 1.54 ÷ 5 = 0.308 mm, SPL = 0.924 mm, and axial resolution = 0.462 mm; the shortcut gives 0.77 × 3 ÷ 5 = 0.462 mm.</li><li>A 1.5 mm beam gives 1.5 mm lateral resolution; a 3 mm slice gives 3 mm elevational resolution.</li><li>At 10 cm and 128 lines, frame time = 13 µs × 10 × 128 = 16.64 ms.</li><li>Frame rate = 1 ÷ 0.01664 ≈ 60 frames/s, so temporal resolution is 16.64 ms.</li></ol></div>`,
       diagrams: [
         { svg: `<svg viewBox="0 0 600 240" role="img"><title>Two gray patches nearly alike: good contrast resolution separates them, poor contrast resolution blends them</title>
 <rect x="40" y="60" width="90" height="90" fill="var(--muted)"/>
@@ -541,7 +546,7 @@ window.UNITS.push({
     { id: "u07-q32", type: "tf", q: "Tissue harmonic imaging and spatial compounding both tend to improve contrast resolution.", answer: true, explain: "Harmonics cut clutter and artifact from the near field, and compounding averages several look angles to reduce speckle; both make similar gray shades easier to tell apart.", objectives: ["u07-o8"], lesson: "u07-l9", level: 2 },
     { id: "u07-q33", type: "mc", q: "For a given imaging system, which statement about the numbers is normally true?", choices: ["Lateral resolution is a smaller number than axial resolution", "Axial resolution is a smaller number than lateral resolution", "They are always equal", "Elevational is always the smallest number"], answer: 1, explain: "Axial is the best (smallest) spatial resolution, typically 2–10 times smaller than lateral; elevational is usually the worst. Getting axial and lateral backwards is the most common error on comparison questions.", objectives: ["u07-o9"], lesson: "u07-l1", level: 2 },
     { id: "u07-q34", type: "mc", q: "A sonographer is imaging a fast-moving fetal heart and the image looks jerky. Which combination best preserves the motion?", choices: ["Increase depth, widen the sector, add two more foci", "Reduce depth, narrow the sector, use one focus", "Increase line density and add foci", "Raise the gain and the dynamic range"], answer: 1, explain: "Shallower depth, fewer lines and a single focus all shorten the frame time, raising the frame rate. Adding foci or line density buys lateral detail at the direct expense of the motion you are trying to capture, and gain changes only brightness.", objectives: ["u07-o9"], lesson: "u07-l8", level: 3 },
-    { id: "u07-q35", type: "short", q: "Which resolution gets worse when you add more transmit foci?", answer: "temporal", accept: ["temporal", "temporal resolution", "frame rate", "temporal res"], explain: "Each extra focus means another pulse down every line, so frame rate falls. Lateral resolution is the one that improves; axial is unaffected.", objectives: ["u07-o9"], lesson: "u07-l6", level: 2 },
+    { id: "u07-q35", type: "short", q: "Which resolution gets worse when you add more transmit foci?", answer: "temporal", accept: ["temporal", "temporal resolution", "temporal res"], explain: "Each extra focus means another pulse down every line, so frame rate falls. Lateral resolution is the one that improves; axial is unaffected.", objectives: ["u07-o9"], lesson: "u07-l6", level: 2 },
     { id: "u07-q36", type: "mc", q: "A sonographer switches from a 3 MHz to a 9 MHz probe on a superficial structure. Which set of changes is correct?", choices: ["Axial better, lateral better, penetration worse", "Axial better, lateral worse, penetration better", "Axial worse, lateral better, penetration worse", "Axial better, lateral better, penetration better"], answer: 0, explain: "Higher frequency shortens the pulse (better axial) and reduces beam divergence (better lateral), but attenuation rises about 0.5 dB/cm/MHz, so penetration drops. No setting improves detail and penetration at the same time.", objectives: ["u07-o9"], lesson: "u07-l4", level: 3 }
   ],
 
@@ -691,6 +696,14 @@ window.UNITS.push({
             "Shortcut: 77,000 ÷ (" + d + " × " + L + ") ≈ " + (77000 / (d * L)).toFixed(1)
           ]
         };
+      }
+    },
+    {
+      id: "u07-d8", title: "Elevational and temporal resolution", formula: "elevational resolution = slice thickness; temporal resolution = frame time", lesson: "u07-l7",
+      gen: function (rnd) {
+        var elev = rnd() < 0.5;
+        var v = [0.5, 1, 1.5, 2, 2.5, 3][Math.floor(rnd() * 6)];
+        return elev ? { kind: "number", given: "Slice thickness at the target is " + v + " mm.", ask: "What is elevational resolution, in mm?", answer: v, unit: "mm", tol: 0.01, steps: ["Elevational resolution equals slice thickness", "= " + v + " mm"] } : { kind: "number", given: "Frame rate = " + (v * 10) + " frames/s.", ask: "What is frame time (temporal resolution), in ms?", answer: +(1000 / (v * 10)).toFixed(3), unit: "ms", tol: 0.05, steps: ["Frame time = 1 ÷ frame rate", "= 1 ÷ " + (v * 10) + " s", "= " + (1000 / (v * 10)).toFixed(2) + " ms"] };
       }
     }
   ],

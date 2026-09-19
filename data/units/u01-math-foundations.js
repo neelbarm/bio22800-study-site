@@ -40,7 +40,7 @@ window.UNITS.push({
 <div class="callout warn">Capital <b>M</b> is mega (a million); lowercase <b>m</b> is milli (a thousandth). They differ by a factor of one billion. Writing "mHz" when you mean "MHz" is a real mistake, not a typo.</div>`,
       diagrams: [
         { svg: `<svg viewBox="0 0 600 240" role="img"><title>Metric prefix ladder from giga down to pico with powers of ten</title>
-<text x="300" y="28" text-anchor="middle" fill="currentColor" font-size="16">One ladder — every rung is a power of ten</text>
+<text x="300" y="28" text-anchor="middle" fill="currentColor" font-size="16">Labeled powers — spacing is not to scale</text>
 <line x1="25" y1="112" x2="575" y2="112" stroke="currentColor" stroke-width="2"/>
 <line x1="45" y1="104" x2="45" y2="120" stroke="var(--c1)" stroke-width="3"/>
 <line x1="109" y1="104" x2="109" y2="120" stroke="var(--c1)" stroke-width="3"/>
@@ -376,7 +376,8 @@ window.UNITS.push({
 <li>If the same division had given you an answer in µs, you would know instantly that something got flipped.</li>
 </ul>
 <div class="callout key">Match the units before you press a key. The soft-tissue shortcut only works in matched units: <b>λ (mm) = 1.54 ÷ f (MHz)</b>, and <b>T (µs) = 1 ÷ f (MHz)</b>.</div>
-<div class="callout warn">Never divide in whichever order feels easier. If a question gives 1.54 and 5, students often write 5 ÷ 1.54. Solve the algebra first, plug numbers second — 1.54 ÷ 5 = 0.31 mm.</div>`,
+<div class="callout warn">Never divide in whichever order feels easier. If a question gives 1.54 and 5, students often write 5 ÷ 1.54. Solve the algebra first, plug numbers second — 1.54 ÷ 5 = 0.31 mm.</div>
+<div class="steps"><ol><li>T = 1 ÷ 5 MHz = 0.20 µs.</li><li>2.5 MHz = 2.5 × 10<sup>6</sup> Hz.</li><li>If y = 3x, x = 4 gives y = 12; if y = 12 ÷ x, x = 4 gives y = 3.</li><li>15 ÷ 60 × 100 = 25%; a rise from 40 to 50 is (50 − 40) ÷ 40 × 100 = 25%.</li><li>A fourfold intensity increase gives 10 log(4) ≈ 6 dB.</li><li>λ = 1.54 ÷ 5 = 0.308 mm.</li><li>For r = 3 mm, A = πr² ≈ 28.3 mm².</li></ol></div>`,
       diagrams: [
         { svg: `<svg viewBox="0 0 600 240" role="img"><title>Cover up triangle for speed equals frequency times wavelength</title>
 <polygon points="300,35 150,195 450,195" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -782,6 +783,10 @@ window.UNITS.push({
       gen: function (rnd) {
         var old = [20, 25, 40, 50, 60, 80, 100, 120, 150, 200][Math.floor(rnd() * 10)];
         var pct = [10, 20, 25, 50, 75][Math.floor(rnd() * 5)];
+        if (rnd() < 0.4) {
+          var part = old * pct / 100;
+          return { kind: "number", given: "part = " + part + ", whole = " + old, ask: "What percent of the whole is the part?", answer: pct, unit: "%", tol: 0.1, steps: ["% = part ÷ whole × 100", "= " + part + " ÷ " + old + " × 100", "= " + pct + " %"] };
+        }
         var up = rnd() < 0.5;
         var nw = up ? old * (1 + pct / 100) : old * (1 - pct / 100);
         var ans = up ? pct : -pct;
@@ -798,6 +803,24 @@ window.UNITS.push({
             "× 100 = " + ans + " %"
           ]
         };
+      }
+    },
+    {
+      id: "u01-d7", title: "Wave equation rearrangements", formula: "c = f × λ", lesson: "u01-l8",
+      gen: function (rnd) {
+        var fs = [2, 2.5, 4, 5, 7.5, 10];
+        var f = fs[Math.floor(rnd() * fs.length)];
+        var lam = 1.54 / f;
+        var askF = rnd() < 0.5;
+        return { kind: "number", given: askF ? "c = 1.54 mm/µs and λ = " + lam.toFixed(4) + " mm" : "c = 1.54 mm/µs and f = " + f + " MHz", ask: askF ? "What is frequency, in MHz?" : "What is wavelength, in mm?", answer: askF ? f : +lam.toFixed(4), unit: askF ? "MHz" : "mm", tol: askF ? 0.05 : 0.01, steps: [askF ? "f = c ÷ λ" : "λ = c ÷ f", askF ? "1.54 ÷ " + lam.toFixed(4) + " = " + f + " MHz" : "1.54 ÷ " + f + " = " + lam.toFixed(4) + " mm"] };
+      }
+    },
+    {
+      id: "u01-d8", title: "Circle area", formula: "A = π × r²", lesson: "u01-l8",
+      gen: function (rnd) {
+        var r = [1, 1.5, 2, 2.5, 3, 4, 5][Math.floor(rnd() * 7)];
+        var a = Math.PI * r * r;
+        return { kind: "number", given: "A circular element has radius " + r + " mm.", ask: "What is its area, in mm²?", answer: +a.toFixed(3), unit: "mm²", tol: 0.05, steps: ["A = πr²", "= π × " + r + "²", "= " + a.toFixed(2) + " mm²"] };
       }
     }
   ],

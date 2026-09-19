@@ -51,6 +51,14 @@ printings, so each unit names the chapter by topic.
 13. Artifacts
 14. Bioeffects, Intensities & Safety
 15. Quality Assurance & Statistics
+16. Putting It Together: The Master Relationships
+
+## Plan for an exam
+
+Open **Exam Planner**, enter the date, and select the units on the exam.
+Home then focuses the daily lesson, weak-objective quiz, and flashcards on
+those units. Paste the instructor's actual objectives into **My course
+objectives** within each unit to track the course's requirements.
 
 ## Your data
 
@@ -58,12 +66,23 @@ Progress lives only in this browser's local storage. Use **Settings →
 Export** to save a backup file, and **Import** to move it to another
 computer or browser. **Reset** wipes everything.
 
+Progress is specific to the browser and site address. Export before moving
+from a downloaded copy to the hosted site, or between devices, then import
+the backup at the new address. The hosted site needs a connection to load;
+the downloaded folder runs offline by opening `index.html`.
+
 ## About the content
 
 All explanations, questions, diagrams and mnemonics on this site are
 original teaching material about standard ultrasound physics. The textbook
 is referenced by chapter topic only. No text, figures, or exercises from the
 book are reproduced here.
+
+This is an independently written companion, not a verified reproduction
+of the fourth edition's chapter sequence or the student's assigned
+objectives. Check the actual book and instructor objectives alongside it.
+The safety lessons distinguish physical models and historical course
+conventions from clinical guidance; source notes are recorded in `docs/`.
 
 ## For whoever maintains this
 
@@ -73,3 +92,10 @@ book are reproduced here.
   `data/manifest.js`.
 - `node tools/validate.js` checks every unit file and must print `OK`.
 - The app is `index.html` + `app.js` + `styles.css`. No build step.
+- `node tools/build.js` validates and copies public assets into `dist/`
+  for hosting. `vercel.json` configures this dependency-free Vercel build.
+- `node tools/qa.js` runs browser smoke checks. Install Playwright or set
+  `PLAYWRIGHT_PATH` to its module directory; use `W=390` for phone layout
+  and `SHOTS=/tmp/ultrasound-ui` to save screenshots.
+- `tools/diagrams-qa.js` renders diagrams in both themes and creates contact
+  sheets. It requires Playwright and Sharp on Node's module path.

@@ -28,6 +28,7 @@ window.UNITS.push({
 <p>The <span class="kw">Doppler effect</span> is the change in the frequency of a wave caused by relative motion between the sound source and the receiver. In ultrasound the moving thing is a red blood cell, and it acts as a moving reflector: it receives sound at one frequency and sends it back at another.</p>
 <p>The <span class="kw">Doppler shift</span> is that difference:</p>
 <div class="formula">Doppler shift = received frequency − transmitted frequency</div>
+<div class="steps"><ol><li>Received 5,003,000 Hz − transmitted 5,000,000 Hz = +3,000 Hz.</li><li>Using the shortcut at 5 MHz, 0.5 m/s and 60°: shift = 2,000×5×0.5×0.5/1,540 = 1.62 kHz.</li></ol></div>
 <table class="dt"><tr><th>Blood is moving…</th><th>Received frequency</th><th>Doppler shift</th></tr>
 <tr><td>Toward the transducer</td><td>Higher than transmitted</td><td><b>Positive</b></td></tr>
 <tr><td>Away from the transducer</td><td>Lower than transmitted</td><td><b>Negative</b></td></tr>
@@ -136,14 +137,14 @@ window.UNITS.push({
         {
           svg: `<svg viewBox="0 0 600 260" role="img"><title>Doppler angle geometry: the beam crossing a vessel at an angle theta, with a table of cosine values</title>
 <rect x="40" y="20" width="34" height="44" fill="none" stroke="currentColor" stroke-width="2"/>
-<line x1="57" y1="64" x2="250" y2="190" stroke="var(--c1)" stroke-width="3"/>
+<line x1="57" y1="64" x2="330" y2="240" stroke="var(--c1)" stroke-width="3"/>
 <text x="70" y="120" fill="var(--c1)" font-size="16">beam</text>
 <line x1="60" y1="190" x2="420" y2="190" stroke="currentColor" stroke-width="2"/>
 <line x1="60" y1="240" x2="420" y2="240" stroke="currentColor" stroke-width="2"/>
 <line x1="260" y1="215" x2="400" y2="215" stroke="var(--c2)" stroke-width="3"/>
 <polyline points="388,205 404,215 388,225" fill="none" stroke="var(--c2)" stroke-width="3"/>
 <text x="300" y="206" fill="var(--c2)" font-size="16">flow</text>
-<text x="252" y="176" fill="currentColor" font-size="17">θ</text>
+<path d="M260 215 A45 45 0 0 1 298 237" fill="none" stroke="currentColor" stroke-width="2"/><text x="282" y="207" fill="currentColor" font-size="17">θ</text>
 <text x="440" y="46" fill="currentColor" font-size="16">cos 0° = 1.00</text>
 <text x="440" y="76" fill="currentColor" font-size="16">cos 30° = 0.87</text>
 <text x="440" y="106" fill="currentColor" font-size="16">cos 45° = 0.71</text>
@@ -170,8 +171,8 @@ window.UNITS.push({
       title: "CW versus PW Doppler",
       objectives: ["u12-o4"],
       html: `<p class="lead">Two ways to do Doppler, and they have exactly opposite strengths — which is the whole reason the exam loves them.</p>
-<p><span class="kw">Continuous wave (CW) Doppler</span> uses <b>two crystals</b>: one transmits without stopping and the other listens without stopping. Because it never stops transmitting, it has no way to time an echo, so it cannot tell you the <b>depth</b> the signal came from. Every moving thing anywhere in the overlap region of the two beams contributes — that is <span class="kw-2">range ambiguity</span>. The payoff: with no pulsing there is no sampling limit, so CW <b>never aliases</b> and can measure very high velocities.</p>
-<p><span class="kw">Pulsed wave (PW) Doppler</span> uses <b>one crystal</b> that alternately transmits and listens. Because it times each echo, it can listen only during a chosen window, which gives you a <span class="kw-2">sample volume</span> (gate) placed exactly where you want it. The price: it samples the flow intermittently, and once the Doppler shift exceeds half the PRF the samples are too sparse to reconstruct the signal — it <b>aliases</b>.</p>
+<p><span class="kw">Continuous wave (CW) Doppler</span> needs separate simultaneously transmitting and receiving elements or element groups. A simple dedicated pencil probe commonly has two elements, while array implementations can assign groups. CW has range ambiguity but no pulse-sampling aliasing limit.</p>
+<p><span class="kw">Pulsed wave (PW) Doppler</span> uses the selected aperture sequentially: transmit, then listen. A simple teaching diagram may show one element, but arrays use groups. Timing creates a depth-selected gate and also the Nyquist limit.</p>
 <table class="dt"><tr><th></th><th>CW</th><th>PW</th></tr>
 <tr><td>Crystals</td><td>2 (one sends, one receives)</td><td>1 (sends, then listens)</td></tr>
 <tr><td>Range resolution</td><td>None — range ambiguity</td><td>Yes — adjustable gate</td></tr>
@@ -228,10 +229,10 @@ window.UNITS.push({
 <p>Fixes, in the order you should reach for them:</p>
 <ol>
 <li><b>Raise the scale / PRF</b> — the direct fix; raises the Nyquist limit.</li>
-<li><b>Shift the baseline</b> down (for forward flow) — doubles the display range in the direction you care about, without changing the PRF.</li>
+<li><b>Shift the baseline</b> — reallocates the existing total display range toward one direction; it does not raise PRF or Nyquist and cannot recover arbitrarily undersampled data.</li>
 <li><b>Lower the transmit (Doppler) frequency</b> — a smaller f₀ makes a smaller shift for the same velocity.</li>
 <li><b>Decrease imaging depth</b> — shallower means shorter listening time, which lets the machine use a higher PRF.</li>
-<li><b>Increase the Doppler angle</b> toward 90° — a bigger angle means a smaller cos θ and a smaller shift. Legitimate, but use last: it degrades accuracy.</li>
+<li><b>Improve geometry while staying at or below 60°</b>; do not deliberately approach 90° for routine vascular velocity measurement.</li>
 <li><b>Switch to CW</b> — no sampling, no aliasing, but you lose range resolution.</li>
 </ol>
 <div class="callout tip">Dumb saying: <b>SLAP the alias, then call in CW</b> — <b>S</b>cale up, <b>L</b>ower the baseline, <b>A</b>ngle bigger, <b>P</b>ick a lower frequency (and less depth), then <b>CW</b>.</div>
@@ -280,8 +281,8 @@ window.UNITS.push({
 <tr><td>Horizontal</td><td>Time (sweep speed is adjustable)</td></tr>
 <tr><td>Vertical</td><td>Doppler shift in kHz, or velocity in cm/s once an angle is entered</td></tr>
 <tr><td>Above / below baseline</td><td>Direction: toward / away (invertible by the sonographer)</td></tr>
-<tr><td>Brightness of a dot</td><td>How many red cells are moving at that velocity at that moment</td></tr></table>
-<div class="callout key">Vertical = how fast. Horizontal = when. Brightness = how many cells. Above or below the baseline = which way.</div>
+<tr><td>Brightness of a dot</td><td>Backscattered signal power from scatterers contributing at that velocity, with settings fixed</td></tr></table>
+<div class="callout key">Vertical = shift/velocity. Horizontal = time. Brightness = received spectral power, influenced by scatterer concentration and settings; it is not a direct red-cell counter.</div>
 <p><span class="kw">Spectral broadening</span> is a vertical thickening of the tracing — a wide range of velocities present at the same instant, which fills in the normally dark <b>spectral window</b> under the waveform. Its two big causes are very different:</p>
 <ul>
 <li><b>Real turbulence</b> — a true finding, typically just distal to a stenosis.</li>
@@ -344,8 +345,8 @@ window.UNITS.push({
 <polyline points="214,150 234,56 252,90 270,116 292,134 318,144 340,150" fill="none" stroke="var(--c1)" stroke-width="3"/>
 <line x1="60" y1="230" x2="580" y2="230" stroke="var(--c2)" stroke-width="2"/>
 <text x="60" y="222" fill="var(--c2)" font-size="16">bottom of scale</text>
-<text x="360" y="212" fill="currentColor" font-size="16">raise scale → less aliasing,</text>
-<text x="360" y="232" fill="currentColor" font-size="16">less slow-flow sensitivity</text>
+<text x="350" y="202" fill="currentColor" font-size="14">raise scale: less aliasing</text>
+<text x="350" y="220" fill="currentColor" font-size="14">but less slow-flow sensitivity</text>
 </svg>`,
           caption: "Scale sets the ceiling, baseline decides how the range is split, wall filter deletes the slow band around zero."
         }
@@ -367,7 +368,7 @@ window.UNITS.push({
       title: "Color Doppler",
       objectives: ["u12-o8", "u12-o7"],
       html: `<p class="lead">Color Doppler is a map, not a measurement: it paints a whole region with an estimate of which way blood is going and roughly how fast.</p>
-<p>Instead of an FFT, color uses <span class="kw">autocorrelation</span> — a fast comparison of each pulse with the one before it. It is much quicker than an FFT, which is what makes real-time color possible, but it gives only a <b>mean velocity</b> and direction per pixel, not a full spectrum. If you want peak velocity, go back to the spectral display.</p>
+<p>Instead of an FFT, color uses <span class="kw">autocorrelation</span>. It estimates mean Doppler shift and direction along the beam per pixel; unless explicit angle correction is applied, the displayed value is not true speed. Peak velocity still requires spectral Doppler.</p>
 <p>Key controls and their costs:</p>
 <ul>
 <li><b>Color box</b> — the region where color is computed. Bigger or deeper box = more lines to process = <b>lower frame rate</b>. Keep it small and steered off perpendicular.</li>
@@ -418,7 +419,7 @@ window.UNITS.push({
       title: "Power Doppler, duplex, and triplex",
       objectives: ["u12-o9"],
       html: `<p class="lead">Power Doppler throws away the frequency information and keeps only the strength of the signal — and that one sacrifice buys a lot of sensitivity.</p>
-<p><span class="kw">Power Doppler</span> (also called energy or amplitude Doppler) maps the <b>amplitude</b> of the Doppler signal: how much moving blood is there, not how fast or which way. Because it ignores the shift, it is free of most of the problems the shift creates.</p>
+<p><span class="kw">Power Doppler</span> maps integrated Doppler signal power, not velocity or direction. It is less angle-sensitive than color velocity imaging, but signal still vanishes near 90° and can be lost to a high wall filter.</p>
 <table class="dt"><tr><th></th><th>Color Doppler</th><th>Power Doppler</th></tr>
 <tr><td>Displays</td><td>Mean velocity + direction</td><td>Signal strength (amplitude)</td></tr>
 <tr><td>Direction shown</td><td>Yes</td><td>No (conventional power Doppler)</td></tr>
@@ -569,18 +570,18 @@ window.UNITS.push({
     { id: "u12-q10", type: "short", q: "What is the value of cos 60°?", answer: "0.5", accept: ["0.5", ".5", "0.50", "one half", "1/2", "half"], explain: "cos 60° = 0.5, so a 60° angle yields only half the shift of a 0° angle. It is the standard clinical ceiling because accuracy degrades quickly beyond it.", objectives: ["u12-o3"], lesson: "u12-l3", level: 1 },
     { id: "u12-q11", type: "mc", q: "Why is 60° usually given as the maximum acceptable Doppler angle?", choices: ["Above 60° the machine cannot compute cosine", "Cosine changes rapidly near 90°, so small angle errors cause large velocity errors", "Above 60° the shift becomes negative", "Above 60° aliasing is guaranteed", ], answer: 1, explain: "The cosine curve steepens toward 90°, so the same few degrees of cursor error translate into a much bigger percentage velocity error. The shift never becomes negative from the angle alone — direction does that.", objectives: ["u12-o3"], lesson: "u12-l3", level: 3 },
     { id: "u12-q12", type: "tf", q: "A vessel imaged at exactly 90° to the beam will show no Doppler shift even if blood is moving quickly.", answer: true, explain: "True, and it is a classic pitfall: a perpendicular vessel can look occluded on color. Steer the box or heel-toe the probe before concluding there is no flow.", objectives: ["u12-o3"], lesson: "u12-l3", level: 2 },
-    { id: "u12-q13", type: "mc", q: "A CW Doppler transducer contains:", choices: ["One crystal that alternately sends and listens", "Two crystals, one sending and one receiving continuously", "One crystal with a matching layer only", "An array of 128 crystals"], answer: 1, explain: "CW needs one element transmitting without pause and another receiving without pause. The single alternating crystal describes PW, which is exactly why PW can time echoes and CW cannot.", objectives: ["u12-o4"], lesson: "u12-l4", level: 1 },
+    { id: "u12-q13", type: "mc", q: "A simple dedicated CW pencil probe commonly contains:", choices: ["One element that alternately sends and listens", "Two elements, one transmitting and one receiving continuously", "One element with a matching layer only", "No piezoelectric elements"], answer: 1, explain: "A dedicated pencil probe commonly uses separate transmit and receive elements. Array probes may assign element groups, so exactly two is not universal.", objectives: ["u12-o4"], lesson: "u12-l4", level: 1 },
     { id: "u12-q14", type: "mc", q: "Which is TRUE of continuous wave Doppler?", choices: ["It has excellent range resolution", "It aliases at high velocities", "It has range ambiguity but never aliases", "It uses a sample volume placed at a chosen depth"], answer: 2, explain: "CW cannot time an echo, so it cannot say where the signal came from (range ambiguity), but with no sampling there is no Nyquist limit. The sample volume belongs to PW.", objectives: ["u12-o4"], lesson: "u12-l4", level: 2 },
     { id: "u12-q15", type: "short", q: "Which Doppler mode should you choose to measure a very high-velocity jet without aliasing?", answer: "continuous wave", accept: ["continuous wave", "cw", "cw doppler", "continuous wave doppler"], explain: "CW, because it never aliases. You give up depth information, but for a known jet whose depth you can identify on the image, that trade is worth it.", objectives: ["u12-o4"], lesson: "u12-l4", level: 2 },
     { id: "u12-q16", type: "mc", q: "The main advantage of PW Doppler over CW Doppler is:", choices: ["Higher maximum measurable velocity", "Range resolution — flow can be sampled at a chosen depth", "Immunity to aliasing", "It needs no angle correction"], answer: 1, explain: "PW's gate tells you exactly where the signal comes from. The other three describe CW or are simply false — every Doppler mode is angle dependent.", objectives: ["u12-o4"], lesson: "u12-l4", level: 2 },
     { id: "u12-q17", type: "mc", q: "PRF is 8 kHz. What is the Nyquist limit?", choices: ["2 kHz", "4 kHz", "8 kHz", "16 kHz"], answer: 1, explain: "Nyquist = PRF ÷ 2 = 4 kHz. The 16 kHz answer comes from multiplying by 2 instead of dividing — remember the sampling theorem takes half, it does not give double.", objectives: ["u12-o5"], lesson: "u12-l5", level: 2 },
     { id: "u12-q18", type: "tf", q: "Aliasing can occur with continuous wave Doppler if the velocity is high enough.", answer: false, explain: "False. Aliasing is a sampling problem and CW never samples — it listens continuously. Only PW-based modes (spectral PW and color Doppler) alias.", objectives: ["u12-o5", "u12-o4"], lesson: "u12-l5", level: 2 },
     { id: "u12-q19", type: "mc", q: "Which control will NOT help eliminate aliasing?", choices: ["Increasing the scale (PRF)", "Lowering the baseline", "Increasing the Doppler gain", "Selecting a lower transmit frequency"], answer: 2, explain: "Gain only amplifies what was already sampled — it changes brightness, not the Nyquist limit. The other three all either raise the limit or shrink the shift.", objectives: ["u12-o5", "u12-o7"], lesson: "u12-l5", level: 2 },
-    { id: "u12-q20", type: "mc", q: "A spectral tracing shows systolic peaks cut off at the top of the display and reappearing below the baseline. The first, best correction is to:", choices: ["Increase the scale (PRF) and lower the baseline", "Increase the Doppler gain", "Decrease the sample volume size", "Increase the wall filter"], answer: 0, explain: "That wrap-around is textbook aliasing, and raising the scale plus dropping the baseline directly makes room for the peak. Shrinking the gate cleans up broadening, not aliasing, and raising the wall filter would erase low velocities.", objectives: ["u12-o5"], lesson: "u12-l5", level: 3 },
+    { id: "u12-q20", type: "mc", q: "A spectral tracing aliases. Which adjustment actually raises the sampling limit?", choices: ["Increase scale/PRF", "Move the baseline", "Increase Doppler gain", "Increase wall filter"], answer: 0, explain:"Raising PRF raises Nyquist. Baseline shift only reallocates the fixed display range and may display a one-direction peak without curing undersampling.",objectives:["u12-o5"],lesson:"u12-l5",level:3 },
     { id: "u12-q21", type: "short", q: "Aliasing occurs when the Doppler shift exceeds what limit?", answer: "Nyquist limit", accept: ["nyquist", "nyquist limit", "prf/2", "prf divided by 2", "half the prf"], explain: "The Nyquist limit, equal to PRF ÷ 2. Below it the samples describe the signal honestly; above it the machine reconstructs a slower, wrong-direction waveform.", objectives: ["u12-o5"], lesson: "u12-l5", level: 1 },
     { id: "u12-q22", type: "mc", q: "Increasing the imaging depth in PW Doppler makes aliasing:", choices: ["Less likely, because PRF rises", "More likely, because PRF must fall", "Unchanged, because depth and PRF are unrelated", "Less likely, because the shift falls"], answer: 1, explain: "Deeper imaging means longer listening time per pulse, so the machine must lower the PRF, which lowers the Nyquist limit and invites aliasing. That is why decreasing depth is a legitimate anti-aliasing move.", objectives: ["u12-o5"], lesson: "u12-l5", level: 3 },
     { id: "u12-q23", type: "short", q: "What mathematical process creates the spectral Doppler display?", answer: "fast Fourier transform", accept: ["fft", "fast fourier transform", "fourier transform", "spectral analysis by fft"], explain: "The fast Fourier transform separates the mixed returning signal into its component frequencies. Autocorrelation is the different, faster process used for color Doppler.", objectives: ["u12-o6"], lesson: "u12-l6", level: 1 },
-    { id: "u12-q24", type: "mc", q: "On a spectral Doppler display, what does the brightness of a point represent?", choices: ["The direction of flow", "The depth of the sample volume", "The number of red cells moving at that velocity", "The transmit frequency"], answer: 2, explain: "Brightness is an amplitude measure: how many scatterers share that velocity at that instant. Direction is shown by which side of the baseline the point falls on.", objectives: ["u12-o6"], lesson: "u12-l6", level: 2 },
+    { id: "u12-q24", type: "mc", q: "On a spectral Doppler display, point brightness primarily represents:", choices: ["Flow direction", "Sample depth", "Backscattered signal power at that shift", "Transmit frequency"], answer: 2, explain:"Brightness reflects received spectral power, related to contributing scatterers and settings; it is not a calibrated red-cell count.",objectives:["u12-o6"],lesson:"u12-l6",level:2 },
     { id: "u12-q25", type: "mc", q: "The vertical axis of the spectral display represents:", choices: ["Time", "Doppler shift or velocity", "Depth", "Signal amplitude"], answer: 1, explain: "Vertical = how fast (shift in kHz, or velocity in cm/s once you angle-correct). Time runs horizontally and amplitude is shown as brightness.", objectives: ["u12-o6"], lesson: "u12-l6", level: 1 },
     { id: "u12-q26", type: "tf", q: "Spectral broadening always indicates disease.", answer: false, explain: "False. Turbulence causes it, but so does a sample volume that spans the vessel or too much Doppler gain. Shrink and center the gate and reduce gain before calling it pathologic.", objectives: ["u12-o6"], lesson: "u12-l6", level: 2 },
     { id: "u12-q27", type: "mc", q: "The wall filter is set too high. What is the likely consequence?", choices: ["Aliasing appears", "Low-velocity flow such as venous or diastolic flow disappears", "The measured peak velocity increases", "Spectral broadening increases"], answer: 1, explain: "The wall filter deletes low frequencies, so an aggressive setting removes real slow flow and can imitate an occlusion. It does not change peak velocity or affect the Nyquist limit.", objectives: ["u12-o7"], lesson: "u12-l7", level: 3 },
@@ -595,7 +596,7 @@ window.UNITS.push({
     { id: "u12-q36", type: "mc", q: "A color image shows red changing abruptly to blue in the center of a vessel with no black band between. This is:", choices: ["Normal bidirectional flow", "Aliasing", "Flash artifact", "Variance from turbulence only"], answer: 1, explain: "True flow reversal passes through zero velocity, which renders black; an instant red-to-blue jump means the velocities wrapped past the Nyquist limit. Raise the color scale to confirm.", objectives: ["u12-o8", "u12-o5"], lesson: "u12-l8", level: 3 },
     { id: "u12-q37", type: "mc", q: "Which is an advantage of power Doppler over color Doppler?", choices: ["It displays direction of flow", "It displays peak velocity", "It is more sensitive to slow flow and does not alias", "It has a higher frame rate"], answer: 2, explain: "Power Doppler maps signal amplitude, so it detects weak, slow flow well and has no Nyquist limit. It gives up direction and velocity entirely, and its frame rate is typically lower, not higher.", objectives: ["u12-o9"], lesson: "u12-l9", level: 2 },
     { id: "u12-q38", type: "short", q: "What artifact is power Doppler especially prone to?", answer: "flash artifact", accept: ["flash", "flash artifact", "motion flash", "flash from motion"], explain: "Flash artifact: because power Doppler is so sensitive to any motion, patient or probe movement paints a burst of color across the image. Holding still and using a short-lived frame average reduce it.", objectives: ["u12-o9"], lesson: "u12-l9", level: 2 },
-    { id: "u12-q39", type: "mc", q: "Conventional power Doppler displays which quantity?", choices: ["Direction of flow", "Mean velocity", "Amplitude (strength) of the Doppler signal", "Peak systolic velocity"], answer: 2, explain: "Power Doppler maps how much signal is coming back, not what the shift was. Because it discards the shift itself, it cannot show direction or any velocity — which is exactly why it never aliases and is barely angle dependent.", objectives: ["u12-o9"], lesson: "u12-l9", level: 2 },
+    { id: "u12-q39", type: "mc", q: "Conventional power Doppler displays which quantity?", choices: ["Direction", "Mean velocity", "Integrated Doppler signal power", "Peak systolic velocity"], answer: 2, explain:"It integrates Doppler signal power. It lacks conventional direction/velocity information and is less angle-sensitive, but still loses signal near 90°.",objectives:["u12-o9"],lesson:"u12-l9",level:2 },
     { id: "u12-q40", type: "mc", q: "Duplex imaging means:", choices: ["Two transducers scanning at once", "A real-time 2D image combined with Doppler", "Two focal zones in one frame", "Transmitting two frequencies at once"], answer: 1, explain: "Duplex = 2D imaging plus Doppler simultaneously; adding both color and spectral is often called triplex. Every added mode consumes pulses, so the frame rate falls.", objectives: ["u12-o9"], lesson: "u12-l9", level: 1 }
   ],
 
@@ -811,7 +812,8 @@ window.UNITS.push({
           ]
         };
       }
-    }
+    },
+    { id:"u12-d8",title:"Shift definition and centered velocity ceiling",formula:"Δf=fr−ft; vmax=cPRF/(4f₀|cosθ|)",lesson:"u12-l5",gen:function(rnd){if(rnd()<0.5){var tx=[2,3,5][Math.floor(rnd()*3)]*1000000,sh=[1000,2000,3500][Math.floor(rnd()*3)],rx=tx+sh;return {kind:"number",given:"Transmitted "+tx+" Hz, received "+rx+" Hz",ask:"Doppler shift?",answer:sh,unit:"Hz",tol:0.1,steps:["shift=received−transmitted","="+rx+"−"+tx,"="+sh+" Hz"]};}var prf=[4000,6000,8000][Math.floor(rnd()*3)],f=[2,4,5][Math.floor(rnd()*3)]*1000000,cos=[1,0.87,0.71,0.5][Math.floor(rnd()*4)],v=1540*prf/(4*f*cos);return {kind:"number",given:"Centered baseline, PRF="+prf+" Hz, f₀="+(f/1000000)+" MHz, |cosθ|="+cos,ask:"Maximum unaliased velocity?",answer:+v.toFixed(3),unit:"m/s",tol:0.01,steps:["vmax=cPRF/(4f₀|cosθ|)","=1540×"+prf+"÷(4×"+f+"×"+cos+")","="+v.toFixed(3)+" m/s"]};} }
   ],
 
   whiteboard: [

@@ -216,8 +216,8 @@ window.UNITS.push({
 <path d="M300 58 L300 280" fill="none" stroke="var(--c2)"/>
 <path d="M300 58 L420 268" fill="none" stroke="var(--c2)"/>
 <path d="M300 58 L490 250" fill="none" stroke="var(--c2)"/>
-<path d="M120 240 a250 250 0 0 0 360 0" fill="none" stroke="var(--c3)"/>
-<text x="235" y="296" fill="currentColor" font-size="16">SECTOR image</text>
+<path d="M135 225 a230 210 0 0 0 330 0" fill="none" stroke="var(--c3)"/>
+<text x="235" y="280" fill="currentColor" font-size="16">SECTOR image</text>
 <text x="20" y="120" fill="currentColor" font-size="16">every element</text>
 <text x="20" y="144" fill="currentColor" font-size="16">fires on every</text>
 <text x="20" y="168" fill="currentColor" font-size="16">pulse; only the</text>
@@ -487,7 +487,8 @@ window.UNITS.push({
 <li><span class="kw-2">Subdicing</span> — cut each element into several even smaller ones fired together, so the spacing between sound sources is smaller than a wavelength. This is the specific fix for <b>grating</b> lobes.</li>
 </ul>
 <div class="callout key">Side lobes: all transducers, single elements included. Grating lobes: arrays only. Both put echoes in the wrong place laterally. Apodization helps both; subdicing targets grating lobes.</div>
-<div class="callout tip">Dumb saying: "<b>Gratings come in rows</b>" — grating lobes need a row of elements, so they are the array-only lobe.</div>`,
+<div class="callout tip">Dumb saying: "<b>Gratings come in rows</b>" — grating lobes need a row of elements, so they are the array-only lobe.</div>
+<div class="steps"><ol><li>At 10 cm, round-trip time is 13 × 10 = 130 µs.</li><li>For 128 lines and one focus, frame time = 130 × 128 = 16.64 ms.</li><li>Frame rate = 1 ÷ 0.01664 ≈ 60 frames/s; temporal resolution is 16.64 ms.</li><li>With two foci, frame time doubles and frame rate halves to about 30 frames/s.</li><li>At 30 frames/s and 160 lines, maximum depth = 77,000 ÷ (30 × 160) ≈ 16 cm.</li><li>At 10 cm and 50 frames/s, maximum lines = 77,000 ÷ (50 × 10) = 154.</li></ol></div>`,
       diagrams: [
         { svg: `<svg viewBox="0 0 600 280" role="img"><title>A main beam with weaker lobes off to the sides, and an echo from a lobe drawn on the main beam line</title>
 <rect x="255" y="40" width="90" height="16" fill="var(--muted)"/>
@@ -628,7 +629,7 @@ window.UNITS.push({
     { id: "u08-q28", type: "mc", q: "A machine must hold 30 frames/s with 160 lines per frame and one focus. What is the greatest imaging depth possible?", choices: ["About 8 cm", "About 16 cm", "About 24 cm", "About 32 cm"], answer: 1, explain: "Max depth = 77,000 ÷ (30 × 160) ≈ 16 cm. Choosing 32 cm forgets that the 13 µs already covers the round trip.", objectives: ["u08-o7"], lesson: "u08-l8", level: 3 },
     { id: "u08-q29", type: "mc", q: "Which change will INCREASE the frame rate?", choices: ["Widening the sector", "Increasing line density", "Reducing the imaging depth", "Adding a third focal zone"], answer: 2, explain: "Less depth means less waiting per line, so frames finish faster. The other three each add pulses or waiting time and lower the frame rate.", objectives: ["u08-o8"], lesson: "u08-l9", level: 2 },
     { id: "u08-q30", type: "tf", q: "Switching to a higher-frequency transducer lowers the frame rate.", answer: false, explain: "Frame rate depends on depth, lines and foci, because the round trip is 13 µs per cm no matter what frequency is used. Frequency affects resolution and penetration instead.", objectives: ["u08-o8"], lesson: "u08-l9", level: 2 },
-    { id: "u08-q31", type: "short", q: "Increasing line density sharpens lateral detail, but which resolution does it worsen?", answer: "temporal", accept: ["temporal", "temporal resolution", "frame rate", "temporal res"], explain: "More lines per frame means more pulses per frame, so frame time rises and frame rate falls. Axial resolution is untouched, because the pulse length has not changed.", objectives: ["u08-o8"], lesson: "u08-l9", level: 2 },
+    { id: "u08-q31", type: "short", q: "Increasing line density sharpens lateral detail, but which resolution does it worsen?", answer: "temporal", accept: ["temporal", "temporal resolution", "temporal res"], explain: "More lines per frame means more pulses per frame, so frame time rises and frame rate falls. Axial resolution is untouched, because the pulse length has not changed.", objectives: ["u08-o8"], lesson: "u08-l9", level: 2 },
     { id: "u08-q32", type: "mc", q: "A sonographer is struggling to capture a fast-moving mitral valve. Which set of changes best protects temporal resolution?", choices: ["Deeper field, wider sector, three foci", "Shallower field, narrower sector, one focus", "Same depth with much higher line density", "Higher frequency with two foci"], answer: 1, explain: "Depth, width and focal zones all multiply into frame time, so reducing all three raises frame rate. Higher frequency does nothing for frame rate, and the second focus in that option actively halves it.", objectives: ["u08-o8"], lesson: "u08-l9", level: 3 },
     { id: "u08-q33", type: "mc", q: "Grating lobes are produced by:", choices: ["Any transducer, including single-element ones", "Arrays only, because sound comes from many separated elements", "Only curved transducers", "Only continuous-wave transducers"], answer: 1, explain: "Grating lobes come from the regular spacing of separate element sources, so only arrays make them. Side lobes are the ones any transducer, single-element included, produces.", objectives: ["u08-o9"], lesson: "u08-l10", level: 1 },
     { id: "u08-q34", type: "short", q: "What construction technique cuts each element into smaller pieces to reduce grating lobes?", answer: "subdicing", accept: ["subdicing", "sub-dicing", "subdice", "sub dicing"], explain: "Subdicing shrinks the spacing between sound sources to less than a wavelength, which suppresses grating lobes. Apodization also helps with lobes but is an electrical weighting, not a cut.", objectives: ["u08-o9"], lesson: "u08-l10", level: 1 },
@@ -710,12 +711,12 @@ window.UNITS.push({
           kind: "number",
           given: "Imaging depth " + d + " cm with one focus, and the frame rate must be at least " + fr + " frames/s.",
           ask: "What is the greatest number of lines per frame? (round to a whole number)",
-          answer: Math.round(L), unit: "lines", tol: Math.max(2, L * 0.03),
+          answer: Math.floor(L), unit: "lines", tol: 0.01,
           steps: [
             "Frame time allowed = 1 ÷ " + fr + " = " + (1 / fr).toFixed(5) + " s",
             "Time per line = 13 µs × " + d + " cm = " + (13 * d) + " µs",
             "Lines = frame time ÷ time per line = " + L.toFixed(1),
-            "So about " + Math.round(L) + " lines  (or 77,000 ÷ (" + fr + " × " + d + "))"
+            "The greatest whole number that does not exceed the limit is " + Math.floor(L) + " lines  (or 77,000 ÷ (" + fr + " × " + d + "))"
           ]
         };
       }

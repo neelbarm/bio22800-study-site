@@ -1,145 +1,81 @@
-# HANDOFF — how to continue this project if the previous agent stopped
+# Ultrasound Physics Study Site — continuation handoff
 
-Read this first, then `SPEC.md`. Everything below is written so a fresh
-agent (any model) with no memory of the earlier session can finish the job.
+Updated 2026-09-19. Repository: `neelbarm/bio22800-study-site`.
+Working branch: `claude/ecstatic-hawking-3hc6l5`.
+Existing PR: https://github.com/neelbarm/bio22800-study-site/pull/1
 
-## What we are building
+## Student and goal
 
-An offline study website for one sonography student learning ultrasound
-physics from *Understanding Ultrasound Physics* (Edelman, 4th ed.). She has
-no lecture slides, studies strictly from course **objectives**, is visual and
-hands-on, uses mnemonics ("dumb sayings"), flashcards, says things out loud,
-brain-dumps on a whiteboard, quizzes with classmates on weekends, and likes
-generated practice tests. `SPEC.md §0` has the full profile; `SPEC.md §8`
-lists every app feature; `README.md` describes the finished product to her.
+The student self-teaches ultrasound physics alongside Sidney K. Edelman,
+Understanding Ultrasound Physics, fourth edition. Her tests follow course
+objectives. She learns through diagrams, notes, memorable sayings,
+flashcards, explaining aloud, whiteboard recall, and weekend classmate
+quizzes. Preserve those learning flows. The actual textbook and professor's
+objective list have not been provided; do not claim verified coverage of
+every assigned objective or reproduce textbook text.
 
-## Git
+The user requested Astra for planning/review and cheaper models for
+implementation. This continuation uses Sol execution agents. The user also
+explicitly authorized Vercel deployment when finished.
 
-- Repo: `neelbarm/bio22800-study-site`. Work on branch
-  `claude/ecstatic-hawking-3hc6l5`. Draft PR:
-  https://github.com/neelbarm/bio22800-study-site/pull/1
-- Commit small and often (`git push -u origin claude/ecstatic-hawking-3hc6l5`).
-  Commit messages end with a `Co-Authored-By:` line for the model in use.
-- The old BIO 22800 site was deliberately wiped on this branch (first commit
-  on the branch). Do not restore it.
+## Current implementation
 
-## Layout and the contract
+- All 16 units exist and are listed in `data/manifest.js`.
+- Unit 16 links frequency/depth relationships, control ownership, units,
+  core formulas, worked examples, and mixed problems. Cram Sheet aggregates
+  the complete formula lists from every unit.
+- The vanilla app includes Learn, objectives and custom objective lists,
+  flashcards, quizzes, timed practice tests, drills, drawing/text whiteboard,
+  Study Group, mnemonics, search, missed questions, and progress backup.
+- Exam Planner stores the next exam date and selected units.
+- All original unit IDs and question IDs remain stable.
+- Content corrections and scope are recorded in `docs/audit-*.md`.
+- `docs/visual-qa.md` records diagram review findings and resolutions.
 
-```
-SPEC.md               the contract: student profile, unit list, data schema,
-                      allowed HTML, SVG rules, accuracy rules, app behavior
-README.md             student-facing instructions (done)
-data/manifest.js      the 15 unit file paths (done)
-data/units/uNN-*.js   one file per unit — THE CONTENT (see status below)
-tools/validate.js     node tools/validate.js  → must print OK (done)
-tools/qa.js           headless-Chromium smoke test of the app (done)
-index.html app.js styles.css   the app (see status below)
-```
+## Important accuracy corrections
 
-## Status checklist — update this file as you go
+Do not reintroduce the previous universal six-intensity ranking. Only
+compare SP with SA at a fixed temporal statistic, or TP/PA/TA at a fixed
+spatial statistic. Crossed comparisons may be indeterminate.
 
-- [x] Contract, validator, manifest, README
-- [x] u01 math-foundations
-- [x] u02 waves-and-parameters
-- [x] u03 pulsed-waves
-- [x] u04 attenuation-and-interaction
-- [x] u05 transducers
-- [x] u06 sound-beams
-- [x] u07 resolution
-- [x] u08 arrays-and-real-time
-- [x] u09 displays-and-instrumentation
-- [x] u10 harmonics-and-contrast
-- [x] u11 hemodynamics
-- [x] u12 doppler
-- [x] u13 artifacts
-- [x] u14 bioeffects-and-safety
-- [x] u15 qa-and-statistics
-- [ ] u16 putting-it-together (cross-unit synthesis; added to manifest)
-- [ ] App shell: index.html + app.js + styles.css implementing SPEC §8, plus the Exam Planner (next exam date + units drive Home's daily plan)
-- [ ] Content audit pass on every unit (see 'Quality layer' below)
-- [ ] `node tools/validate.js` prints OK for all 15 units
-- [ ] `NODE_PATH=/opt/node22/lib/node_modules node tools/qa.js` runs with
-      0 console errors at 1280 px and at `W=390`
-- [ ] Manual look at screenshots; fix layout problems
-- [ ] Physics spot-check of a sample of questions per unit
-- [ ] Final commit, push, PR description updated, PR marked ready if asked
+Frequency/damping/depth relationships require named constants. Increasing
+frequency at fixed cycles shortens PD and SPL; at fixed PRP that lowers DF.
+Depth constrains maximum PRF; actual settings may already be below the
+ceiling. Snell angles are measured from the normal.
 
-A unit counts as done only when its file exists, `node tools/validate.js
-data/units/<file>` prints `OK`, and it is committed.
+TI is a model, not a thermometer or guaranteed upper bound. MI uses derated
+rarefactional pressure. Historical no-effects intensity values are not
+universal safety guarantees. See the cited AIUM/FDA sources in the safety
+audit. This site is a study companion, not a clinical operating protocol.
 
-## How the work was split (so you can re-run it the same way)
+## Validation and hosting
 
-Content was delegated to parallel agents, two units each, with this brief:
-"Read SPEC.md in full. Write `data/units/<file>` for unit(s) X. Cover every
-topic in the `covers` column of SPEC §2. Targets: 6–12 objectives, 6–10
-lessons of 150–400 words with hand-drawable inline SVG diagrams, 5–10
-mnemonics, all formulas, key numbers, 30–45 flashcards, 32–45 questions
-(≈60% mc / 15% tf / 25% short, ≥⅓ level 2–3, every objective ≥2 questions,
-explanations that say why the tempting wrong answer is wrong), 3–8 drills
-with deterministic `gen(rnd)` functions that vary the numbers, 3–5
-whiteboard prompts with 6–15 key points. Original prose only — never copy
-the textbook. Run the validator until OK."
+- `node tools/validate.js`: schema/references/coverage checks, deterministic
+  drill checks, and manifest parity. Explicit file arguments validate a unit.
+- `node tools/qa.js`: browser checks; supply Playwright through Node's module
+  path or `PLAYWRIGHT_PATH`. `W=390` selects phone width; `SHOTS` saves images.
+- `node tools/diagrams-qa.js`: Playwright + Sharp, renders every SVG in both
+  themes and generates contact sheets. `SHOTS` selects output directory.
+- `node tools/build.js`: validates and copies only index/app/styles/data to
+  `dist/`. Vercel uses this dependency-free build via `vercel.json`.
+- `.vercel/`, `.env*`, generated output, and dependencies are not source.
+- Vercel project: `ultrasound-physics-study`, team
+  `neelbarmecha5-8782s-projects`. Local project linkage is in ignored
+  `.vercel/project.json`. CLI deployment is available. Automatic GitHub
+  linkage failed because Vercel needs a GitHub login connection; manual
+  deployment does not depend on that connection.
 
-The app shell was delegated to one agent with SPEC §8 as the brief, told to
-test with Playwright (globally installed: prefix commands with
-`NODE_PATH=/opt/node22/lib/node_modules`). If `data/units/u99-sample.js`
-exists it is that agent's temporary test fixture: delete it and make sure
-`data/manifest.js` still lists exactly the 15 real files.
+Progress uses browser localStorage (`usp.v1`) and is specific to browser,
+device, and origin. Export/Import moves it between the file copy and hosted
+site. Opening the downloaded folder works offline; a cold load of the
+hosted site requires a connection.
 
-If you cannot run parallel agents, just write the missing unit files one at a
-time yourself, in the same style, validating each.
+## Release gate
 
-## Physics ground rules (so units stay consistent)
-
-Standard SPI-level teaching: soft tissue 1,540 m/s = 1.54 mm/µs; λ(mm) =
-1.54 ÷ f(MHz); period(µs) = 1 ÷ f(MHz); 13 µs per cm of depth round trip;
-PRP = 13 µs × depth(cm); duty factor = PD ÷ PRP; axial resolution = SPL ÷ 2;
-lateral resolution = beam width; near-zone length = D² ÷ (4λ); PZT pulsed
-frequency = c(PZT) ÷ (2 × thickness); matching layer = ¼ λ; Q = f₀ ÷
-bandwidth; Z = ρc; reflection % = ((Z₂−Z₁)/(Z₂+Z₁))²; attenuation coeff ≈
-f/2 dB/cm in soft tissue; Doppler shift = 2 f v cos θ ÷ c; Nyquist = PRF ÷
-2; MI = peak rarefactional pressure ÷ √f; SPTP ≥ SPPA ≥ SPTA ≥ SATP ≥ SAPA ≥
-SATA; TA = PA × duty factor; AIUM: no confirmed bioeffects below SPTA
-100 mW/cm² unfocused, 1 W/cm² focused; sensitivity = TP/(TP+FN),
-specificity = TN/(TN+FP).
-
-## Things the user still owes us (ask if they are around)
-
-- The student's real course objective list. When received, either paste it
-  into each unit's `objectives` (keeping ids stable) or leave it for her to
-  paste into the app's "My course objectives" box.
-- Confirmation of the chapter numbering in her printing of the book (units
-  are named by topic, in book order, on purpose).
-
-## UI quality bar (client requirement, added later)
-
-The client said: "It will be a webpage so UI needs to be amazing." The app
-must look designed, not just work. Non-negotiables: a deliberate type scale
-and 8px spacing grid; neutral surface system with per-unit accent colors; a
-designed dark mode; 150–200ms motion with a flashcard flip and animated
-progress; Home hero with today's plan and a unit-card grid with mastery
-rings; two-column Learn layout; large answer cards in quizzes with a results
-ring; a visible whiteboard toolbar; a full-bleed Study Group presentation
-mode; empty states with a next action; touch targets ≥ 44px; contrast
-≥ 4.5:1 in both themes; no horizontal scroll at 360px. Screenshot every page
-in both themes at 1280 and 390 and look at them before calling it done.
-
-## Quality layer (client: "truly make sure this helps her learn everything for this course")
-
-After all units validate, run an independent audit of every unit (delegated
-4 units per auditor). Each auditor must, for its units:
-1. Check every question's answer key and every explanation for physics
-   correctness; fix errors in place.
-2. Remove ambiguity: no mc question may have two defensible answers; short
-   answers must accept every reasonable spelling/abbreviation.
-3. Make sure every formula in `formulas[]` has a worked example in a lesson
-   (`<div class="steps"><ol>…</ol></div>`) and a drill; add them if missing.
-4. Make sure every objective can be fully answered from its lessons alone
-   (no question relies on facts the lessons never state); patch lessons.
-5. Render every SVG diagram to PNG (Playwright, `NODE_PATH=/opt/node22/lib/node_modules`)
-   and look at a contact sheet; fix overlapping labels, unreadable text, or
-   diagrams that do not show the idea.
-6. Re-run `node tools/validate.js` → OK, and commit.
-u16 "Putting It Together" is the synthesis unit: master relationship chains,
-who-controls-what table, all formulas with worked examples, cross-unit
-multi-step questions and mixed drills.
+The content, arithmetic, visual and application regression gates passed on
+2026-09-19. The validated release contains 16 units, 605 questions and 115
+drills. The static build completed with zero validator errors or warnings,
+diagram QA completed 298 theme renders with zero text bounds failures, and
+desktop/mobile browser regression passed all 18 routes in both themes.
+Deployment details are recorded in `docs/release.md`. Do not merge the PR or
+mark it ready without a separate request.

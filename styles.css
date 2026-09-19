@@ -121,6 +121,7 @@
 /* ----------------------------------------------------------- primitives -- */
 
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 
 body {
@@ -370,7 +371,7 @@ button.chip[aria-pressed="true"] { background: var(--a1); border-color: var(--a1
 
 /* forms */
 label.field { display: block; font-weight: 650; font-size: var(--fs-sm); margin: 0 0 6px; }
-input[type="text"], input[type="number"], input[type="search"], textarea, select {
+input[type="text"], input[type="number"], input[type="date"], input[type="search"], textarea, select {
   font: inherit; font-size: var(--fs-sm); color: var(--ink); background: var(--surface);
   border: 1px solid var(--line-strong); border-radius: var(--r-sm);
   padding: 10px 12px; width: 100%; min-height: 44px;
@@ -402,6 +403,35 @@ input[type="checkbox"], input[type="radio"] { width: 20px; height: 20px; accent-
 .tab[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ua); }
 
 /* ------------------------------------------------------------------ HOME -- */
+
+.exam-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s4);
+  background: var(--ua-soft); border: 1px solid var(--ua-line); border-radius: var(--r);
+  padding: var(--s4); margin-bottom: var(--s4);
+}
+.exam-banner h2 { font-size: 18px; margin-bottom: 2px; }
+.exam-banner p { margin: 0; }
+.exam-banner.empty-plan { --ua-soft: var(--well); --ua-line: var(--line); }
+
+.exam-countdown {
+  display: flex; align-items: center; gap: var(--s5); padding: var(--s5); margin-bottom: var(--s4);
+  background: var(--ua-soft); border: 1px solid var(--ua-line); border-radius: var(--r-lg);
+}
+.exam-countdown p { margin: 0; }
+.exam-days { min-width: 92px; text-align: center; border-right: 1px solid var(--ua-line); padding-right: var(--s5); }
+.exam-days b { display: block; font-size: var(--fs-2xl); line-height: 1; }
+.exam-days span { display: block; color: var(--muted); font-size: var(--fs-xs); margin-top: 6px; }
+.planner-fields { display: grid; grid-template-columns: 1fr 220px; gap: var(--s4); }
+.planner-units { border: 0; padding: 0; margin: var(--s5) 0 0; }
+.planner-units legend { font-weight: 700; margin-bottom: var(--s2); }
+.unit-check { position: relative; }
+.unit-check input { position: absolute; opacity: 0; pointer-events: none; }
+.unit-check span {
+  display: inline-flex; align-items: center; min-height: 42px; padding: 8px 13px;
+  border: 1px solid var(--line); border-radius: var(--r-pill); cursor: pointer; font-size: var(--fs-xs); font-weight: 650;
+}
+.unit-check input:checked + span { background: var(--ua-soft); border-color: var(--ua); }
+.unit-check input:focus-visible + span { outline: 3px solid var(--a1); outline-offset: 2px; }
 
 .hero {
   display: flex; align-items: center; gap: var(--s6);
@@ -844,6 +874,8 @@ figure.diagram figcaption { font-size: var(--fs-xs); color: var(--muted); margin
 .cram-table tr:last-child td { border-bottom: none; }
 .cram-table th { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
 .cram-table td.expr { font-family: var(--mono); font-size: var(--fs-xs); }
+.cram-table { table-layout: fixed; }
+.cram-table th, .cram-table td { overflow-wrap: anywhere; word-break: break-word; }
 .hidden-val {
   background: var(--line); border-radius: 5px; color: transparent; cursor: pointer;
   display: inline-block; min-width: 60px; user-select: none;
@@ -926,6 +958,11 @@ mark { background: rgb(var(--c2-rgb) / .3); color: inherit; border-radius: 3px; 
   .cram-cols { grid-template-columns: 1fr; }
   .plan-item { flex-wrap: wrap; }
   .plan-item .btn { width: 100%; }
+  .exam-banner { align-items: flex-start; flex-direction: column; }
+  .exam-banner .btn { width: 100%; }
+  .planner-fields { grid-template-columns: 1fr; }
+  .exam-countdown { align-items: flex-start; padding: var(--s4); }
+  .exam-days { min-width: 72px; padding-right: var(--s4); }
   .lightbox { padding: var(--s3); }
   .lightbox-inner { padding: var(--s4); }
 }

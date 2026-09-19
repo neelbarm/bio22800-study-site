@@ -26,8 +26,9 @@ window.UNITS.push({
       objectives: ["u11-o1", "u11-o2"],
       html: `<p class="lead">Blood is lazy. It never moves because the heart "pushes it along the pipe" — it moves because one end of the pipe has more energy than the other end.</p>
 <p>Picture a water slide. Water at the top has height (potential energy); water at the bottom has none. Water runs down, never up, and it stops the instant the slide is level. Blood behaves exactly the same way, except the energy that matters most is <span class="kw">pressure</span>, measured in <b>mmHg</b>.</p>
-<p>The difference in pressure between two points is the <span class="kw">pressure gradient</span> (ΔP). If the pressure at the start of a segment is 100 mmHg and at the end is 20 mmHg, the gradient is 80 mmHg and blood flows from the 100 end toward the 20 end. Flip the numbers and the flow flips direction. Make them equal and the flow stops — even if the pressure in both places is enormous.</p>
-<div class="callout key">Flow goes from <b>high energy to low energy</b>. No gradient, no flow. The size of the gradient (not the size of the pressure) sets how hard blood is pushed.</div>
+<p>The difference in pressure between two points is the <span class="kw">pressure gradient</span> (ΔP). If upstream pressure is 100 mmHg and downstream pressure is 20 mmHg, ΔP = 80 mmHg. In a steady segment at the same elevation with no other energy source, equal pressures imply no pressure-driven flow.</p>
+<div class="steps"><ol><li>ΔP = 100 − 20 = 80 mmHg.</li><li>If resistance is 4 mmHg/(mL/min), flow = 80 ÷ 4 = 20 mL/min.</li><li>Total energy bookkeeping also includes kinetic and gravitational potential energy.</li></ol></div>
+<div class="callout key">Flow follows a total-energy gradient. Pressure is usually dominant, but “no pressure gradient, no flow” assumes steady flow at the same elevation without another energy source.</div>
 <p>Three kinds of energy add up to a vessel's total energy: <span class="kw-2">pressure energy</span> (the push from the heart), <span class="kw-2">kinetic energy</span> (energy of motion, from velocity), and <span class="kw-2">potential energy</span> (from height relative to the heart). Bernoulli's principle, later in this unit, is just bookkeeping on these three.</p>
 <p>What controls the gradient? The <b>heart</b> generates the pressure at the upstream end; the <b>vascular bed</b> downstream sets how much pressure is left. The sonographer controls none of it — but you measure its consequences in every Doppler tracing.</p>
 <div class="callout warn">Exam trap: "high pressure" alone does not cause flow. A pressurized closed bottle at 200 mmHg has zero flow because there is no <i>gradient</i>.</div>`,
@@ -66,6 +67,8 @@ window.UNITS.push({
 <div class="formula">resistance = 8 × length × viscosity ÷ (π × radius⁴)</div>
 <p>Put that back into the flow equation and you get the version the exam loves:</p>
 <div class="formula">flow = pressure gradient × π × radius⁴ ÷ (8 × length × viscosity)</div>
+<p>Poiseuille's equation assumes steady laminar flow of a Newtonian fluid through a rigid cylindrical tube. Use coherent units: SI inputs produce resistance in Pa·s/m³ and flow in m³/s. The proportional relationships are the intended blood-flow model even though real blood and vessels are not ideal.</p>
+<div class="steps"><ol><li>Keeping geometry and viscosity fixed, ΔP doubling from 20 to 40 doubles flow.</li><li>Keeping all else fixed, radius doubling multiplies flow by 2⁴ = 16.</li><li>For R = 8Lη/(πr⁴), doubling length doubles R; doubling radius divides R by 16.</li></ol></div>
 <table class="dt"><tr><th>If this goes up…</th><th>Resistance</th><th>Flow</th></tr>
 <tr><td>Vessel radius (r⁴!)</td><td>Falls hard</td><td>Rises hard</td></tr>
 <tr><td>Vessel length</td><td>Rises</td><td>Falls</td></tr>
@@ -110,7 +113,7 @@ window.UNITS.push({
 <p><span class="kw">Phasic flow</span>: velocity changes with <b>respiration</b>. This is the signature of normal <b>veins</b>. It is a slower, gentler undulation than the arterial pulse — breathing cycles happen a few times per minute, heartbeats about once a second.</p>
 <div class="callout key">Arteries = <b>pulsatile</b> (cardiac). Veins = <b>phasic</b> (respiratory). Constant velocity = <b>steady</b> (textbook only).</div>
 <p>Why you care clinically: a leg vein that has lost its phasicity — a flat, continuous, "monophasic" venous signal — suggests an obstruction upstream between that vein and the heart. A normal vein should sound like the tide going in and out when you listen to it.</p>
-<div class="callout warn">Do not confuse <i>phasic</i> with <i>pulsatile</i>. They both mean "changing," but phasic tracks the lungs and pulsatile tracks the heart. A pulsatile <i>vein</i> is abnormal (think right heart failure or tricuspid regurgitation).</div>
+<div class="callout warn">Do not confuse respiratory phasicity with cardiac pulsatility. Central veins such as jugular and hepatic veins normally show cardiac pulsations; marked pulsatility in a peripheral leg vein may reflect transmitted right-heart pressure.</div>
 <p>Nothing here is operator-controlled: the patient's heart and lungs generate these patterns. Your job is to record them without distorting them — which is why wall filter and sweep speed settings in the Doppler unit matter so much.</p>`,
       diagrams: [
         {
@@ -143,8 +146,8 @@ window.UNITS.push({
       objectives: ["u11-o5"],
       html: `<p class="lead">Now freeze time and look <i>across</i> the vessel. Is every red cell going the same speed, or not?</p>
 <p><span class="kw">Plug flow</span>: every cell in the cross-section moves at the same speed, so the profile is a flat, blunt block — like a cork sliding down a tube. Plug flow appears at the <b>entrance</b> to a vessel, at the entrance to the heart's great vessels, and in large vessels such as the aorta. On a spectrum it gives a thin, narrow band, because almost all cells share one velocity.</p>
-<p><span class="kw">Laminar flow</span> (also called <span class="kw-2">parabolic</span> flow): layers slide over each other smoothly, and friction against the wall slows the outer layers. The center is fastest and the edges are slowest, giving a bullet-shaped profile. The peak velocity in the center is about <b>twice the average</b> velocity across the vessel. This is normal flow in most of the body. On a spectrum you see a <b>clear window</b> under the waveform, because few cells travel at the low-middle velocities.</p>
-<p><span class="kw">Turbulent flow</span>: the orderly layers break down and cells move in all directions, including backward and sideways. Turbulence occurs beyond a stenosis, at sharp bifurcations, and wherever velocity gets too high. It makes an audible <span class="kw-2">bruit</span> and a palpable thrill, and on a spectrum it produces <b>spectral broadening</b> — a fuzzy, filled-in tracing with simultaneous high and low, forward and reverse velocities.</p>
+<p><span class="kw">Laminar flow</span> means orderly layers and can be plug-like or parabolic. A fully developed steady laminar profile in an ideal tube is parabolic: center velocity is about twice the average. A small central Doppler gate may show a clear window, while a large or wall-adjacent gate can broaden the spectrum even in laminar flow.</p>
+<p><span class="kw">Turbulent flow</span> has disordered velocities and may produce spectral broadening, an audible bruit or a palpable thrill. None is guaranteed in every case, and spectral broadening alone does not prove turbulence because gate size, gain and transit-time effects can mimic it.</p>
 <div class="callout key">Plug = flat profile, narrow spectrum. Laminar = parabolic, center 2× average, clear spectral window. Turbulent = chaotic, bruit, spectral broadening.</div>
 <div class="callout tip">Mental picture: marching band (plug), a river where the middle runs fastest (laminar), whitewater rapids (turbulent).</div>`,
       diagrams: [
@@ -163,7 +166,7 @@ window.UNITS.push({
 <line x1="230" y1="80" x2="330" y2="80" stroke="var(--c3)" stroke-width="3"/>
 <line x1="230" y1="106" x2="330" y2="106" stroke="var(--c3)" stroke-width="3"/>
 <line x1="230" y1="132" x2="270" y2="132" stroke="var(--c3)" stroke-width="3"/>
-<polyline points="270,50 332,93 270,138" fill="none" stroke="var(--c3)" stroke-width="3"/>
+<path d="M270 50 Q342 93 270 138" fill="none" stroke="var(--c3)" stroke-width="3"/>
 <text x="415" y="28" fill="currentColor" font-size="16">turbulent</text>
 <rect x="410" y="40" width="170" height="110" fill="none" stroke="currentColor" stroke-width="2"/>
 <polyline points="425,60 460,50 445,80 490,68 465,100 515,86 480,120 540,104" fill="none" stroke="var(--c2)" stroke-width="3"/>
@@ -203,7 +206,8 @@ window.UNITS.push({
 <div class="callout key">The magic number is <b>2,000</b>. Reynolds number greater than 2,000 → turbulence. It has <b>no units</b> — it is a pure ratio.</div>
 <p>Clinical reading of that equation: turbulence appears where velocity spikes. That is exactly what happens just beyond a stenosis, which is why the classic finding is not turbulence <i>in</i> the narrowing but turbulence <b>distal</b> to it. Anemia also raises Reynolds number, because thinned blood has lower viscosity — which is why high-output anemic patients can develop flow murmurs in normal vessels.</p>
 <div class="callout warn">Exam trap: increasing viscosity does <b>not</b> increase turbulence. Higher viscosity <i>lowers</i> Reynolds number and makes flow more laminar (while also increasing resistance and reducing flow — two separate effects, don't blur them).</div>
-<div class="callout tip">Hear it: turbulence is audible as a <b>bruit</b> and feelable as a <b>thrill</b>. Laminar flow is silent.</div>`,
+<div class="callout tip">The familiar Re ≈ 2,000 transition is an idealized tube heuristic. Geometry, pulsatility, entrance effects and vessel disease shift the transition in vivo.</div>
+<div class="steps"><ol><li>Re = ρvD/η: with coherent values ρ=1,060, v=0.5, D=0.01 and η=0.004, Re=1,325.</li><li>If velocity doubles with everything else fixed, Re doubles to 2,650.</li><li>Peak velocity 80 cm/s in a fully developed parabola implies mean velocity ≈ 40 cm/s.</li></ol></div>`,
       diagrams: [
         {
           svg: `<svg viewBox="0 0 600 220" role="img"><title>A number line showing laminar flow below 1500, a transitional band from 1500 to 2000, and turbulent flow above 2000</title>
@@ -238,10 +242,12 @@ window.UNITS.push({
       title: "Bernoulli and the stenosis",
       objectives: ["u11-o7", "u11-o1"],
       html: `<p class="lead">Squeeze a hose and the water shoots out faster — but something has to pay for that speed. Bernoulli's principle says the payment comes out of pressure.</p>
-<p>Total energy is conserved along the vessel. Inside a narrowing, the same volume of blood per second must squeeze through a smaller area, so <b>velocity must rise</b> (this is continuity: area × velocity is constant). That extra kinetic energy is borrowed from pressure energy, so <b>pressure falls</b> exactly where velocity is highest.</p>
+<p>In the ideal lossless Bernoulli model, total mechanical energy is conserved. Continuity raises velocity in a narrowing and pressure falls as energy shifts toward motion. Real stenoses dissipate energy through viscosity and turbulence, so pressure recovery downstream is incomplete.</p>
 <div class="callout key">At the tightest point of a stenosis: <b>velocity is highest, pressure is lowest</b>. Past the narrowing the vessel widens, velocity falls, pressure partly recovers, and the disorganized jet creates <b>turbulence and spectral broadening distal to the stenosis</b>.</div>
 <p>The clinically useful shortcut is the <span class="kw">simplified Bernoulli equation</span>:</p>
 <div class="formula">pressure gradient (mmHg) ≈ 4 × velocity² (velocity in m/s)</div>
+<p>This shortcut assumes upstream velocity is negligible. When it is not, use ΔP ≈ 4(v₂² − v₁²).</p>
+<div class="steps"><ol><li>Continuity: if area falls from 2 cm² to 1 cm² while flow is conserved, velocity doubles.</li><li>With v₂ = 3 m/s and negligible v₁, ΔP = 4×3² = 36 mmHg.</li><li>With v₁ = 1 m/s, ΔP = 4(3²−1²) = 32 mmHg.</li></ol></div>
 <p>So a jet of 3 m/s implies 4 × 9 = <b>36 mmHg</b>; a jet of 5 m/s implies 4 × 25 = <b>100 mmHg</b>. Note how brutally the gradient grows: velocity is squared, so a little more speed means a lot more gradient. Get the units right — the 4 only works with velocity in <b>m/s</b>, and the answer comes out in <b>mmHg</b>.</p>
 <div class="callout warn">Common mistake: thinking pressure is highest at the narrowest point because "it is being squeezed." It is the opposite. The squeeze converts pressure energy into speed, so the tightest spot has the <i>lowest</i> pressure.</div>
 <div class="callout tip">Whisper it while you draw: "narrow, fast, low — then messy."</div>`,
@@ -324,8 +330,9 @@ window.UNITS.push({
       objectives: ["u11-o8"],
       html: `<p class="lead">Blood has weight. Stand up and that weight adds pressure below the heart and subtracts it above.</p>
 <p><span class="kw">Hydrostatic pressure</span> is the pressure created by a column of blood, measured relative to the <b>heart</b>. Lying flat, nearly the whole body sits at heart level, so hydrostatic pressure is about <b>zero</b> everywhere. Stand up and a column of blood now hangs from heart to feet.</p>
-<div class="formula">hydrostatic pressure ≈ 0.735 mmHg per cm below the heart</div>
-<p>That works out to roughly <b>22 mmHg per 30 cm</b> (about a foot). A heart-to-ankle distance near 130–140 cm gives about <b>+100 mmHg</b> at the ankle. Above the heart the sign flips: the head sits at a <b>negative</b> hydrostatic pressure of roughly −30 to −40 mmHg when standing.</p>
+<div class="formula">hydrostatic pressure ≈ density × gravity × vertical height</div>
+<p>The common 0.735 mmHg/cm classroom shortcut is for water. Blood's density gives about <b>0.78 mmHg/cm</b>, or <b>23.4 mmHg per 30 cm</b>. Either estimate puts a 130 cm heart-to-ankle column near +100 mmHg; always state which approximation the question supplies.</p>
+<div class="steps"><ol><li>Using the blood estimate: 0.78 × 30 cm = 23.4 mmHg.</li><li>Using a stated water/course coefficient: 0.735 × 30 = 22.05 mmHg.</li><li>Height above the heart takes a negative sign.</li></ol></div>
 <table class="dt"><tr><th>Site, standing</th><th>Hydrostatic contribution</th></tr>
 <tr><td>Head (≈ 45 cm above heart)</td><td>about −33 mmHg</td></tr>
 <tr><td>Heart</td><td>0 mmHg (the reference)</td></tr>
@@ -421,13 +428,13 @@ window.UNITS.push({
   formulas: [
     { name: "Volume flow rate", expr: "flow = pressure gradient ÷ resistance", units: "mL/min (or cm³/s)", note: "Directly proportional to ΔP, inversely proportional to resistance." },
     { name: "Pressure gradient", expr: "ΔP = P(upstream) − P(downstream)", units: "mmHg", note: "No gradient = no flow, regardless of absolute pressure." },
-    { name: "Poiseuille resistance", expr: "R = 8 × length × viscosity ÷ (π × radius⁴)", units: "mmHg per (mL/min)", note: "Radius to the 4th power dominates; length and viscosity are first power." },
-    { name: "Poiseuille flow", expr: "flow = ΔP × π × radius⁴ ÷ (8 × length × viscosity)", units: "mL/min", note: "Double the radius → 16× flow. Halve it → 1/16 flow." },
+    { name: "Poiseuille resistance", expr: "R = 8 × length × viscosity ÷ (π × radius⁴)", units: "Pa·s/m³ with coherent SI inputs", note: "Ideal steady laminar Newtonian flow in a rigid cylindrical tube." },
+    { name: "Poiseuille flow", expr: "flow = ΔP × π × radius⁴ ÷ (8 × length × viscosity)", units: "m³/s with coherent SI inputs", note: "Use chiefly for proportional reasoning in blood." },
     { name: "Continuity (conservation of flow)", expr: "area₁ × velocity₁ = area₂ × velocity₂", units: "cm³/s", note: "Same volume per second must pass every cross-section; smaller area → higher velocity." },
     { name: "Reynolds number", expr: "Re = density × velocity × diameter ÷ viscosity", units: "none (unitless)", note: "Above 2,000 → turbulent; below 1,500 → laminar." },
     { name: "Simplified Bernoulli", expr: "ΔP (mmHg) ≈ 4 × velocity²", units: "mmHg (velocity in m/s)", note: "3 m/s → 36 mmHg; 4 m/s → 64 mmHg; 5 m/s → 100 mmHg." },
     { name: "Total energy (Bernoulli)", expr: "total energy = pressure energy + kinetic energy + potential energy", units: "conserved", note: "Velocity up at a stenosis means pressure down." },
-    { name: "Hydrostatic pressure", expr: "P ≈ 0.735 mmHg × height in cm below the heart", units: "mmHg", note: "≈ 22 mmHg per 30 cm; zero at heart level; negative above the heart." },
+    { name: "Hydrostatic pressure", expr: "P = ρgh; blood ≈ 0.78 mmHg/cm", units: "mmHg", note: "0.735 mmHg/cm is the water/course approximation; state the convention." },
     { name: "Parabolic peak velocity", expr: "peak (center) velocity ≈ 2 × average velocity", units: "cm/s", note: "Only true for fully developed laminar/parabolic flow." }
   ],
 
@@ -510,9 +517,9 @@ window.UNITS.push({
     { id: "u11-q15", type: "mc", q: "A leg vein shows a flat, continuous Doppler signal with no respiratory variation. The most likely meaning is:", choices: ["Normal venous flow", "Obstruction proximal to the sample site", "Turbulence at the sample site", "Incompetent valves only"], answer: 1, explain: "Normal veins are phasic, so a continuous signal suggests something is blocking the path back to the heart. Valve incompetence shows up as reflux on Valsalva, not as loss of phasicity — though an excessive wall filter can imitate this artifactually.", objectives: ["u11-o4", "u11-o8"], lesson: "u11-l3", level: 3 },
     { id: "u11-q16", type: "mc", q: "In fully developed laminar flow, the peak (center) velocity is approximately:", choices: ["Equal to the average velocity", "Half the average velocity", "Twice the average velocity", "Four times the average velocity"], answer: 2, explain: "A parabolic profile has a center velocity about twice the cross-sectional average. 'Equal to average' describes plug flow, where the whole profile is flat.", objectives: ["u11-o5"], lesson: "u11-l4", level: 2 },
     { id: "u11-q17", type: "mc", q: "Which flow profile shows all red cells moving at essentially the same velocity?", choices: ["Plug", "Parabolic", "Laminar", "Turbulent"], answer: 0, explain: "Plug flow is the blunt, uniform profile found at vessel entrances and in large vessels. Parabolic and laminar are the same thing and describe a center-fast profile.", objectives: ["u11-o5"], lesson: "u11-l4", level: 1 },
-    { id: "u11-q18", type: "short", q: "What spectral finding indicates turbulent flow?", answer: "spectral broadening", accept: ["spectral broadening", "broadening", "filled in window", "loss of the spectral window"], explain: "Spectral broadening: many velocities and directions present at once, filling in the clear window under the waveform. A too-large sample volume can imitate it, so confirm your gate size.", objectives: ["u11-o5"], lesson: "u11-l4", level: 2 },
+    { id: "u11-q18", type: "short", q: "What spectral finding is compatible with turbulent flow but can also be caused by gate or gain settings?", answer: "spectral broadening", accept: ["spectral broadening", "broadening", "filled in window", "loss of the spectral window"], explain: "Spectral broadening accompanies a wide velocity distribution, but gate size, placement and gain can imitate it, so it does not prove turbulence alone.", objectives: ["u11-o5"], lesson: "u11-l4", level: 2 },
     { id: "u11-q19", type: "tf", q: "Laminar flow typically produces a clear window under the spectral waveform.", answer: true, explain: "True. In laminar flow the sampled cells share a narrow range of velocities, so the display shows a thin band with an empty space beneath it.", objectives: ["u11-o5"], lesson: "u11-l4", level: 2 },
-    { id: "u11-q20", type: "mc", q: "Reynolds number exceeds 2,000 in a vessel. What does this predict?", choices: ["Laminar flow", "Plug flow", "Turbulent flow", "No flow"], answer: 2, explain: "Above 2,000, orderly layers break down into turbulence. Below about 1,500 the flow is laminar, and 1,500–2,000 is the transitional zone.", objectives: ["u11-o6"], lesson: "u11-l5", level: 1 },
+    { id: "u11-q20", type: "mc", q: "In the idealized straight-tube heuristic, a Reynolds number above about 2,000 predicts an increased tendency toward:", choices: ["Laminar flow", "Plug flow", "Turbulent transition", "No flow"], answer: 2, explain: "About 2,000 is an approximate tube-flow transition, not an exact in-vivo disease classifier; geometry and pulsatility matter.", objectives: ["u11-o6"], lesson: "u11-l5", level: 1 },
     { id: "u11-q21", type: "mc", q: "Which change would most likely convert laminar flow into turbulent flow?", choices: ["A large increase in velocity", "An increase in blood viscosity", "A decrease in vessel diameter with velocity held constant", "An increase in vessel length"], answer: 0, explain: "Velocity is in the numerator of Reynolds number, so a big velocity jump drives it over 2,000. Raising viscosity is the classic trap — viscosity is in the denominator, so it makes flow more laminar, not less.", objectives: ["u11-o6"], lesson: "u11-l5", level: 3 },
     { id: "u11-q22", type: "short", q: "What are the units of Reynolds number?", answer: "none", accept: ["none", "no units", "unitless", "dimensionless", "it has no units"], explain: "Reynolds number is unitless — all the units in density × velocity × diameter ÷ viscosity cancel. It is a pure ratio compared against the 2,000 threshold.", objectives: ["u11-o6"], lesson: "u11-l5", level: 1 },
     { id: "u11-q23", type: "tf", q: "Higher blood viscosity increases Reynolds number and therefore encourages turbulence.", answer: false, explain: "False. Viscosity is in the denominator: thicker blood lowers Reynolds number and keeps flow laminar. (It does raise resistance and lower flow — a different relationship.)", objectives: ["u11-o6", "u11-o3"], lesson: "u11-l5", level: 3 },
@@ -524,7 +531,7 @@ window.UNITS.push({
     { id: "u11-q29", type: "mc", q: "During inspiration, venous flow in the arm:", choices: ["Increases, because thoracic pressure falls", "Decreases, because thoracic pressure falls", "Increases, because abdominal pressure rises", "Is unchanged"], answer: 0, explain: "Chest pressure drops on inspiration, which sucks blood from the arms and neck toward the heart. The abdominal-pressure answer is the leg mechanism applied to the wrong limb.", objectives: ["u11-o8"], lesson: "u11-l7", level: 3 },
     { id: "u11-q30", type: "mc", q: "A Valsalva maneuver is performed during a leg venous exam. In a normal vein with competent valves you expect:", choices: ["Flow to increase sharply", "Flow to stop", "Sustained reversed flow", "No change at all"], answer: 1, explain: "Valsalva raises abdominal and thoracic pressure together, halting venous return from the legs. Sustained reversed flow is the abnormal finding — it means the valves are incompetent (reflux).", objectives: ["u11-o8"], lesson: "u11-l7", level: 2 },
     { id: "u11-q31", type: "mc", q: "A patient stands up. What is the hydrostatic pressure contribution at the level of the heart?", choices: ["About +100 mmHg", "About 0 mmHg", "About −35 mmHg", "About +22 mmHg"], answer: 1, explain: "The heart is the zero reference for hydrostatic pressure. +100 mmHg belongs at the ankle and the negative value belongs at the head.", objectives: ["u11-o8"], lesson: "u11-l8", level: 1 },
-    { id: "u11-q32", type: "short", q: "Approximately how many mmHg of hydrostatic pressure are added per 30 cm below the heart?", answer: "22 mmHg", accept: ["22", "22 mmhg", "about 22", "~22 mmhg", "22mmhg"], explain: "About 22 mmHg per 30 cm, which is the same as roughly 0.735 mmHg per cm. Over a heart-to-ankle distance of about 135 cm this adds up to roughly +100 mmHg.", objectives: ["u11-o8"], lesson: "u11-l8", level: 2 },
+    { id: "u11-q32", type: "short", q: "Using the stated course approximation 0.735 mmHg/cm, how much hydrostatic pressure is added per 30 cm?", answer: "22.05 mmHg", accept: ["22.05","22.05 mmhg","22","22 mmhg","about 22"], explain: "0.735×30 = 22.05 mmHg. For blood itself, 0.78 mmHg/cm gives about 23.4 mmHg per 30 cm.", objectives: ["u11-o8"], lesson: "u11-l8", level: 2 },
     { id: "u11-q33", type: "tf", q: "Hydrostatic pressure above the level of the heart is negative when a person is standing.", answer: true, explain: "True. Above the reference point the column of blood is being lifted rather than stacked, so the contribution is negative — roughly −30 to −40 mmHg at the head.", objectives: ["u11-o8"], lesson: "u11-l8", level: 2 },
     { id: "u11-q34", type: "mc", q: "Which vessel normally shows continuous forward flow throughout diastole?", choices: ["Internal carotid artery", "External carotid artery", "Resting popliteal artery", "Resting brachial artery"], answer: 0, explain: "The internal carotid feeds the brain, a low-resistance bed that needs perfusion all the time. The external carotid and resting limb arteries are high-resistance, with little or reversed diastolic flow.", objectives: ["u11-o9"], lesson: "u11-l9", level: 2 },
     { id: "u11-q35", type: "mc", q: "A triphasic waveform with early diastolic flow reversal indicates:", choices: ["A low-resistance distal bed", "A high-resistance distal bed", "Turbulence at the sample site", "An incompetent venous valve"], answer: 1, explain: "The reverse component happens because the constricted downstream bed bounces blood back. Low-resistance beds never show that dip — they hold forward flow all through diastole.", objectives: ["u11-o9"], lesson: "u11-l9", level: 2 },
@@ -685,7 +692,7 @@ window.UNITS.push({
       }
     },
     {
-      id: "u11-d7",
+      id: "u11-d9",
       title: "Radius change → flow change factor",
       formula: "flow ∝ radius⁴",
       lesson: "u11-l2",
@@ -707,7 +714,8 @@ window.UNITS.push({
           ]
         };
       }
-    }
+    },
+    { id:"u11-d7",title:"Continuity, Reynolds and parabolic mean",formula:"A₁v₁=A₂v₂; Re=ρvD/η; peak≈2mean",lesson:"u11-l5",gen:function(rnd){var mode=Math.floor(rnd()*3);if(mode===0){var a1=[2,3,4][Math.floor(rnd()*3)],a2=[0.5,1,1.5][Math.floor(rnd()*3)],v1=[10,20,30][Math.floor(rnd()*3)],v2=a1*v1/a2;return {kind:"number",given:"A₁="+a1+" cm², v₁="+v1+" cm/s, A₂="+a2+" cm²",ask:"v₂?",answer:+v2.toFixed(2),unit:"cm/s",tol:0.1,steps:["A₁v₁=A₂v₂","v₂="+a1+"×"+v1+"÷"+a2,"="+v2.toFixed(2)+" cm/s"]};}if(mode===1){var peak=[40,60,80,100][Math.floor(rnd()*4)];return {kind:"number",given:"Fully developed parabolic peak velocity="+peak+" cm/s",ask:"Approximate mean velocity?",answer:peak/2,unit:"cm/s",tol:0.1,steps:["peak≈2×mean","mean=peak÷2","="+(peak/2)+" cm/s"]};}var v=[0.4,0.5,0.8][Math.floor(rnd()*3)],D=[0.005,0.01,0.015][Math.floor(rnd()*3)],re=1060*v*D/0.004;return {kind:"number",given:"ρ=1060 kg/m³, v="+v+" m/s, D="+D+" m, η=0.004 Pa·s",ask:"Reynolds number?",answer:+re.toFixed(1),unit:"",tol:1,steps:["Re=ρvD/η","=1060×"+v+"×"+D+"÷0.004","="+re.toFixed(1)]};} }
   ],
 
   whiteboard: [

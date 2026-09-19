@@ -201,7 +201,7 @@ window.UNITS.push({
       title: "Normal incidence: how much bounces back?",
       objectives: ["u04-o5", "u04-o8", "u04-o4"],
       html: `<p class="lead">Hit the boundary straight on and the math is clean: only the two impedances decide how much comes back.</p>
-<p><span class="kw">Normal incidence</span> (also called perpendicular or 90-degree incidence) means the beam strikes the boundary at 90° to its surface — the angle measured from the normal line is 0°. Under that condition, the reflected sound comes straight back to the probe and the amount that returns is completely predictable:</p>
+<p><span class="kw">Normal incidence</span> means the beam travels along the normal line, so its incidence angle is <b>0° when measured from the normal</b>. Equivalently, the beam is perpendicular to the boundary surface. Under that condition, the reflected sound comes straight back to the probe and the amount that returns is completely predictable:</p>
 <div class="formula">IRC = ((Z2 − Z1) ÷ (Z2 + Z1))<sup>2</sup></div>
 <div class="formula">ITC = 1 − IRC &nbsp;&nbsp; and &nbsp;&nbsp; IRC + ITC = 1 (or 100 %)</div>
 <p><span class="kw-2">IRC</span> is the intensity reflection coefficient — the fraction of intensity that bounces back. <span class="kw-2">ITC</span> is the intensity transmission coefficient — the fraction that keeps going. Both are unitless; multiply by 100 for a percent. Energy is conserved, so whatever does not reflect must transmit.</p>
@@ -221,7 +221,7 @@ window.UNITS.push({
 <line x1="280" y1="155" x2="280" y2="255" stroke="var(--c3)" stroke-width="6"/>
 <text x="300" y="215" fill="var(--c3)" font-size="16">transmitted ≈ 99 %</text>
 <text x="330" y="145" fill="var(--muted)" font-size="15">90° to the boundary</text>
-<text x="40" y="275" fill="currentColor" font-size="16">IRC = ((Z2 − Z1) ÷ (Z2 + Z1))² &nbsp; ITC = 1 − IRC</text>
+<text x="40" y="275" fill="currentColor" font-size="16">IRC = ((Z2−Z1)/(Z2+Z1))²; ITC = 1−IRC</text>
 </svg>`, caption: "Normal incidence: the echo returns along the same line, and only the impedance mismatch sets its size." }
       ],
       sayIt: "Out loud: what condition is needed for an echo at normal incidence, what is the IRC formula, and what do IRC and ITC add up to?",
@@ -290,9 +290,9 @@ window.UNITS.push({
       title: "Oblique incidence, refraction, and Snell's law",
       objectives: ["u04-o7", "u04-o8"],
       html: `<p class="lead">Push a shopping cart onto grass at an angle and one wheel slows first — the cart turns. That turn is refraction.</p>
-<p><span class="kw">Oblique incidence</span> means the beam hits the boundary at any angle other than 90°. Now the reflected sound leaves at the mirror angle and heads away from the probe, and the amount reflected and transmitted becomes <b>unpredictable</b> — the neat IRC formula only applies at normal incidence.</p>
+<p><span class="kw">Oblique incidence</span> means the incidence angle measured from the normal is greater than 0°. Now the reflected sound leaves at the mirror angle and heads away from the probe, and the amount reflected and transmitted becomes <b>unpredictable</b> — the neat IRC formula only applies at normal incidence.</p>
 <p>Refraction is the <b>bending of the transmitted beam</b> as it crosses into the second medium. It requires <b>two</b> conditions at once, and exam questions live on this:</p>
-<ul><li>Oblique incidence (not 90°), <b>and</b></li>
+<ul><li>Oblique incidence (not 0° from the normal), <b>and</b></li>
 <li>Different propagation speeds in the two media</li></ul>
 <p>Miss either one and there is no bending at all. Same speed with an angle? No refraction. Different speeds but a straight-on hit? No refraction. Note it is a <b>speed</b> difference, not an impedance difference — impedance mismatch causes reflection, speed mismatch causes refraction.</p>
 <div class="formula">sin θ<sub>t</sub> ÷ sin θ<sub>i</sub> = c<sub>2</sub> ÷ c<sub>1</sub> &nbsp;&nbsp; (Snell's law)</div>
@@ -317,7 +317,7 @@ window.UNITS.push({
       ],
       sayIt: "Out loud: name the two conditions for refraction, state Snell's law, and say which way the beam bends when it enters a faster medium.",
       keyPoints: [
-        "Oblique incidence = any angle other than 90° to the boundary",
+        "Oblique incidence = any nonzero angle measured from the normal",
         "At oblique incidence, reflection and transmission are unpredictable",
         "Refraction requires oblique incidence AND different propagation speeds",
         "Snell's law: sin θt ÷ sin θi = c2 ÷ c1",
@@ -338,7 +338,8 @@ window.UNITS.push({
 <p>Example: an echo returns 91 µs after transmission. Depth = 91 ÷ 13 = <b>7 cm</b> (or 0.77 × 91 = 70 mm — the same answer). Going the other way, a reflector at 4 cm returns its echo at 13 × 4 = <b>52 µs</b>.</p>
 <p>The machine assumes 1,540 m/s everywhere. When the sound actually travels through a faster medium the echo comes back early and the structure is drawn too <b>shallow</b>; through a slower medium (like fat) it comes back late and is drawn too <b>deep</b>. That is the propagation-speed-error artifact, and it is a direct consequence of this one equation.</p>
 <div class="callout key">distance = ½ × c × time. 13 µs per cm round trip; 6.5 µs per cm one way; 0.77 mm per µs of go-return time.</div>
-<div class="callout tip">Unlucky 13: every centimeter of depth costs 13 microseconds, down and back.</div>`,
+<div class="callout tip">Unlucky 13: every centimeter of depth costs 13 microseconds, down and back.</div>
+<div class="steps"><ol><li>At 6 MHz, coefficient ≈ 3 dB/cm; across 4 cm, attenuation = 12 dB and HVL = 3 ÷ 3 = 1 cm.</li><li>Z = 1,000 × 1,500 = 1.5 MRayls.</li><li>For Z₁ = 1 and Z₂ = 2 MRayls, IRC = [(2 − 1) ÷ (2 + 1)]² = 11.1%; ITC = 88.9%.</li><li>At 30° from 1,500 into 3,000 m/s, sin θt = sin 30° × 2 = 1, so θt = 90°.</li><li>A 65 µs echo gives depth = 0.77 × 65 = 50 mm = 5 cm.</li><li>Doubling frequency raises Rayleigh scattering by 2⁴ = 16 times.</li></ol></div>`,
       diagrams: [
         { svg: `<svg viewBox="0 0 600 280" role="img"><title>A probe sending a pulse down to a reflector and receiving the echo, with the total time labelled and the depth equal to half the round trip</title>
 <line x1="60" y1="50" x2="200" y2="50" stroke="currentColor" stroke-width="6"/>
@@ -555,10 +556,10 @@ window.UNITS.push({
       answer: "1", accept: ["1", "one", "100%", "100 %", "100", "100 percent", "unity"],
       explain: "IRC + ITC = 1 (or 100 %) because energy is conserved at the boundary. If a question gives you one, subtract to get the other.",
       objectives: ["u04-o5"], lesson: "u04-l5", level: 1 },
-    { id: "u04-q23", type: "mc", q: "Normal incidence means the sound beam strikes the boundary at:",
-      choices: ["0° to the boundary surface", "45° to the boundary surface", "90° to the boundary surface", "Any angle, as long as the media differ"],
-      answer: 2,
-      explain: "Normal (perpendicular) incidence is 90° to the boundary surface, which is 0° measured from the normal line. Mixing up those two reference lines is exactly why this question trips people up.",
+    { id: "u04-q23", type: "mc", q: "Using the standard convention of measuring incidence angles from the normal line, normal incidence is:",
+      choices: ["0°", "45°", "90°", "Any angle, as long as the media differ"],
+      answer: 0,
+      explain: "Incidence angles are measured from the normal line, so normal incidence is 0°. The beam is simultaneously 90° to the boundary surface; stating the reference line prevents ambiguity.",
       objectives: ["u04-o8"], lesson: "u04-l5", level: 2 },
     { id: "u04-q24", type: "mc", q: "Which structure behaves as a specular reflector?",
       choices: ["Red blood cells", "Liver parenchyma", "The diaphragm", "A cloud of microbubbles"],
@@ -595,7 +596,7 @@ window.UNITS.push({
       objectives: ["u04-o7", "u04-o8"], lesson: "u04-l7", level: 3 },
     { id: "u04-q31", type: "tf", q: "Refraction can occur at normal incidence if the two media have different propagation speeds.",
       answer: false,
-      explain: "False — at 90° incidence the beam passes straight through no matter how different the speeds are. Both conditions, an oblique angle and a speed difference, must be present at the same time.",
+      explain: "False — at 0° from the normal the beam passes straight through no matter how different the speeds are. Both conditions, an oblique angle and a speed difference, must be present at the same time.",
       objectives: ["u04-o7"], lesson: "u04-l7", level: 2 },
     { id: "u04-q32", type: "short", q: "What is the name of the law relating the transmission angle to the propagation speeds?",
       answer: "Snell's law", accept: ["snell", "snells law", "snell's law", "snell law", "law of refraction"],
@@ -637,12 +638,14 @@ window.UNITS.push({
       gen: function (rnd) {
         var f = [1, 2, 2.5, 3, 4, 5, 7.5, 10][Math.floor(rnd() * 8)];
         var coeff = f / 2;
+        var askHvl = rnd() < 0.5;
+        var hvl = 3 / coeff;
         return {
           kind: "number",
           given: "A beam with a frequency of " + f + " MHz is traveling through soft tissue.",
-          ask: "What is the attenuation coefficient, in dB/cm?",
-          answer: +coeff.toFixed(3), unit: "dB/cm", tol: 0.02,
-          steps: [
+          ask: askHvl ? "What is the half-value layer, in cm?" : "What is the attenuation coefficient, in dB/cm?",
+          answer: askHvl ? +hvl.toFixed(3) : +coeff.toFixed(3), unit: askHvl ? "cm" : "dB/cm", tol: 0.02,
+          steps: askHvl ? ["coefficient = f ÷ 2 = " + coeff + " dB/cm", "HVL = 3 dB ÷ coefficient", "= 3 ÷ " + coeff + " = " + hvl.toFixed(2) + " cm"] : [
             "In soft tissue the rate is 0.5 dB per centimeter per megahertz.",
             "coefficient = f ÷ 2 = " + f + " ÷ 2",
             "coefficient = " + coeff + " dB/cm",
@@ -789,13 +792,13 @@ window.UNITS.push({
         else ans = (c2 > c1) ? 1 : 0;
         return {
           kind: "choice",
-          given: "Sound travels from a medium with c1 = " + c1 + " m/s into a medium with c2 = " + c2 + " m/s at " + (normal ? "normal (90°) incidence." : "oblique incidence."),
+          given: "Sound travels from a medium with c1 = " + c1 + " m/s into a medium with c2 = " + c2 + " m/s at " + (normal ? "normal incidence (0° from the normal)." : "oblique incidence below any critical angle, so a transmitted beam exists."),
           ask: "What does the transmitted beam do?",
           choices: ["Bends toward the normal", "Bends away from the normal", "Passes straight through, no bending"],
           answer: ans,
           steps: [
             "Refraction needs BOTH oblique incidence and a speed difference.",
-            normal ? "Incidence is 90°, so there is no bending no matter what the speeds are." : (c2 === c1 ? "The speeds are equal, so there is no bending even though the beam is oblique." : "Snell: sin θt ÷ sin θi = c2 ÷ c1 = " + (c2 / c1).toFixed(3)),
+            normal ? "Incidence is 0° from the normal, so there is no bending no matter what the speeds are." : (c2 === c1 ? "The speeds are equal, so there is no bending even though the beam is oblique." : "Snell: sin θt ÷ sin θi = c2 ÷ c1 = " + (c2 / c1).toFixed(3)),
             (!normal && c2 !== c1) ? ("The ratio is " + (c2 > c1 ? "greater" : "less") + " than 1, so θt is " + (c2 > c1 ? "larger" : "smaller") + " than θi.") : "Both conditions are required; one missing condition means a straight path.",
             "Answer: " + ["bends toward the normal", "bends away from the normal", "no bending"][ans] + "."
           ]
@@ -806,13 +809,14 @@ window.UNITS.push({
       id: "u04-d8", title: "What happens to attenuation when things change?", formula: "attenuation ↑ with frequency and with path length", lesson: "u04-l1",
       gen: function (rnd) {
         var up = rnd() < 0.5;
-        var whatI = Math.floor(rnd() * 3);
-        var what = ["the transducer frequency", "the path length the sound travels", "the acoustic impedance of the tissue"][whatI];
+        var whatI = Math.floor(rnd() * 4);
+        var what = ["the transducer frequency", "the path length the sound travels", "the acoustic impedance of the tissue", "the frequency illuminating Rayleigh scatterers"][whatI];
         var askI = Math.floor(rnd() * 2);
-        if (whatI === 1) askI = 0;
+        if (whatI === 1 || whatI === 3) askI = 0;
         var ask = ["the total attenuation (dB)", "the penetration (useful imaging depth)"][askI];
         var ans;
         if (whatI === 2) ans = 2;
+        else if (whatI === 3) ans = up ? 0 : 1;
         else if (whatI === 1) ans = (askI === 0) ? (up ? 0 : 1) : 2;
         else ans = (up ? 0 : 1);
         if (whatI === 0 && askI === 1) ans = up ? 1 : 0;
@@ -826,7 +830,7 @@ window.UNITS.push({
             "Attenuation coefficient (dB/cm) = frequency ÷ 2, so frequency drives the per-centimeter loss.",
             "Total attenuation = coefficient × path length, so a longer path also raises the total.",
             "Penetration is the flip side of attenuation: more attenuation means less penetration, and penetration is set by frequency, not by how far a particular pulse happened to travel.",
-            "Acoustic impedance controls how much reflects at boundaries — it does not change attenuation or penetration."
+            whatI === 3 ? "Rayleigh scattering is proportional to frequency⁴; doubling frequency makes it 16 times stronger." : "Acoustic impedance controls how much reflects at boundaries — it does not change attenuation or penetration."
           ]
         };
       }

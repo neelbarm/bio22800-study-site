@@ -58,9 +58,13 @@
     s = s.replace(/[μµ]/g, 'µ');            // greek mu -> micro sign
     s = s.replace(/[‘’“”]/g, "'");
     s = s.replace(/(\d)[,   ](\d\d\d)(?!\d)/g, '$1$2'); // 1,540 -> 1540
+    s = s.replace(/(^|[\s=(])\+(?=\d|\.\d)/g, '$1\u0002'); // protect numeric plus
+    s = s.replace(/(^|[\s=(])-(?=\d|\.\d)/g, '$1\u0003');  // protect numeric minus
     s = s.replace(/(\d)\.(\d)/g, '$1\u0001$2');            // protect decimal points
+    s = s.replace(/([a-z])\-([a-z])/g, '$1$2');              // hyphenated words compare like plain words
     s = s.replace(/[!"#$&'()*+,\-–—_:;<=>?@[\\\]^`{|}~.]/g, ' ');
     s = s.replace(/\u0001/g, '.');
+    s = s.replace(/\u0002/g, '+').replace(/\u0003/g, '-');
     s = s.replace(/\s+/g, ' ').trim();
     return s;
   }
@@ -76,17 +80,16 @@
     return false;
   }
 
-  /* number drill grading: absolute tolerance, plus a 1% relative safety net
-     when tol is tiny compared with the answer. */
+  /* Number drills accept one complete numeric literal only. */
   function numIsCorrect(input, answer, tol) {
-    var v = parseFloat(String(input).replace(/,/g, '').replace(/[^\d.eE+\-]/g, ''));
+    var raw = String(input == null ? '' : input).trim();
+    if (/^[+-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?(?:e[+-]?\d+)?$/i.test(raw)) raw = raw.replace(/,/g, '');
+    if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(raw)) return false;
+    var v = Number(raw);
     if (!isFinite(v)) return false;
     var t = (typeof tol === 'number' && tol >= 0) ? tol : 0;
     var d = Math.abs(v - answer);
-    if (d <= t) return true;
-    var rel = Math.abs(answer) * 0.01;
-    if (t < rel && d <= rel) return true;
-    return false;
+    return d <= t;
   }
 
   /* --------------------------------------------------------------- state -- */
@@ -112,20 +115,43 @@
 
   var state = defaultState();
 
+  function plainObject(o) { return !!o && typeof o === 'object' && !Array.isArray(o); }
+  function validMap(o) { return plainObject(o); }
+  function validateState(o) {
+    if (!plainObject(o) || o.v !== 1 || !plainObject(o.settings)) return null;
+    var mapKeys = ['lessonsDone', 'objRatings', 'cards', 'qstats', 'missed', 'board', 'days'];
+    for (var i = 0; i < mapKeys.length; i++) if (!validMap(o[mapKeys[i]])) return null;
+    if (!plainObject(o.customObjectives) || !plainObject(o.mnemonics)) return null;
+    if (typeof o.settings.name !== 'string' || ['auto', 'light', 'dark'].indexOf(o.settings.theme) < 0) return null;
+    if (o.exam !== null) {
+      if (!plainObject(o.exam) || typeof o.exam.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(o.exam.date) || !Array.isArray(o.exam.units) || typeof o.exam.label !== 'string') return null;
+      if (!o.exam.units.every(function (x) { return typeof x === 'string'; })) return null;
+    }
+    var ok = true;
+    Object.keys(o.lessonsDone).forEach(function (k) { if (o.lessonsDone[k] !== true) ok = false; });
+    Object.keys(o.days).forEach(function (k) { if (o.days[k] !== true) ok = false; });
+    Object.keys(o.objRatings).forEach(function (k) { if (o.objRatings[k] !== null && ![0, 1, 2].includes(o.objRatings[k])) ok = false; });
+    Object.keys(o.cards).forEach(function (k) { var x = o.cards[k]; if (!plainObject(x) || ![1, 2, 3].includes(x.box) || !Number.isFinite(x.lastSeen) || x.lastSeen < 0) ok = false; });
+    Object.keys(o.qstats).forEach(function (k) { var x = o.qstats[k]; if (!plainObject(x) || !Number.isInteger(x.attempts) || !Number.isInteger(x.correct) || x.attempts < 0 || x.correct < 0 || x.correct > x.attempts) ok = false; });
+    Object.keys(o.missed).forEach(function (k) { var x = o.missed[k]; if (!plainObject(x) || !Number.isInteger(x.streak) || x.streak < 0 || x.streak > 1 || !Number.isFinite(x.ts)) ok = false; });
+    Object.keys(o.board).forEach(function (k) { var x = o.board[k]; if (!plainObject(x) || !Number.isFinite(x.score) || !Number.isFinite(x.total) || !Number.isFinite(x.ts)) ok = false; });
+    Object.keys(o.customObjectives).forEach(function (k) { var xs = o.customObjectives[k]; if (!Array.isArray(xs) || !xs.every(function (x) { return plainObject(x) && typeof x.text === 'string' && (x.rating === null || [0, 1, 2].includes(x.rating)); })) ok = false; });
+    Object.keys(o.mnemonics).forEach(function (k) { var xs = o.mnemonics[k]; if (!Array.isArray(xs) || !xs.every(function (x) { return plainObject(x) && typeof x.saying === 'string' && typeof x.meaning === 'string'; })) ok = false; });
+    if (!ok) return null;
+    var d = defaultState();
+    Object.keys(d).forEach(function (k) { if (k !== 'v') d[k] = o[k]; });
+    return d;
+  }
+
   function loadState() {
     var d = defaultState();
     try {
       var raw = localStorage.getItem(KEY);
       if (!raw) return d;
       var o = JSON.parse(raw);
-      if (!o || typeof o !== 'object') return d;
-      Object.keys(d).forEach(function (k) {
-        if (k === 'v') return;
-        if (o[k] && typeof o[k] === 'object') {
-          if (k === 'settings') d.settings = { theme: o.settings.theme || 'auto', name: typeof o.settings.name === 'string' ? o.settings.name : '' };
-          else d[k] = o[k];
-        }
-      });
+      var checked = validateState(o);
+      if (!checked) return d;
+      d = checked;
     } catch (e) { /* corrupt or blocked storage: start fresh */ }
     return d;
   }
@@ -163,7 +189,7 @@
     var days = Math.round((new Date(+parts[0], +parts[1] - 1, +parts[2]).getTime() - today.getTime()) / DAY);
     var ids = arr(e.units).filter(function (id) { return !!unitById(id); });
     return {
-      date: e.date, label: (e.label || '').trim() || 'your exam',
+      date: e.date, label: (typeof e.label === 'string' ? e.label : '').trim() || 'your exam',
       unitIds: ids, units: ids.map(unitById).filter(Boolean),
       days: days, past: days < 0,
       dateText: d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })
@@ -303,10 +329,11 @@
     markToday();
     save();
   }
-  function missedList() {
+  function missedList(units) {
+    var allowed = units && units.map(function (u) { return u.id; });
     return Object.keys(state.missed)
       .map(function (id) { return questionIndex[id]; })
-      .filter(Boolean);
+      .filter(function (x) { return !!x && (!allowed || allowed.indexOf(x.unit.id) >= 0); });
   }
 
   /* --------------------------------------------------------------- toast -- */
@@ -465,6 +492,7 @@
   /* ----------------------------------------------------------------- nav -- */
 
   var GLOBAL_NAV = [
+    ['planner', '📅', 'Exam Planner'],
     ['test', '📝', 'Practice Test'],
     ['cards', '🃏', 'Flashcards'],
     ['objectives', '🎯', 'Objectives'],
@@ -536,9 +564,9 @@
     return h < 12 ? 'Good morning' : (h < 18 ? 'Good afternoon' : 'Good evening');
   }
 
-  function weakObjectives(limit) {
+  function weakObjectives(limit, units) {
     var list = [];
-    UNITS.forEach(function (u) {
+    (units || UNITS).forEach(function (u) {
       arr(u.objectives).forEach(function (o) {
         list.push({ unit: u, obj: o, m: objMastery(o.id), rated: state.objRatings[o.id] != null });
       });
@@ -559,40 +587,52 @@
     markToday();
 
     var name = (state.settings.name || '').trim();
-    var due = dueCount();
-    var missedN = missedList().length;
+    var exam = examInfo();
+    var scope = exam && !exam.past && exam.units.length ? exam.units : UNITS;
+    var due = dueCount(scope);
+    var missedN = missedList(exam && !exam.past ? scope : null).length;
     var streak = streakDays();
     var overall = overallMastery();
-    var weak = weakObjectives(3);
+    var weak = weakObjectives(3, scope);
 
-    /* today's plan — three concrete actions */
+    /* today's plan — concrete, bounded actions */
     var plan = [];
+    if (exam && !exam.past) {
+      var remainingLessons = 0, firstExamLesson = null;
+      scope.forEach(function (u) { arr(u.lessons).forEach(function (l) {
+        if (!state.lessonsDone[l.id]) { remainingLessons++; if (!firstExamLesson) firstExamLesson = { u: u, l: l }; }
+      }); });
+      if (remainingLessons && firstExamLesson) {
+        var lessonPace = Math.max(1, Math.ceil(remainingLessons / Math.max(1, exam.days)));
+        plan.push({ icon: '📖', title: 'Read ' + lessonPace + ' ' + plural(lessonPace, 'lesson') + ' today', sub: remainingLessons + ' selected ' + plural(remainingLessons, 'lesson') + ' left across ' + Math.max(1, exam.days) + ' ' + plural(Math.max(1, exam.days), 'day') + '.', btn: 'Start next lesson', href: '#/unit/' + firstExamLesson.u.id + '/learn/' + firstExamLesson.l.id });
+      }
+    }
     if (weak.length) {
       plan.push({
         icon: '🎯', title: 'Drill your weakest objectives',
         sub: weak.map(function (w) { return w.obj.text; })[0],
-        btn: 'Start 12-question quiz', href: '#/focus/weak'
+        btn: 'Start 12-question quiz', href: exam && !exam.past ? '#/focus/exam' : '#/focus/weak'
       });
     }
     plan.push(due ? {
-      icon: '🃏', title: due + ' ' + plural(due, 'flashcard') + ' due today',
-      sub: 'Leitner boxes: new cards daily, learning every 3 days, known weekly.',
-      btn: 'Review now', href: '#/cards'
+      icon: '🃏', title: 'Review ' + Math.min(20, due) + ' of ' + due + ' due ' + plural(due, 'card'),
+      sub: 'A capped session keeps today manageable; the rest stay due.',
+      btn: 'Start card session', href: exam && !exam.past ? '#/cards/exam' : '#/cards'
     } : {
       icon: '🃏', title: 'No flashcards due right now',
       sub: 'Everything you have seen is resting in its box. You can still review anything.',
-      btn: 'Review anyway', href: '#/cards'
+      btn: 'Review anyway', href: exam && !exam.past ? '#/cards/exam' : '#/cards'
     });
     if (missedN) {
       plan.push({
         icon: '🔁', title: missedN + ' missed ' + plural(missedN, 'question') + ' waiting',
         sub: 'A question leaves the bank after you get it right twice.',
-        btn: 'Re-drill them', href: '#/missed'
+        btn: 'Re-drill them', href: exam && !exam.past ? '#/missed/exam' : '#/missed'
       });
     } else {
       var firstUndone = null;
-      for (var i = 0; i < UNITS.length && !firstUndone; i++) {
-        var u = UNITS[i];
+      for (var i = 0; i < scope.length && !firstUndone; i++) {
+        var u = scope[i];
         for (var j = 0; j < arr(u.lessons).length; j++) {
           if (!state.lessonsDone[u.lessons[j].id]) { firstUndone = { u: u, l: u.lessons[j] }; break; }
         }
@@ -609,6 +649,17 @@
     }
 
     var html = '';
+    if (exam && !exam.past) {
+      html += '<section class="exam-banner" style="' + accentStyle(scope[0]) + '">' +
+        '<div><p class="eyebrow">Next exam · ' + esc(daysWord(exam.days)) + '</p>' +
+        '<h2>' + esc(exam.label) + '</h2><p class="small muted">' + esc(exam.dateText) + ' · ' +
+        exam.units.map(function (u) { return esc(u.icon || '📘') + ' ' + esc(u.title); }).join(' · ') + '</p></div>' +
+        '<a class="btn sm" href="#/planner">Edit plan</a></section>';
+    } else {
+      html += '<section class="exam-banner empty-plan"><div><p class="eyebrow">Exam planner</p><h2>Make today\'s plan match your next exam.</h2>' +
+        '<p class="small muted">Choose the date and units once; Home will focus its quiz, cards, and next lesson.</p></div>' +
+        '<a class="btn primary sm" href="#/planner">Set up exam</a></section>';
+    }
     html += '<section class="hero" style="' + accentStyle(UNITS[0]) + '">' +
       '<div class="hero-main">' +
       '<p class="eyebrow">' + esc(greeting()) + (name ? ', ' + esc(name) : '') + '</p>' +
@@ -616,9 +667,9 @@
       '<p class="sub">' + UNITS.length + ' ' + plural(UNITS.length, 'unit') + ' · ' +
       allQuestions.length + ' questions · ' + allCards().length + ' flashcards, all offline.</p>' +
       '<div class="hero-actions">' +
-      '<a class="btn primary" href="#/focus/weak">🎯 Study my weakest</a>' +
+      '<a class="btn primary" href="' + (exam && !exam.past ? '#/focus/exam' : '#/focus/weak') + '">🎯 Study my weakest</a>' +
       '<a class="btn" href="#/test">📝 Practice test</a>' +
-      '<a class="btn" href="#/cards">🃏 Flashcards' + (due ? ' (' + due + ')' : '') + '</a>' +
+      '<a class="btn" href="' + (exam && !exam.past ? '#/cards/exam' : '#/cards') + '">🃏 Flashcards' + (due ? ' (' + due + ')' : '') + '</a>' +
       '</div></div>' +
       '<div class="hero-ring">' + ringHtml(overall, 132, 'big') +
       '<p class="small muted center" style="margin:6px 0 0">overall mastery</p></div>' +
@@ -947,6 +998,7 @@
   function renderCards(pane, units, opts) {
     opts = opts || {};
     var scope = units;
+    if (opts.global && cardOpts.unit !== 'all' && !scope.some(function (u) { return u.id === cardOpts.unit; })) cardOpts.unit = 'all';
     var S = { deck: [], idx: 0, flipped: false, said: false, done: 0, knew: 0 };
 
     function pool() {
@@ -959,6 +1011,7 @@
       var list = pool();
       var deck = cardOpts.dueOnly ? list.filter(function (e) { return cardIsDue(e.unit.id, e.i); }) : list.slice();
       if (cardOpts.shuffle) shuffleInPlace(deck);
+      if (opts.sessionLimit && deck.length > opts.sessionLimit) deck = deck.slice(0, opts.sessionLimit);
       S.deck = deck; S.idx = 0; S.flipped = false; S.said = false; S.done = 0; S.knew = 0;
     }
 
@@ -976,7 +1029,7 @@
         '</div></div>' +
         '<div class="row mt opt-row">' +
         (opts.global ? '<label class="sr-only" for="fcUnit">Unit</label><select id="fcUnit" style="max-width:220px"><option value="all">All units</option>' +
-          UNITS.map(function (u) { return '<option value="' + escAttr(u.id) + '"' + (cardOpts.unit === u.id ? ' selected' : '') + '>' + esc(u.title) + '</option>'; }).join('') + '</select>' : '') +
+          scope.map(function (u) { return '<option value="' + escAttr(u.id) + '"' + (cardOpts.unit === u.id ? ' selected' : '') + '>' + esc(u.title) + '</option>'; }).join('') + '</select>' : '') +
         toggleChip('fcDue', 'Due only', cardOpts.dueOnly) +
         toggleChip('fcShuffle', '🔀 Shuffle', cardOpts.shuffle) +
         toggleChip('fcReverse', '🔁 Reverse', cardOpts.reverse) +
@@ -1112,11 +1165,12 @@
     renderCards(pane, [u], { global: false });
   }
 
-  function viewCards(el) {
+  function viewCards(el, r) {
     if (!UNITS.length) { el.innerHTML = noContent(); return; }
-    el.innerHTML = head('Flashcards', 'Flashcards', 'Leitner boxes: new cards come back daily, learning every 3 days, known every week.') +
+    var units = r && r[1] === 'exam' ? examScopeUnits() : UNITS;
+    el.innerHTML = head('Flashcards', r && r[1] === 'exam' ? 'Exam flashcards' : 'Flashcards', 'Leitner boxes: new cards come back daily, learning every 3 days, known every week.') +
       '<div id="cardPane"></div>';
-    renderCards($('#cardPane', el), UNITS, { global: true });
+    renderCards($('#cardPane', el), units, { global: true, sessionLimit: 20 });
   }
 
   /* ------------------------------------------------------------- TIMERS --- */
@@ -1524,12 +1578,14 @@
     var items = [];
     var title = 'Focus quiz';
     var sub = '';
-    if (what === 'weak') {
-      var weak = weakObjectives(6).map(function (w) { return w.obj.id; });
-      items = pickQuestions(allQuestions, { objs: weak, count: 12 });
+    if (what === 'weak' || what === 'exam') {
+      var focusUnits = what === 'exam' ? examScopeUnits() : UNITS;
+      var weak = weakObjectives(6, focusUnits).map(function (w) { return w.obj.id; });
+      var focusPool = allQuestions.filter(function (x) { return focusUnits.indexOf(x.unit) >= 0; });
+      items = pickQuestions(focusPool, { objs: weak, count: 12 });
       title = 'Your weakest objectives';
-      sub = 'Twelve questions drawn from the six objectives you are shakiest on.';
-      if (!items.length) items = pickQuestions(allQuestions, { count: 12 });
+      sub = 'Twelve questions drawn from the six objectives you are shakiest on' + (what === 'exam' ? ' in your exam units.' : '.');
+      if (!items.length) items = pickQuestions(focusPool, { count: 12 });
     } else if (objIndex[what]) {
       items = pickQuestions(allQuestions, { objs: [what], count: 'all' });
       title = 'Objective drill';
@@ -1544,9 +1600,9 @@
 
   /* ---------------------------------------------------- MISSED QUESTIONS -- */
 
-  function viewMissed(el) {
+  function viewMissed(el, r) {
     if (!UNITS.length) { el.innerHTML = noContent(); return; }
-    var bank = missedList();
+    var bank = missedList(r && r[1] === 'exam' ? examScopeUnits() : null);
     el.innerHTML = head('Missed questions', 'Missed Questions', 'Every question you got wrong lands here. It leaves after you answer it correctly twice in a row.') +
       '<div id="missedPane"></div>';
     var pane = $('#missedPane', el);
@@ -2363,6 +2419,54 @@
     draw();
   }
 
+  /* -------------------------------------------------------- EXAM PLANNER -- */
+
+  function viewPlanner(el) {
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    var current = examInfo();
+    var selected = current ? current.unitIds.slice() : [];
+    var raw = plainObject(state.exam) ? state.exam : {};
+
+    function draw() {
+      var info = examInfo();
+      el.innerHTML = head('Exam planner', 'Plan for your next exam',
+        'Choose the exam date and what it covers. The Home page will build its daily plan from these units.') +
+        (info ? '<section class="exam-countdown" style="' + accentStyle(info.units[0] || UNITS[0]) + '">' +
+          '<div class="exam-days"><b>' + esc(info.days < 0 ? 'Past' : String(info.days)) + '</b><span>' +
+          esc(info.days < 0 ? daysWord(info.days) : (info.days === 0 ? 'exam day' : plural(info.days, 'day') + ' left')) + '</span></div>' +
+          '<div><h2>' + esc(info.label) + '</h2><p class="muted">' + esc(info.dateText) + ' · ' + info.units.length + ' ' + plural(info.units.length, 'unit') + '</p></div></section>' : '') +
+        '<section class="card config-card"><div class="planner-fields">' +
+          '<div><label class="field" for="examLabel">Exam name <span class="muted">(optional)</span></label>' +
+          '<input type="text" id="examLabel" maxlength="60" value="' + escAttr(typeof raw.label === 'string' ? raw.label : '') + '" placeholder="e.g. Physics midterm"></div>' +
+          '<div><label class="field" for="examDate">Exam date</label>' +
+          '<input type="date" id="examDate" min="' + todayKey() + '" value="' + escAttr(typeof raw.date === 'string' ? raw.date : '') + '"></div></div>' +
+          '<fieldset class="planner-units"><legend>Units on the exam</legend><div class="row">' +
+          UNITS.map(function (u) { return '<label class="unit-check" style="' + accentStyle(u) + '"><input type="checkbox" value="' +
+            escAttr(u.id) + '"' + (selected.indexOf(u.id) >= 0 ? ' checked' : '') + '><span>' + esc(u.icon || '📘') + ' ' + esc(u.title) + '</span></label>'; }).join('') +
+          '</div></fieldset><div class="row mt"><button class="btn primary big" id="saveExam">Save exam plan</button>' +
+          '<button class="btn" id="allExam">Select all</button>' +
+          (state.exam ? '<button class="btn bad" id="clearExam">Clear plan</button>' : '') + '</div></section>';
+
+      $('#saveExam', el).addEventListener('click', function () {
+        var date = $('#examDate', el).value;
+        var units = $$('.planner-units input:checked', el).map(function (x) { return x.value; });
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { toast('Choose the exam date'); return; }
+        var p = date.split('-'), check = new Date(+p[0], +p[1] - 1, +p[2]);
+        if (check.getFullYear() !== +p[0] || check.getMonth() !== +p[1] - 1 || check.getDate() !== +p[2]) { toast('Choose a valid date'); return; }
+        if (date < todayKey()) { toast('Choose today or a future date'); return; }
+        if (!units.length) { toast('Choose at least one unit'); return; }
+        state.exam = { date: date, units: units, label: $('#examLabel', el).value.trim().slice(0, 60) };
+        selected = units; raw = state.exam; save(); toast('Exam plan saved'); go('home');
+      });
+      $('#allExam', el).addEventListener('click', function () {
+        $$('.planner-units input', el).forEach(function (x) { x.checked = true; });
+      });
+      var clear = $('#clearExam', el);
+      if (clear) clear.addEventListener('click', function () { state.exam = null; save(); selected = []; raw = {}; draw(); toast('Exam plan cleared'); });
+    }
+    draw();
+  }
+
   /* ------------------------------------------------------------ SETTINGS -- */
 
   function viewSettings(el) {
@@ -2433,9 +2537,10 @@
       fr.onload = function () {
         try {
           var o = JSON.parse(String(fr.result));
-          if (!o || typeof o !== 'object') throw new Error('bad file');
-          localStorage.setItem(KEY, JSON.stringify(o));
-          state = loadState();
+          var checked = validateState(o);
+          if (!checked) throw new Error('bad file');
+          localStorage.setItem(KEY, JSON.stringify(checked));
+          state = checked;
           applyTheme(); render();
           toast('Progress imported');
         } catch (e) { toast('That file could not be read'); }
@@ -2578,9 +2683,10 @@
     try {
       switch (r[0]) {
         case 'unit': viewUnit(el, r); break;
-        case 'cards': viewCards(el); break;
+        case 'cards': viewCards(el, r); break;
+        case 'planner': viewPlanner(el); break;
         case 'test': viewTest(el); break;
-        case 'missed': viewMissed(el); break;
+        case 'missed': viewMissed(el, r); break;
         case 'objectives': viewObjectives(el); break;
         case 'board': viewBoard(el, r); break;
         case 'group': viewGroup(el, r); break;

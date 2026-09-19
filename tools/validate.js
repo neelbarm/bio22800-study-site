@@ -21,6 +21,30 @@ const err = (f, m) => errors.push(`${path.basename(f)}: ${m}`);
 const warn = (f, m) => warnings.push(`${path.basename(f)}: ${m}`);
 const isStr = (s, min = 1) => typeof s === 'string' && s.trim().length >= min;
 
+// Full validation must check what the browser loads, not just files on disk.
+if (!process.argv.slice(2).length) {
+  const manifest = path.join(root, 'data', 'manifest.js');
+  try {
+    const context = { window: {} };
+    vm.runInNewContext(fs.readFileSync(manifest, 'utf8'), context, { timeout: 1000 });
+    const entries = context.window.UNIT_FILES;
+    if (!Array.isArray(entries) || !entries.length) err(manifest, 'UNIT_FILES must be a non-empty array');
+    else {
+      const listed = new Set();
+      for (const entry of entries) {
+        if (typeof entry !== 'string' || !/^data\/units\/u\d\d-[a-z0-9-]+\.js$/.test(entry)) {
+          err(manifest, `invalid unit path: ${String(entry)}`); continue;
+        }
+        const absolute = path.join(root, entry);
+        if (listed.has(absolute)) err(manifest, `duplicate entry: ${entry}`);
+        listed.add(absolute);
+        if (!fs.existsSync(absolute)) err(manifest, `missing unit file: ${entry}`);
+      }
+      for (const file of files) if (!listed.has(file)) err(manifest, `unit omitted from manifest: ${path.basename(file)}`);
+    }
+  } catch (e) { err(manifest, `cannot load manifest: ${e.message}`); }
+}
+
 const ALLOWED_TAGS = new Set(['p','ul','ol','li','b','i','em','strong','br','table','tr','th','td','span','div','sup','sub','code','thead','tbody']);
 const ALLOWED_CLASSES = new Set(['lead','kw','kw-2','callout','key','tip','warn','formula','dt','steps']);
 
@@ -165,6 +189,14 @@ for (const f of files) {
     refLesson(d.lesson, `drill ${d.id}`, true);
     if (typeof d.gen !== 'function') { err(f, `drill ${d.id}: gen must be a function`); return; }
     if (/Math\.random/.test(String(d.gen))) err(f, `drill ${d.id}: gen uses Math.random`);
+    // Repeated inputs must produce the same problem, including at domain edges.
+    for (const value of [0, 0.25, 0.5, 0.75, 1 - Number.EPSILON]) {
+      try {
+        const first = JSON.stringify(d.gen(() => value));
+        const second = JSON.stringify(d.gen(() => value));
+        if (first !== second) err(f, `drill ${d.id}: output is not deterministic`);
+      } catch (e) { err(f, `drill ${d.id}: boundary input ${value} threw: ${e.message}`); }
+    }
     let seed = 12345; const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x80000000; };
     const seen = new Set();
     for (let i = 0; i < 60; i++) {
@@ -174,11 +206,12 @@ for (const f of files) {
       if (!Array.isArray(p.steps) || !p.steps.length) { err(f, `drill ${d.id}: problem needs steps[]`); break; }
       if (p.kind === 'number') {
         if (typeof p.answer !== 'number' || !isFinite(p.answer)) { err(f, `drill ${d.id}: number answer invalid (${p.answer})`); break; }
-        if (typeof p.tol !== 'number' || p.tol < 0) { err(f, `drill ${d.id}: number needs tol`); break; }
+        if (typeof p.tol !== 'number' || !Number.isFinite(p.tol) || p.tol < 0) { err(f, `drill ${d.id}: number needs finite nonnegative tol`); break; }
         if (!isStr(p.unit, 0)) { err(f, `drill ${d.id}: number needs unit (may be "")`); break; }
       } else if (p.kind === 'choice') {
         if (!Array.isArray(p.choices) || p.choices.length < 2) { err(f, `drill ${d.id}: choice needs choices[]`); break; }
         if (!Number.isInteger(p.answer) || p.answer < 0 || p.answer >= p.choices.length) { err(f, `drill ${d.id}: choice answer out of range`); break; }
+        if (new Set(p.choices.map(String)).size !== p.choices.length) { err(f, `drill ${d.id}: duplicate choices`); break; }
       } else { err(f, `drill ${d.id}: kind must be number|choice`); break; }
       seen.add(p.given + '|' + p.ask);
     }

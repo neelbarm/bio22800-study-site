@@ -63,9 +63,9 @@ window.UNITS.push({
 <line x1="486" y1="45" x2="486" y2="95" stroke="currentColor" stroke-width="2"/>
 <line x1="512" y1="45" x2="512" y2="95" stroke="currentColor" stroke-width="2"/>
 <line x1="540" y1="45" x2="540" y2="95" stroke="currentColor" stroke-width="2"/>
-<text x="148" y="115" text-anchor="middle" fill="var(--c2)" font-size="15">compression</text>
-<text x="230" y="115" text-anchor="middle" fill="var(--c1)" font-size="15">rarefaction</text>
-<text x="299" y="115" text-anchor="middle" fill="var(--c2)" font-size="15">compression</text>
+<text x="148" y="112" text-anchor="middle" fill="var(--c2)" font-size="15">compression</text>
+<text x="230" y="134" text-anchor="middle" fill="var(--c1)" font-size="15">rarefaction</text>
+<text x="330" y="112" text-anchor="middle" fill="var(--c2)" font-size="15">compression</text>
 <line x1="60" y1="150" x2="560" y2="150" stroke="var(--muted)" stroke-width="1" stroke-dasharray="5 5"/>
 <polyline points="60,150 100,150 148,120 196,180 244,180 299,120 347,180 395,180 447,120 495,180 560,150" fill="none" stroke="var(--c3)" stroke-width="3"/>
 <text x="20" y="128" fill="var(--c2)" font-size="15">high P</text>
@@ -241,7 +241,7 @@ window.UNITS.push({
 <polyline points="40,120 85,55 130,120 175,185 220,120 265,55 310,120 355,185 400,120" fill="none" stroke="var(--c1)" stroke-width="3"/>
 <line x1="85" y1="55" x2="85" y2="120" stroke="var(--c2)" stroke-width="3"/>
 <text x="95" y="85" fill="var(--c2)" font-size="16">amplitude</text>
-<text x="430" y="118" fill="var(--muted)" font-size="15">resting value</text>
+<text x="330" y="212" fill="var(--muted)" font-size="15">dashed line = resting value</text>
 <text x="40" y="30" fill="currentColor" font-size="16">baseline to peak, never peak to trough</text>
 <circle cx="500" cy="170" r="45" fill="none" stroke="var(--c3)" stroke-width="2"/>
 <circle cx="500" cy="170" r="18" fill="none" stroke="var(--c2)" stroke-width="3"/>
@@ -298,7 +298,8 @@ window.UNITS.push({
 <tr><td>Bone</td><td>3,500 m/s</td><td>very stiff solid</td></tr>
 </table>
 <div class="callout tip">Dumb saying: <b>"Stiff and speedy, dense and dawdling."</b> And for the ranking: <b>air is slowest, bone is fastest, soft tissue sits in the middle at 1,540.</b></div>
-<div class="callout warn">Changing the transducer frequency does <b>not</b> change speed. A 2 MHz and a 15 MHz wave travel through liver at exactly the same 1,540 m/s. Solids are generally faster than liquids, which are faster than gases — but the reason is stiffness, not density: bone is denser than fat <i>and</i> far faster, because its stiffness wins by a mile.</div>`,
+<div class="callout warn">Changing the transducer frequency does <b>not</b> change speed. A 2 MHz and a 15 MHz wave travel through liver at exactly the same 1,540 m/s. Solids are generally faster than liquids, which are faster than gases — but the reason is stiffness, not density: bone is denser than fat <i>and</i> far faster, because its stiffness wins by a mile.</div>
+<div class="steps"><ol><li>At 4 MHz, T = 1 ÷ 4 = 0.25 µs; 1 ÷ 0.25 µs = 4 MHz.</li><li>λ = 1.54 ÷ 4 = 0.385 mm, so c = fλ = 4 × 0.385 = 1.54 mm/µs.</li><li>12 mW over 3 cm² gives I = 12 ÷ 3 = 4 mW/cm².</li><li>Doubling amplitude makes intensity and power 2² = 4 times as large.</li></ol></div>`,
       diagrams: [
         { svg: `<svg viewBox="0 0 600 220" role="img"><title>Stiffness raises speed while density lowers it</title>
 <text x="300" y="30" text-anchor="middle" fill="currentColor" font-size="16">Only the medium gets a vote</text>
@@ -641,7 +642,7 @@ window.UNITS.push({
       explain: "These three make up the strength family, and the output or acoustic power control changes all of them together. They are the only acoustic parameters the sonographer can directly change.",
       objectives: ["u02-o5"], lesson: "u02-l5", level: 2 },
     { id: "u02-q20", type: "short", q: "The beam area is halved while the power stays the same. What happens to the intensity?", answer: "doubles",
-      accept: ["doubles", "it doubles", "double", "increases", "x2", "twice as much", "2x"],
+      accept: ["doubles", "it doubles", "double", "x2", "twice as much", "2x"],
       explain: "Intensity = power ÷ area, so halving the denominator doubles the result even though no extra energy is being delivered. This is why focusing raises intensity without raising power.",
       objectives: ["u02-o5"], lesson: "u02-l5", level: 2 },
     { id: "u02-q21", type: "mc", q: "Which acoustic parameter can the sonographer directly increase from the control panel?", choices: ["Frequency", "Period", "Propagation speed", "Intensity"], answer: 3,
@@ -835,6 +836,7 @@ window.UNITS.push({
       id: "u02-d5", title: "Amplitude and intensity factors", formula: "intensity ∝ amplitude²", lesson: "u02-l5",
       gen: function (rnd) {
         var k = [2, 3, 4, 5][Math.floor(rnd() * 4)];
+        var strengthName = rnd() < 0.5 ? "intensity" : "power";
         var forward = rnd() < 0.5;
         var up = rnd() < 0.5;
         if (forward) {
@@ -842,12 +844,12 @@ window.UNITS.push({
           return {
             kind: "number",
             given: "the amplitude is " + (up ? "multiplied by " : "divided by ") + k,
-            ask: "By what factor does the intensity change? (4 means four times, 0.25 means one quarter)",
+            ask: "By what factor does the " + strengthName + " change? (4 means four times, 0.25 means one quarter)",
             answer: +factor.toFixed(5),
             unit: "× original",
             tol: Math.max(0.001, factor * 0.01),
             steps: [
-              "Intensity is proportional to amplitude squared",
+              strengthName.charAt(0).toUpperCase() + strengthName.slice(1) + " is proportional to amplitude squared",
               "Square the amplitude factor: " + k + "² = " + (k * k),
               up ? "Amplitude went up, so intensity is × " + (k * k) : "Amplitude went down, so intensity is ÷ " + (k * k),
               "Factor = " + (+factor.toFixed(5))
@@ -858,13 +860,13 @@ window.UNITS.push({
         var aFactor = up ? k : 1 / k;
         return {
           kind: "number",
-          given: "the intensity is " + (up ? "multiplied by " : "divided by ") + iFactor,
+          given: "the " + strengthName + " is " + (up ? "multiplied by " : "divided by ") + iFactor,
           ask: "By what factor does the amplitude change? (2 means doubled, 0.5 means halved)",
           answer: +aFactor.toFixed(5),
           unit: "× original",
           tol: Math.max(0.001, aFactor * 0.01),
           steps: [
-            "Intensity ∝ amplitude², so go backwards with a square root",
+            strengthName.charAt(0).toUpperCase() + strengthName.slice(1) + " ∝ amplitude², so go backwards with a square root",
             "√" + iFactor + " = " + k,
             up ? "Intensity rose, so amplitude is × " + k : "Intensity fell, so amplitude is ÷ " + k,
             "Factor = " + (+aFactor.toFixed(5))

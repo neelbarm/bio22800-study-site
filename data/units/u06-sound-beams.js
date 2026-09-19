@@ -339,7 +339,8 @@ window.UNITS.push({
 <div class="callout key">You can only focus <b>within the near zone</b> — at a depth shallower than the natural focus. No lens, curve or delay scheme can push the focus deeper than the unfocused NZL. That is why the answer to "can I focus at 20 cm with this probe?" is often simply no.</div>
 <p>The reason to accept the trade is <span class="kw">lateral resolution</span>. Lateral resolution equals the beam width at that depth, so the narrowest part of the beam gives the best side-by-side detail. Put the focal marker at the depth of the structure you care about and it sharpens; everything much deeper gets slightly worse. The <span class="kw-2">focal zone</span> — the region around the focus where the beam stays narrow — is the part of the image you should trust most.</p>
 <div class="callout tip">Dumb saying: "Focus = <b>S</b>hallower, <b>S</b>kinnier, <b>S</b>assier spread." Shallower focus, skinnier waist, sassier divergence beyond.</div>
-<p>Who controls it? The sonographer, on an electronically focused array: move the focus, or turn on multiple focal zones (which costs frame rate, since each zone needs its own transmit pulse per scan line).</p>`,
+<p>Who controls it? The sonographer, on an electronically focused array: move the focus, or turn on multiple focal zones (which costs frame rate, since each zone needs its own transmit pulse per scan line).</p>
+<div class="steps"><ol><li>At 5 MHz, λ = 1.54 ÷ 5 = 0.308 mm.</li><li>For a 6 mm unfocused disc, NZL = 36 ÷ (4 × 0.308) ≈ 29.2 mm; the shortcut gives 6² × 5 ÷ 6 = 30 mm.</li><li>Doubling diameter makes NZL four times longer; doubling frequency doubles it.</li><li>At the natural focus, diameter ≈ D ÷ 2 = 3 mm; at two NZLs it is ≈ D = 6 mm.</li><li>A 2 mm beam width gives 2 mm lateral resolution.</li></ol></div>`,
       diagrams: [
         { svg: `<svg viewBox="0 0 600 260" role="img"><title>An unfocused beam compared with a focused beam that narrows sooner and diverges faster</title>
 <rect x="44" y="96" width="14" height="72" fill="none" stroke="var(--c1)"/>
@@ -350,7 +351,8 @@ window.UNITS.push({
 <path d="M 230 126 L 230 138" fill="none" stroke="var(--c4)"/>
 <text x="150" y="88" fill="currentColor" font-size="15">focused: narrow waist, shallower</text>
 <text x="330" y="112" fill="currentColor" font-size="15">unfocused (grey)</text>
-<text x="420" y="230" fill="currentColor" font-size="15">focused beam spreads more</text>
+<text x="390" y="230" fill="currentColor" font-size="15">focused beam</text>
+<text x="390" y="251" fill="currentColor" font-size="15">spreads more</text>
 <text x="44" y="40" fill="currentColor" font-size="15">Same transducer, two beams</text>
 <text x="44" y="62" fill="currentColor" font-size="15">Focusing only works inside the near zone</text>
 <text x="188" y="164" fill="currentColor" font-size="15">best lateral resolution here</text>
@@ -458,7 +460,7 @@ window.UNITS.push({
       explain: "False. The beam converges (narrows) all the way through the near zone and only starts diverging after the focus, in the far zone.",
       objectives: ["u06-o1"], lesson: "u06-l1", level: 2 },
     { id: "u06-q5", type: "mc", q: "An unfocused 10 mm diameter transducer operates at 5 MHz in soft tissue. Approximately how deep is its focus?", choices: ["8 mm", "17 mm", "83 mm", "250 mm"], answer: 2,
-      explain: "NZL = D² × f ÷ 6 = 100 × 5 ÷ 6 ≈ 83 mm. The tempting 8 mm comes from forgetting to square the diameter (10 × 5 ÷ 6). Squaring the diameter is the whole point of the formula.",
+      explain: "Using the soft-tissue shortcut, NZL ≈ D² × f ÷ 6 = 100 × 5 ÷ 6 ≈ 83 mm (the exact 1.54 mm/µs calculation is about 81 mm). The tempting 8 mm comes from forgetting to square the diameter.",
       objectives: ["u06-o2"], lesson: "u06-l3", level: 3 },
     { id: "u06-q6", type: "mc", q: "A transducer has a diameter of 8 mm and produces a wavelength of 0.4 mm. What is the near-zone length?", choices: ["40 mm", "20 mm", "160 mm", "5 mm"], answer: 0,
       explain: "NZL = D² ÷ (4λ) = 64 ÷ (4 × 0.4) = 64 ÷ 1.6 = 40 mm. The trap answer 160 mm comes from dividing by λ alone and forgetting the 4.",

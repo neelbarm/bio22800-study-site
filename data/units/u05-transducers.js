@@ -57,7 +57,7 @@ window.UNITS.push({
 <text x="300" y="66" fill="currentColor" font-size="15">Backing: epoxy + tungsten</text>
 <text x="300" y="104" fill="currentColor" font-size="15">Active element: PZT</text>
 <text x="300" y="130" fill="currentColor" font-size="15">Matching layer (1/4 wavelength)</text>
-<text x="300" y="156" fill="currentColor" font-size="15">Gel: squeezes out the air</text>
+<text x="300" y="150" fill="currentColor" font-size="15">Gel: squeezes out the air</text>
 <text x="300" y="176" fill="currentColor" font-size="15">Skin</text>
 <text x="46" y="186" fill="currentColor" font-size="15">Case (housing) all around</text>
 </svg>`, caption: "Backing behind, matching layer in front. Draw this stack from memory every time you open the unit." }
@@ -241,7 +241,8 @@ window.UNITS.push({
 <text x="296" y="80" fill="currentColor" font-size="15">transmit element</text>
 <text x="296" y="128" fill="currentColor" font-size="15">receive element</text>
 <path d="M 250 170 q 15 -30 30 0 q 15 30 30 0 q 15 -30 30 0 q 15 30 30 0 q 15 -30 30 0 q 15 30 30 0 q 15 -30 30 0 q 15 30 30 0" fill="none" stroke="var(--c2)"/>
-<text x="250" y="206" fill="currentColor" font-size="15">output sound: 4 MHz, never stops (duty factor 100 %)</text>
+<text x="250" y="202" fill="currentColor" font-size="15">output: 4 MHz, never stops</text>
+<text x="250" y="217" fill="currentColor" font-size="15">duty factor = 100 %</text>
 <text x="40" y="34" fill="currentColor" font-size="15">CW: no backing, two elements, high Q</text>
 </svg>`, caption: "Driven, not rung: a CW element outputs whatever frequency the electronics feed it." }
       ],
@@ -371,12 +372,13 @@ window.UNITS.push({
 <tr><td>Purity of tone</td><td>impure, many frequencies</td><td>pure, nearly one frequency</td></tr>
 </table>
 <p>The wide bandwidth of an imaging probe is also what makes <b>multi-frequency</b> and <b>harmonic</b> imaging possible: the system can transmit or listen at different parts of the band without changing probes. A high-Q crystal simply has no other frequencies to offer.</p>
-<div class="callout warn">Q and bandwidth are inversely related — every single time. If a question says "high Q and wide bandwidth," it is wrong before you read the rest of it.</div>`,
+<div class="callout warn">Q and bandwidth are inversely related — every single time. If a question says "high Q and wide bandwidth," it is wrong before you read the rest of it.</div>
+<div class="steps"><ol><li>With c = 4 mm/µs and thickness = 0.5 mm, pulsed f = 4 ÷ (2 × 0.5) = 4 MHz; for 8 MHz, thickness = 4 ÷ 16 = 0.25 mm.</li><li>A 5 MHz electrical drive produces 5 MHz CW sound.</li><li>If matching-layer c = 2 mm/µs at 5 MHz, λ = 0.4 mm and quarter-wave thickness = 0.10 mm.</li><li>A 2–6 MHz probe has BW = 4 MHz and center frequency = 4 MHz.</li><li>Fractional BW = 4 ÷ 4 × 100 = 100%; Q = 4 ÷ 4 = 1.</li></ol></div>`,
       diagrams: [
         { svg: `<svg viewBox="0 0 600 280" role="img"><title>A tall narrow bandwidth curve for a high-Q transducer beside a low broad curve for a low-Q imaging transducer</title>
 <path d="M 60 200 L 540 200" fill="none" stroke="currentColor"/>
 <path d="M 60 200 L 60 50" fill="none" stroke="currentColor"/>
-<text x="452" y="222" fill="currentColor" font-size="15">frequency</text>
+<text x="455" y="190" fill="currentColor" font-size="15">frequency →</text>
 <text x="70" y="44" fill="currentColor" font-size="15">amplitude</text>
 <path d="M 250 200 C 275 200 278 60 295 60 C 312 60 315 200 340 200" fill="none" stroke="var(--c4)"/>
 <path d="M 130 200 C 200 200 205 120 295 120 C 385 120 390 200 460 200" fill="none" stroke="var(--c1)"/>
@@ -697,19 +699,21 @@ window.UNITS.push({
         var span = spans[Math.floor(rnd() * spans.length)];
         var hi = lo + span;
         var center = (hi + lo) / 2;
-        var askQ = rnd() < 0.5;
-        var ans = askQ ? center / span : span;
+        var mode = Math.floor(rnd() * 3);
+        var askQ = mode === 0;
+        var askFrac = mode === 1;
+        var ans = askQ ? center / span : (askFrac ? span / center * 100 : span);
         return {
           kind: "number",
           given: "A transducer emits frequencies from " + lo + " MHz to " + hi + " MHz.",
-          ask: askQ ? "What is its Q-factor?" : "What is its bandwidth, in MHz?",
-          answer: +ans.toFixed(3), unit: askQ ? "" : "MHz", tol: 0.06,
+          ask: askQ ? "What is its Q-factor?" : (askFrac ? "What is its fractional bandwidth, in percent?" : "What is its bandwidth, in MHz?"),
+          answer: +ans.toFixed(3), unit: askQ ? "" : (askFrac ? "%" : "MHz"), tol: askFrac ? 0.2 : 0.06,
           steps: [
             "Bandwidth = highest − lowest = " + hi + " − " + lo + " = " + span + " MHz",
             "Main (center) frequency = (" + hi + " + " + lo + ") ÷ 2 = " + center + " MHz",
             "Fractional bandwidth = " + span + " ÷ " + center + " × 100 = " + (span / center * 100).toFixed(0) + " %",
             "Q = " + center + " ÷ " + span + " = " + (center / span).toFixed(2),
-            askQ ? "Answer: Q = " + (center / span).toFixed(2) : "Answer: bandwidth = " + span + " MHz"
+            askQ ? "Answer: Q = " + (center / span).toFixed(2) : (askFrac ? "Answer: fractional bandwidth = " + (span / center * 100).toFixed(1) + " %" : "Answer: bandwidth = " + span + " MHz")
           ]
         };
       }
@@ -741,6 +745,13 @@ window.UNITS.push({
             "Chant it: backing makes it Brief, Broad and Bad at hearing"
           ]
         };
+      }
+    },
+    {
+      id: "u05-d7", title: "Continuous-wave driving frequency", formula: "CW sound frequency = electrical driving frequency", lesson: "u05-l5",
+      gen: function (rnd) {
+        var f = [2, 3, 4, 5, 6, 8, 10][Math.floor(rnd() * 7)];
+        return { kind: "number", given: "A CW element is driven by an alternating voltage at " + f + " MHz.", ask: "What frequency sound does it emit, in MHz?", answer: f, unit: "MHz", tol: 0.01, steps: ["A continuously driven element follows the electrical oscillator", "Sound frequency = driving frequency = " + f + " MHz", "Element thickness sets pulsed resonance, not this CW driving frequency"] };
       }
     }
   ],

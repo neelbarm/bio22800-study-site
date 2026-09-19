@@ -81,7 +81,7 @@ window.UNITS.push({
       title: "The system block diagram",
       objectives: ["u09-o2"],
       html: `<p class="lead">Seven boxes, one round trip: voltage out, echo back, picture on the screen.</p>
-<p>The <span class="kw">pulser</span> (transmitter) is the machine's spark plug. It creates the electrical voltage — typically tens to a few hundred volts — that shocks the crystal into ringing, and it decides <b>how often</b> to do it (the <b>PRF</b>). Turning up <b>output power / acoustic power / transmit gain</b> tells the pulser to send bigger voltage, which means a louder pulse, brighter echoes <b>and more patient exposure</b>. That is the only control in this chapter that changes exposure.</p>
+<p>The <span class="kw">pulser</span> (transmitter) is the machine's spark plug. It creates the electrical voltage — typically tens to a few hundred volts — that shocks the crystal into ringing, and it decides <b>how often</b> to do it (the <b>PRF</b>). Turning up <b>output power / acoustic power / transmit gain</b> tells the pulser to send bigger voltage, which means a louder pulse, brighter echoes <b>and more patient exposure</b>. It is the most direct exposure control; transmit focusing, mode/PRF, coded excitation and dwell time can also change exposure.</p>
 <p>The <span class="kw">beamformer</span> is the brain of an array. On transmit it hands the pulser's voltage to each element at a slightly different <b>time delay</b>, which steers and focuses the beam; it also uses <span class="kw-2">apodization</span> (driving outer elements more gently) to shrink grating and side lobes. On receive it re-aligns the echoes from all the elements before they are summed.</p>
 <p>The <span class="kw">transducer</span> converts voltage to sound (transmit) and sound back to voltage (receive) — the piezoelectric effect running in both directions.</p>
 <p>The <span class="kw">receiver</span> takes the tiny returning voltages and performs five processing steps on them (next lesson) so they can be displayed.</p>
@@ -346,7 +346,8 @@ window.UNITS.push({
 <p>A <span class="kw">pixel</span> (picture element) is the smallest box of the image. The memory is a matrix, commonly <b>512 × 512</b> or <b>1024 × 1024</b> pixels. Each pixel holds a binary number that many <span class="kw">bits</span> long. Bits are binary digits — each one has two states, so:</p>
 <div class="formula">number of gray shades = 2<sup>bits</sup></div>
 <p>1 bit → 2 shades (pure black and white), 4 bits → 16, 6 bits → 64, 8 bits → 256, 10 bits → 1,024. Going the other way, "how many bits do I need for 128 shades?" is asking for the exponent: 2<sup>7</sup> = 128, so 7 bits.</p>
-<div class="callout key">More <b>pixels</b> in the same area → better <b>spatial</b> resolution (finer detail). More <b>bits</b> per pixel → better <b>contrast</b> resolution (more gray shades).</div>
+<div class="callout key">More <b>pixels</b> in the same field of view improve display sampling only when the matrix was limiting; they cannot beat the acoustic beam and pulse resolution. More <b>bits</b> provide more available gray levels, but clinical contrast also depends on signal quality and processing.</div>
+<div class="steps"><ol><li>6 bits gives 2⁶ = 64 available shades; 1,024 shades needs log₂(1,024) = 10 bits.</li><li>A 512 × 512 matrix has 262,144 pixels.</li><li>At 8 bits/pixel it stores 2,097,152 bits per frame.</li></ol></div>
 <div class="callout tip">Dumb saying: <b>"Pixels for sharpness, bits for shades."</b></div>
 <div class="callout warn">Trap: adding bits does not make the picture sharper, and adding pixels does not add gray shades. Keep the two columns separate.</div>`,
       diagrams: [
@@ -415,7 +416,8 @@ window.UNITS.push({
 <tr><td>New data?</td><td>Yes — new lines fired in that box</td><td>No — same pixels, drawn bigger</td></tr>
 <tr><td>Quality</td><td>Better resolution, fills memory with the region of interest</td><td>Blockier, can look pixelated</td></tr>
 <tr><td>Frozen image?</td><td>No</td><td>Yes</td></tr></table>
-<div class="callout tip">Dumb saying: <b>"Write before, read after."</b> W comes before R in the alphabet, and write comes before storage.</div>`,
+<div class="callout tip">Dumb saying: <b>"Write before, read after."</b> Write zoom reacquires before storage; read zoom enlarges what is already stored.</div>
+<div class="callout warn">The frozen-image test is the conventional stored-image teaching model. Modern raw-data systems may retain enough channel data to reprocess some settings after freeze, so use the scanner's implementation rather than treating the shortcut as universal.</div>`,
       diagrams: [
         {
           svg: `<svg viewBox="0 0 600 290" role="img"><title>Timeline showing pre-processing before image memory and post-processing after it</title>
@@ -502,7 +504,8 @@ window.UNITS.push({
 <p><span class="kw-2">Frequency compounding</span> does the same trick in frequency instead of angle: the broadband echo data is split into sub-bands, imaged separately, then averaged. Speckle patterns differ with frequency, so averaging suppresses speckle. The cost is some loss of resolution and signal-to-noise per sub-band.</p>
 <p><span class="kw">Elastography</span> maps <b>stiffness</b>. Either the probe (or an acoustic push pulse) deforms tissue and the system measures displacement (strain), or the system measures how fast a shear wave travels — faster shear wave = stiffer tissue, often reported in m/s or kPa. Stiff lesions and fibrotic liver stand out even when B-mode looks bland.</p>
 <p><span class="kw">3D/4D</span> builds a <b>volume</b> from many 2D slices — swept mechanically, swept by hand, or captured electronically by a <b>2D matrix array</b>. 4D is 3D updating in real time; volume rendering is why obstetric "baby face" images exist.</p>
-<div class="callout tip">Dumb saying: <b>"Compounding smooths but slows."</b> Every averaging trick costs frame rate.</div>`,
+<div class="callout tip">Dumb saying: <b>"Compounding smooths; sequential looks may slow."</b> Sequential spatial looks can reduce effective frame rate, although overlapping-frame implementations soften that cost. Frequency compounding may split one acquisition into subbands and need not divide frame rate.</div>
+<div class="steps"><ol><li>Dynamic range: 10 log₁₀(1,000/1) = 30 dB.</li><li>Gain: 10 log₁₀(100/10) = 10 dB.</li><li>Five sequential looks from a 30 fps acquisition give an idealized 30/5 = 6 fps if no looks overlap.</li></ol></div>`,
       diagrams: [
         {
           svg: `<svg viewBox="0 0 600 260" role="img"><title>Spatial compounding: three steered looks averaged into one frame at a lower frame rate</title>
@@ -600,8 +603,8 @@ window.UNITS.push({
     { front: "Bit", back: "Binary digit with two possible states; bits per pixel set the number of gray shades", lesson: "u09-l7" },
     { front: "Shades of gray formula", back: "shades = 2^bits (8 bits = 256)", lesson: "u09-l7" },
     { front: "How many bits for 64 shades?", back: "6 bits (2⁶ = 64)", lesson: "u09-l7" },
-    { front: "More pixels in the same area improves…", back: "Spatial resolution (detail)", lesson: "u09-l7" },
-    { front: "More bits per pixel improves…", back: "Contrast resolution (number of gray shades)", lesson: "u09-l7" },
+    { front: "More pixels in the same field of view improve…", back: "Display sampling when matrix-limited; never beyond acoustic resolution", lesson: "u09-l7" },
+    { front: "More bits per pixel provide…", back: "More available gray levels; clinical contrast still depends on signal and processing", lesson: "u09-l7" },
     { front: "Pre-processing", back: "Write functions performed before storage: TGC, compression, edge enhancement, persistence, write zoom", lesson: "u09-l8" },
     { front: "Post-processing", back: "Read functions performed after storage: gray maps, B-color, black/white invert, read zoom", lesson: "u09-l8" },
     { front: "Quick test for post-processing", back: "If you can do it to a frozen image, it is post-processing", lesson: "u09-l8" },
@@ -670,8 +673,8 @@ window.UNITS.push({
       explain: "Rectification flips the negative half of the signal positive; smoothing traces an envelope over the humps.", objectives: ["u09-o6"], lesson: "u09-l6", level: 1 },
     { id: "u09-q26", type: "mc", q: "How many shades of gray can a 6-bit pixel display?", choices: ["12", "32", "64", "128"], answer: 2,
       explain: "2⁶ = 64. Choice 0 is the trap for anyone who multiplies 6 × 2 instead of raising 2 to the 6th power; 32 is 2⁵ and 128 is 2⁷.", objectives: ["u09-o7"], lesson: "u09-l7", level: 2 },
-    { id: "u09-q27", type: "mc", q: "Doubling the number of pixels used to display the same field of view primarily improves:", choices: ["Contrast resolution", "Spatial resolution", "Temporal resolution", "Penetration"], answer: 1,
-      explain: "More pixels per unit area = finer detail = better spatial resolution. Contrast resolution is the tempting answer, but that is governed by the number of bits per pixel (gray shades).", objectives: ["u09-o7"], lesson: "u09-l7", level: 2 },
+    { id: "u09-q27", type: "mc", q: "If display sampling is the limiting factor, doubling pixels over the same field of view primarily improves:", choices: ["Available gray levels", "Display spatial sampling", "Temporal resolution", "Acoustic penetration"], answer: 1,
+      explain: "Smaller display samples can preserve finer detail when the matrix was limiting, but cannot exceed the transducer's acoustic resolution. Bits, not pixel count, set available gray levels.", objectives: ["u09-o7"], lesson: "u09-l7", level: 2 },
     { id: "u09-q28", type: "short", q: "How many shades of gray does an 8-bit pixel hold?", answer: "256", accept: ["256", "256 shades", "2^8"],
       explain: "2⁸ = 256, the most commonly quoted gray-scale depth in ultrasound memory.", objectives: ["u09-o7"], lesson: "u09-l7", level: 1 },
     { id: "u09-q29", type: "tf", q: "Analog scan converters are still preferred because they hold an image indefinitely without drift.", answer: false,
@@ -684,8 +687,8 @@ window.UNITS.push({
       explain: "Inverting black and white remaps stored pixel values on the way out, so it works even on a frozen image. TGC, edge enhancement and persistence all act before the data is stored.", objectives: ["u09-o8"], lesson: "u09-l8", level: 2 },
     { id: "u09-q33", type: "short", q: "Which magnification rescans the region of interest and gives better resolution?", answer: "write magnification", accept: ["write", "write zoom", "write magnification", "write mag"],
       explain: "Write (pre-processing) zoom acquires new scan lines inside the selected box, so the enlarged image contains genuinely new data instead of bigger old pixels.", objectives: ["u09-o8"], lesson: "u09-l8", level: 2 },
-    { id: "u09-q34", type: "tf", q: "If a function can be applied to a frozen image, it is post-processing.", answer: true,
-      explain: "True — that is the practical test. A frozen frame lives in memory, so only read (post) functions can still change how it looks.", objectives: ["u09-o8"], lesson: "u09-l8", level: 2 },
+    { id: "u09-q34", type: "tf", q: "In the conventional stored-image model taught for this course, a function available on a frozen image is classified as post-processing.", answer: true,
+      explain: "That is the course shortcut for stored image data. Some modern raw-data systems preserve more information and permit additional reprocessing, so it is not a universal hardware law.", objectives: ["u09-o8"], lesson: "u09-l8", level: 2 },
     { id: "u09-q35", type: "mc", q: "In medical imaging, DICOM is best described as:", choices: ["The hospital network that stores and distributes images", "The standard file format and communication protocol for medical images", "A flat-panel display technology", "A pre-processing function in the scan converter"], answer: 1,
       explain: "DICOM is the standard that lets different vendors exchange images plus their metadata. Choice 0 describes PACS, which is the classic swap.", objectives: ["u09-o9"], lesson: "u09-l9", level: 1 },
     { id: "u09-q36", type: "short", q: "What does PACS stand for?", answer: "picture archiving and communication system", accept: ["picture archiving and communication system", "picture archiving & communication system", "picture archival and communication system"],
@@ -698,10 +701,10 @@ window.UNITS.push({
       explain: "A long coded pulse puts more energy into the body, and decoding on receive recovers the short-pulse axial resolution. Choice 1 confuses transmit coding with memory bit depth, which is unrelated.", objectives: ["u09-o10"], lesson: "u09-l10", level: 2 },
     { id: "u09-q40", type: "short", q: "Which imaging technique maps tissue stiffness?", answer: "elastography", accept: ["elastography", "elastogram", "shear wave elastography"],
       explain: "Strain or shear-wave elastography measures how much tissue deforms or how fast a shear wave travels — faster shear wave means stiffer tissue.", objectives: ["u09-o10"], lesson: "u09-l10", level: 1 },
-    { id: "u09-q41", type: "mc", q: "A system uses five steered looks for spatial compounding. Compared with conventional imaging at 30 frames per second, the displayed frame rate will be approximately:", choices: ["150 frames per second", "30 frames per second", "6 frames per second", "Unchanged, because compounding is post-processing"], answer: 2,
+    { id: "u09-q41", type: "mc", q: "An idealized sequential spatial-compounding system needs five non-overlapping steered acquisitions per displayed frame. From 30 acquisitions/s, displayed frame rate is approximately:", choices: ["150 frames per second", "30 frames per second", "6 frames per second", "Unchanged because all compounding is post-processing"], answer: 2,
       explain: "Five frames are averaged into one, so about 30 ÷ 5 = 6 frames per second. Choice 3 is tempting because compounding sounds like image processing, but the extra looks must actually be acquired, which costs real time.", objectives: ["u09-o10"], lesson: "u09-l10", level: 3 },
-    { id: "u09-q42", type: "mc", q: "Which pair correctly matches the resolution it improves?", choices: ["More bits → spatial resolution; more pixels → contrast resolution", "More bits → contrast resolution; more pixels → spatial resolution", "More bits → temporal resolution; more pixels → contrast resolution", "More bits → penetration; more pixels → temporal resolution"], answer: 1,
-      explain: "Bits are gray shades (contrast), pixels are detail (spatial). Choice 0 is the reversed version of the same fact and is the most commonly chosen wrong answer.", objectives: ["u09-o7"], lesson: "u09-l7", level: 2 },
+    { id: "u09-q42", type: "mc", q: "Which pair correctly states what digital storage can provide?", choices: ["More bits → finer acoustic beam; more pixels → more transmitted power", "More bits → more gray levels; more pixels → finer display sampling when matrix-limited", "More bits → higher frame rate; more pixels → lower attenuation", "More bits → penetration; more pixels → Doppler sensitivity"], answer: 1,
+      explain: "Bits provide representable gray levels and pixels provide display samples. Neither guarantees clinical contrast or beats acoustic resolution by itself.", objectives: ["u09-o7"], lesson: "u09-l7", level: 2 },
     { id: "u09-q43", type: "mc", q: "Which sequence correctly describes the path of an echo after it returns to the transducer?", choices: ["Receiver → scan converter → display", "Scan converter → receiver → display", "Pulser → receiver → display", "Beamformer → display → scan converter"], answer: 0,
       explain: "Returning voltages are processed by the receiver, stored and reformatted by the scan converter, then shown on the display. Choice 2 is tempting because the pulser is part of the system, but the pulser is only in the transmit path.", objectives: ["u09-o2"], lesson: "u09-l2", level: 2 }
   ],
@@ -804,7 +807,7 @@ window.UNITS.push({
       }
     },
     {
-      id: "u09-d6", title: "Dynamic range reasoning", formula: "↓ dynamic range → fewer shades → more contrast", lesson: "u09-l5",
+      id: "u09-d8", title: "Dynamic range reasoning", formula: "↓ dynamic range → fewer shades → more contrast", lesson: "u09-l5",
       gen: function (rnd) {
         var from = [70, 65, 60, 55][Math.floor(rnd() * 4)];
         var change = [10, 15, 20, 25][Math.floor(rnd() * 4)];
@@ -829,7 +832,8 @@ window.UNITS.push({
           ]
         };
       }
-    }
+    },
+    { id:"u09-d6",title:"Digital memory and signal math",formula:"DR/gain, pixels, memory, sequential compounding",lesson:"u09-l7",gen:function(rnd){var cases=[function(){var n=[256,512,1024][Math.floor(rnd()*3)],b=[6,8,10][Math.floor(rnd()*3)];return {g:n+" × "+n+" pixels at "+b+" bits/pixel",q:"Memory per frame in bits?",a:n*n*b,u:"bits",s:["memory = rows × columns × bits/pixel","= "+n+" × "+n+" × "+b,"= "+(n*n*b)+" bits"]};},function(){var ratio=[10,100,1000][Math.floor(rnd()*3)],v=10*Math.log10(ratio);return {g:"Power ratio = "+ratio+":1",q:"Dynamic range or gain in dB?",a:v,u:"dB",s:["dB = 10 log₁₀(ratio)","= 10 log₁₀("+ratio+")","= "+v+" dB"]};},function(){var fr=[24,30,60][Math.floor(rnd()*3)],looks=[2,3,5][Math.floor(rnd()*3)],v=fr/looks;return {g:fr+" acquisitions/s and "+looks+" non-overlapping sequential looks",q:"Idealized displayed frame rate?",a:v,u:"fps",s:["FR = acquisition rate ÷ looks","= "+fr+" ÷ "+looks,"= "+v+" fps"]};}];var x=cases[Math.floor(rnd()*cases.length)]();return {kind:"number",given:x.g,ask:x.q,answer:+x.a.toFixed(2),unit:x.u,tol:0.05,steps:x.s};} }
   ],
 
   whiteboard: [
