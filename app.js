@@ -2714,6 +2714,27 @@
   /* ---------------------------------------------------------------- shell -- */
 
   function wireShell() {
+    var gate = $('#welcomeGate');
+    var enter = $('#welcomeEnter');
+    var gated = $$('.skip, .topbar, .scrim, .sidebar, .main, .lightbox, .toast');
+    if (gate && enter) {
+      gated.forEach(function (el) { el.inert = true; });
+      window.setTimeout(function () { enter.focus(); }, 0);
+      enter.addEventListener('click', function () {
+        if (gate.classList.contains('leaving')) return;
+        gate.classList.add('leaving');
+        var finish = function () {
+          gate.hidden = true;
+          document.body.classList.remove('welcome-open');
+          gated.forEach(function (el) { el.inert = false; });
+          var main = $('#main');
+          if (main) main.focus({ preventScroll: true });
+        };
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) finish();
+        else window.setTimeout(finish, 520);
+      });
+    } else document.body.classList.remove('welcome-open');
+
     var tg = $('#navToggle');
     if (tg) tg.addEventListener('click', function () {
       setDrawer(!$('#sidebar').classList.contains('open'));

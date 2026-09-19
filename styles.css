@@ -178,6 +178,95 @@ kbd {
   text-transform: uppercase; color: var(--muted); margin: 0 0 var(--s1);
 }
 
+/* ----------------------------------------------------------- welcome -- */
+
+body.welcome-open { overflow: hidden; }
+
+.welcome-gate {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center; overflow: hidden;
+  min-height: 100dvh; padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  background:
+    radial-gradient(circle at 50% 42%, rgb(var(--a1-rgb) / .16), transparent 34rem),
+    linear-gradient(145deg, var(--paper), color-mix(in srgb, var(--paper) 90%, var(--a5)));
+  isolation: isolate;
+}
+
+.welcome-gate::before {
+  content: ""; position: absolute; inset: -30%; z-index: -2;
+  background-image:
+    linear-gradient(rgb(var(--a1-rgb) / .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--a1-rgb) / .055) 1px, transparent 1px);
+  background-size: 42px 42px; transform: perspective(600px) rotateX(58deg) translateY(25%);
+  mask-image: radial-gradient(circle, #000 12%, transparent 68%);
+  animation: welcome-grid 12s linear infinite;
+}
+
+.welcome-gate.leaving { animation: welcome-away .52s var(--ease) forwards; pointer-events: none; }
+
+.welcome-field { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+.welcome-orb {
+  position: absolute; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--a1); box-shadow: 0 0 22px 7px rgb(var(--a1-rgb) / .32);
+  animation: welcome-float 6s ease-in-out infinite;
+}
+.orb-one { left: 13%; top: 27%; }
+.orb-two { right: 14%; top: 34%; background: var(--a4); box-shadow: 0 0 22px 7px rgb(var(--a4-rgb) / .3); animation-delay: -2s; }
+.orb-three { left: 22%; bottom: 18%; background: var(--a3); box-shadow: 0 0 22px 7px rgb(var(--a3-rgb) / .28); animation-delay: -4s; }
+
+.welcome-panel {
+  width: min(680px, 100%); text-align: center; position: relative;
+  padding: clamp(28px, 7vw, 64px) clamp(20px, 7vw, 72px);
+  border: 1px solid rgb(var(--a1-rgb) / .25); border-radius: 32px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  box-shadow: 0 30px 90px rgb(var(--ink-rgb) / .13), inset 0 1px 0 rgb(255 255 255 / .25);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  animation: welcome-panel-in .7s var(--ease) both;
+}
+
+.welcome-mark { width: 82px; height: 82px; margin: 0 auto 22px; position: relative; display: grid; place-items: center; }
+.welcome-core {
+  position: relative; z-index: 2; display: grid; place-items: center; width: 62px; height: 62px;
+  font-size: 27px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line);
+  box-shadow: 0 10px 30px rgb(var(--a1-rgb) / .22);
+}
+.welcome-pulse { position: absolute; inset: 9px; border: 2px solid var(--a1); border-radius: 50%; animation: welcome-pulse 2.4s ease-out infinite; }
+.welcome-pulse.pulse-two { animation-delay: .8s; }
+.welcome-pulse.pulse-three { animation-delay: 1.6s; }
+
+.welcome-kicker {
+  margin: 0 0 9px; color: var(--muted); font-size: var(--fs-xs); font-weight: 750;
+  letter-spacing: .14em; text-transform: uppercase; animation: welcome-rise .5s .25s both;
+}
+.welcome-title { margin: 0; font-size: clamp(42px, 10vw, 82px); line-height: .98; letter-spacing: -.055em; }
+.welcome-title > span { display: inline-block; animation: welcome-word .65s calc(.34s + var(--i) * .11s) var(--ease) both; }
+.welcome-name {
+  color: transparent; background: linear-gradient(110deg, var(--a1), var(--a5), var(--a4));
+  background-clip: text; -webkit-background-clip: text;
+}
+.welcome-wave { height: 42px; margin: 28px auto 26px; display: flex; justify-content: center; align-items: center; gap: 5px; }
+.welcome-wave i {
+  width: 4px; height: 9px; border-radius: var(--r-pill); background: var(--a1);
+  animation: welcome-wave 1.15s ease-in-out infinite; animation-delay: calc(var(--n, 0) * -80ms);
+}
+.welcome-wave i:nth-child(2), .welcome-wave i:nth-child(11) { --n: 1; }
+.welcome-wave i:nth-child(3), .welcome-wave i:nth-child(10) { --n: 2; }
+.welcome-wave i:nth-child(4), .welcome-wave i:nth-child(9) { --n: 3; }
+.welcome-wave i:nth-child(5), .welcome-wave i:nth-child(8) { --n: 4; }
+.welcome-wave i:nth-child(6), .welcome-wave i:nth-child(7) { --n: 5; }
+.welcome-enter { min-width: 170px; min-height: 50px; font-size: var(--fs-base); box-shadow: 0 12px 28px rgb(var(--a1-rgb) / .24); animation: welcome-rise .55s .72s both; }
+.welcome-enter span { display: inline-block; margin-left: 7px; transition: transform var(--t); }
+.welcome-enter:hover span { transform: translateX(4px); }
+
+@keyframes welcome-grid { to { background-position: 0 42px, 42px 0; } }
+@keyframes welcome-float { 50% { transform: translateY(-20px) scale(1.4); opacity: .55; } }
+@keyframes welcome-pulse { 0% { transform: scale(.72); opacity: .7; } 75%, 100% { transform: scale(1.55); opacity: 0; } }
+@keyframes welcome-panel-in { from { opacity: 0; transform: translateY(20px) scale(.97); } }
+@keyframes welcome-word { from { opacity: 0; transform: translateY(28px) rotate(2deg); filter: blur(8px); } }
+@keyframes welcome-rise { from { opacity: 0; transform: translateY(12px); } }
+@keyframes welcome-wave { 50% { height: 38px; background: var(--a4); } }
+@keyframes welcome-away { to { opacity: 0; transform: scale(1.035); filter: blur(8px); visibility: hidden; } }
+
 /* --------------------------------------------------------------- topbar -- */
 
 .topbar {

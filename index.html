@@ -8,7 +8,33 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>%F0%9F%94%8A</text></svg>">
 </head>
-<body>
+<body class="welcome-open">
+
+<section class="welcome-gate" id="welcomeGate" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+  <div class="welcome-field" aria-hidden="true">
+    <span class="welcome-orb orb-one"></span>
+    <span class="welcome-orb orb-two"></span>
+    <span class="welcome-orb orb-three"></span>
+  </div>
+  <div class="welcome-panel">
+    <div class="welcome-mark" aria-hidden="true">
+      <span class="welcome-pulse"></span>
+      <span class="welcome-pulse pulse-two"></span>
+      <span class="welcome-pulse pulse-three"></span>
+      <span class="welcome-core">🔊</span>
+    </div>
+    <p class="welcome-kicker">Your ultrasound study room is ready</p>
+    <h1 class="welcome-title" id="welcomeTitle" aria-label="Good luck Gabbs!">
+      <span style="--i:0">Good</span>
+      <span style="--i:1">luck</span>
+      <span class="welcome-name" style="--i:2">Gabbs!</span>
+    </h1>
+    <div class="welcome-wave" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <button class="btn primary welcome-enter" id="welcomeEnter" type="button">Let's study <span aria-hidden="true">→</span></button>
+  </div>
+</section>
 
 <a class="skip" href="#main">Skip to content</a>
 

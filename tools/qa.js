@@ -26,6 +26,9 @@ function assert(ok, message) { if (!ok) throw new Error('QA: ' + message); }
   const launch = fs.existsSync(chrome) ? { executablePath: chrome } : {};
   const browser = await chromium.launch(launch);
   const page = await browser.newPage({ viewport: { width, height: 900 } });
+  await page.addLocatorHandler(page.locator('#welcomeGate'), async gate => {
+    await gate.locator('#welcomeEnter').click();
+  });
   const errors = [];
   page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
