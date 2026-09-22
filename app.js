@@ -552,37 +552,120 @@
     return n;
   }
 
+  /* ------------------------------------------------------- exam planner -- */
+
+  function examEditorHtml(idSuffix, compact) {
+    var e = state.exam || {};
+    var sel = arr(e.units);
+    return '<div class="exam-editor" id="examEd' + idSuffix + '">' +
+      (compact ? '' : '<h2>Next exam</h2>') +
+      '<p class="small muted">Set the date and tick the units it covers. Your plan on the home page follows it.</p>' +
+      '<div class="exam-fields">' +
+      '<div><label class="field" for="examLabel' + idSuffix + '">Call it</label>' +
+      '<input type="text" id="examLabel' + idSuffix + '" maxlength="30" placeholder="Exam 2" value="' + escAttr(e.label || '') + '"></div>' +
+      '<div><label class="field" for="examDate' + idSuffix + '">Date</label>' +
+      '<input type="date" id="examDate' + idSuffix + '" value="' + escAttr(e.date || '') + '"></div>' +
+      '</div>' +
+      '<p class="field mt">Units it covers</p>' +
+      '<div class="row exam-units">' +
+      '<button type="button" class="chip" data-exall="1">' + (sel.length === UNITS.length ? 'Clear all' : 'Select all') + '</button>' +
+      UNITS.map(function (u) {
+        return '<button type="button" class="chip" data-exu="' + escAttr(u.id) + '" aria-pressed="' + (sel.indexOf(u.id) >= 0 ? 'true' : 'false') + '">' +
+          esc(u.icon || '📘') + ' ' + esc(trunc(u.title, 22)) + '</button>';
+      }).join('') + '</div>' +
+      '<div class="row mt"><button class="btn primary" data-exsave="1">Save exam</button>' +
+      (state.exam ? '<button class="btn ghost" data-exclear="1">Clear it</button>' : '') + '</div>' +
+      '</div>';
+  }
+
+  function wireExamEditor(root, idSuffix, after) {
+    var box = $('#examEd' + idSuffix, root);
+    if (!box) return;
+    var sel = arr(state.exam && state.exam.units).slice();
+    box.addEventListener('click', function (ev) {
+      var b = ev.target.closest ? ev.target.closest('button') : null;
+      if (!b) return;
+      if (b.hasAttribute('data-exu')) {
+        var id = b.getAttribute('data-exu'), k = sel.indexOf(id);
+        if (k >= 0) sel.splice(k, 1); else sel.push(id);
+        b.setAttribute('aria-pressed', k >= 0 ? 'false' : 'true');
+      } else if (b.hasAttribute('data-exall')) {
+        sel = sel.length === UNITS.length ? [] : UNITS.map(function (u) { return u.id; });
+        $$('[data-exu]', box).forEach(function (x) { x.setAttribute('aria-pressed', sel.length ? 'true' : 'false'); });
+        b.textContent = sel.length === UNITS.length ? 'Clear all' : 'Select all';
+      } else if (b.hasAttribute('data-exsave')) {
+        var date = $('#examDate' + idSuffix, box).value;
+        if (!date) { toast('Pick a date first'); return; }
+        state.exam = {
+          date: date,
+          units: sel.length ? sel.slice() : UNITS.map(function (u) { return u.id; }),
+          label: $('#examLabel' + idSuffix, box).value.trim().slice(0, 30)
+        };
+        save(); toast('Exam saved');
+        if (after) after();
+      } else if (b.hasAttribute('data-exclear')) {
+        state.exam = null; save(); toast('Exam cleared');
+        if (after) after();
+      }
+    });
+  }
+
   /* ---------------------------------------------------------------- HOME -- */
 
-  function viewHome(el) {
-    if (!UNITS.length) { el.innerHTML = noContent(); return; }
-    markToday();
-
-    var name = (state.settings.name || '').trim();
-    var due = dueCount();
-    var missedN = missedList().length;
-    var streak = streakDays();
-    var overall = overallMastery();
-    var weak = weakObjectives(3);
-
-    /* today's plan — three concrete actions */
+  function buildPlan(ex) {
+    var scope = ex && ex.units.length ? ex.units : UNITS;
+    var scopeIds = scope.map(function (u) { return u.id; });
     var plan = [];
+    var days = ex ? ex.days : null;
+
+    /* 1 — weakest objectives, inside the exam's units when one is set */
+    var weak = weakObjectives().filter(function (w) { return scopeIds.indexOf(w.unit.id) >= 0; }).slice(0, 3);
     if (weak.length) {
       plan.push({
-        icon: '🎯', title: 'Drill your weakest objectives',
-        sub: weak.map(function (w) { return w.obj.text; })[0],
-        btn: 'Start 12-question quiz', href: '#/focus/weak'
+        icon: '🎯', title: 'Drill your weakest objectives' + (ex ? ' in the exam units' : ''),
+        sub: weak[0].obj.text,
+        btn: '12-question quiz', href: ex ? '#/focus/exam' : '#/focus/weak'
       });
     }
+
+    /* 2 — flashcards due in scope */
+    var due = dueCount(scope);
     plan.push(due ? {
-      icon: '🃏', title: due + ' ' + plural(due, 'flashcard') + ' due today',
+      icon: '🃏', title: due + ' ' + plural(due, 'flashcard') + ' due' + (ex ? ' in the exam units' : ' today'),
       sub: 'Leitner boxes: new cards daily, learning every 3 days, known weekly.',
-      btn: 'Review now', href: '#/cards'
+      btn: 'Review now', href: ex ? '#/cards/exam' : '#/cards'
     } : {
       icon: '🃏', title: 'No flashcards due right now',
-      sub: 'Everything you have seen is resting in its box. You can still review anything.',
-      btn: 'Review anyway', href: '#/cards'
+      sub: 'Everything you have seen is resting in its box — you can still review anything.',
+      btn: 'Review anyway', href: ex ? '#/cards/exam' : '#/cards'
     });
+
+    /* 3 — exam-driven escalation */
+    if (ex && days !== null && days <= 7 && days >= 0) {
+      plan.push({
+        icon: '📝', title: 'Daily practice test, exam mode',
+        sub: 'No feedback until the end — ' + scope.length + ' ' + plural(scope.length, 'unit') + ' on the clock, just like the real thing.',
+        btn: 'Start it', href: '#/test/exam'
+      });
+      plan.push({
+        icon: '📄', title: 'Cram sheet with the values hidden',
+        sub: 'Every formula and number from the exam units — fill in the blanks from memory.',
+        btn: 'Test me', href: '#/cram/hide'
+      });
+    }
+    if (ex && days !== null && days <= 2 && days >= 0) {
+      var weakUnit = scope.slice().sort(function (a, b) { return unitMastery(a) - unitMastery(b); })[0];
+      if (weakUnit) {
+        plan.push({
+          icon: '🖍️', title: 'Whiteboard brain-dump: ' + weakUnit.title,
+          sub: 'Your weakest exam unit. Say it out loud, write everything, then grade yourself.',
+          btn: 'Pick a prompt', href: '#/unit/' + weakUnit.id + '/board'
+        });
+      }
+    }
+
+    /* 4 — missed bank, or the next unread lesson */
+    var missedN = missedList().length;
     if (missedN) {
       plan.push({
         icon: '🔁', title: missedN + ' missed ' + plural(missedN, 'question') + ' waiting',
@@ -590,23 +673,42 @@
         btn: 'Re-drill them', href: '#/missed'
       });
     } else {
-      var firstUndone = null;
-      for (var i = 0; i < UNITS.length && !firstUndone; i++) {
-        var u = UNITS[i];
+      var nextLesson = null;
+      for (var i = 0; i < scope.length && !nextLesson; i++) {
+        var u = scope[i];
         for (var j = 0; j < arr(u.lessons).length; j++) {
-          if (!state.lessonsDone[u.lessons[j].id]) { firstUndone = { u: u, l: u.lessons[j] }; break; }
+          if (!state.lessonsDone[u.lessons[j].id]) { nextLesson = { u: u, l: u.lessons[j] }; break; }
         }
       }
-      if (firstUndone) {
+      if (nextLesson) {
         plan.push({
-          icon: '📖', title: 'Next lesson: ' + firstUndone.l.title,
-          sub: firstUndone.u.title, btn: 'Read it',
-          href: '#/unit/' + firstUndone.u.id + '/learn/' + firstUndone.l.id
+          icon: '📖', title: 'Next lesson: ' + nextLesson.l.title,
+          sub: nextLesson.u.title, btn: 'Read it',
+          href: '#/unit/' + nextLesson.u.id + '/learn/' + nextLesson.l.id
         });
       } else {
-        plan.push({ icon: '🖍️', title: 'Brain-dump on the whiteboard', sub: 'Say it out loud, then write everything you remember.', btn: 'Pick a prompt', href: '#/board' });
+        plan.push({
+          icon: '🖍️', title: 'Brain-dump on the whiteboard',
+          sub: 'Say it out loud, then write everything you remember.',
+          btn: 'Pick a prompt', href: '#/board'
+        });
       }
     }
+    return plan;
+  }
+
+  function viewHome(el) {
+    if (!UNITS.length) { el.innerHTML = noContent(); return; }
+    markToday();
+
+    var name = (state.settings.name || '').trim();
+    var ex = examInfo();
+    var scope = ex && ex.units.length ? ex.units : UNITS;
+    var due = dueCount();
+    var missedN = missedList().length;
+    var streak = streakDays();
+    var overall = overallMastery();
+    var plan = buildPlan(ex && !ex.past ? ex : null);
 
     var html = '';
     html += '<section class="hero" style="' + accentStyle(UNITS[0]) + '">' +
@@ -616,7 +718,7 @@
       '<p class="sub">' + UNITS.length + ' ' + plural(UNITS.length, 'unit') + ' · ' +
       allQuestions.length + ' questions · ' + allCards().length + ' flashcards, all offline.</p>' +
       '<div class="hero-actions">' +
-      '<a class="btn primary" href="#/focus/weak">🎯 Study my weakest</a>' +
+      '<a class="btn primary" href="' + (ex && !ex.past ? '#/focus/exam' : '#/focus/weak') + '">🎯 Study my weakest</a>' +
       '<a class="btn" href="#/test">📝 Practice test</a>' +
       '<a class="btn" href="#/cards">🃏 Flashcards' + (due ? ' (' + due + ')' : '') + '</a>' +
       '</div></div>' +
@@ -624,14 +726,43 @@
       '<p class="small muted center" style="margin:6px 0 0">overall mastery</p></div>' +
       '</section>';
 
+    /* countdown / invitation */
+    if (ex && !ex.past) {
+      var examMastery = scope.reduce(function (a, u) { return a + unitMastery(u); }, 0) / (scope.length || 1);
+      html += '<section class="card exam-band" style="' + accentStyle(scope[0] || UNITS[0]) + '">' +
+        '<div class="eb-count"><span class="eb-n nums">' + Math.max(0, ex.days) + '</span>' +
+        '<span class="eb-l">' + (ex.days === 1 ? 'day' : 'days') + ' to go</span></div>' +
+        '<div class="eb-body"><h2>' + esc(ex.label) + ' · ' + esc(ex.dateText) + '</h2>' +
+        '<p class="small muted">Covering ' + ex.units.length + ' ' + plural(ex.units.length, 'unit') + ' · ' +
+        pct(examMastery) + '% mastered across them' + (ex.days <= 7 ? ' · crunch time' : '') + '</p>' +
+        '<div class="row exam-band-units">' + ex.units.map(function (u) {
+          var m = pct(unitMastery(u));
+          return '<span class="chip ' + (m >= 75 ? 'c3' : (m >= 40 ? 'c2' : 'bad')) + '">' + esc(u.icon || '📘') + ' ' +
+            esc(trunc(u.title, 20)) + ' ' + m + '%</span>';
+        }).join('') + '</div>' +
+        '<div class="row mt"><a class="btn sm primary" href="#/test/exam">📝 Exam-mode test</a>' +
+        '<a class="btn sm" href="#/objectives/exam">🎯 Exam objectives</a>' +
+        '<a class="btn sm" href="#/cram/hide">📄 Cram sheet</a>' +
+        '<a class="btn sm ghost" href="#/settings">Edit</a></div>' +
+        '</div></section>';
+    } else {
+      html += '<section class="card exam-invite">' +
+        '<div class="row between"><div><h2>' + (ex && ex.past ? 'That exam has passed 🎉' : 'When is your next exam?') + '</h2>' +
+        '<p class="small muted" style="margin:0">Tell me the date and which units it covers, and your daily plan will aim straight at it.</p></div>' +
+        '<button class="btn primary nowrap" id="setExam">Set my exam</button></div>' +
+        '<div id="examSlot" hidden></div></section>';
+    }
+
     html += '<div class="grid three mb statrow">' +
-      statHtml(streak, 'day ' + plural(streak, 'streak', 'streak'), '🔥') +
+      statHtml(streak, 'day streak', '🔥') +
       statHtml(due, 'cards due', '🃏') +
       statHtml(missedN, 'missed', '🔁') +
       statHtml(pct(overall) + '%', 'mastery', '📈') +
       '</div>';
 
-    html += '<section class="card plan-card"><h2>Today\'s plan</h2><ol class="plan-list">' +
+    html += '<section class="card plan-card"><div class="row between"><h2>Today\'s plan</h2>' +
+      (ex && !ex.past ? '<span class="chip c2">aimed at ' + esc(ex.label) + '</span>' : '') + '</div>' +
+      '<ol class="plan-list">' +
       plan.map(function (p) {
         return '<li class="plan-item"><span class="pi-icon" aria-hidden="true">' + esc(p.icon) + '</span>' +
           '<span class="pi-body"><b>' + esc(p.title) + '</b>' +
@@ -645,12 +776,14 @@
       var ld = lessonsDoneCount(u), lt = arr(u.lessons).length;
       var ud = dueCount([u]);
       var weakN = arr(u.objectives).filter(function (o) { return objMastery(o.id) < 50; }).length;
-      html += '<a class="unit-card" href="#/unit/' + esc(u.id) + '/learn" style="' + accentStyle(u) + '">' +
+      var inExam = ex && !ex.past && ex.unitIds.indexOf(u.id) >= 0;
+      html += '<a class="unit-card' + (inExam ? ' in-exam' : '') + '" href="#/unit/' + esc(u.id) + '/learn" style="' + accentStyle(u) + '">' +
         '<div class="uc-top"><span class="uc-icon" aria-hidden="true">' + esc(u.icon || '📘') + '</span>' +
         ringHtml(m, 54) + '</div>' +
         '<h3 class="uc-title">' + esc(u.title) + '</h3>' +
         '<p class="uc-blurb">' + esc(u.blurb || '') + '</p>' +
         '<div class="uc-meta">' +
+        (inExam ? '<span class="chip c1">📝 on the exam</span>' : '') +
         '<span class="chip">📖 ' + ld + '/' + lt + '</span>' +
         (ud ? '<span class="chip c2">🃏 ' + ud + ' due</span>' : '') +
         (weakN ? '<span class="chip c4">🎯 ' + weakN + ' weak</span>' : '<span class="chip c3">🎯 solid</span>') +
@@ -659,6 +792,15 @@
     html += '</div>';
 
     el.innerHTML = html;
+
+    var setBtn = $('#setExam', el);
+    if (setBtn) setBtn.addEventListener('click', function () {
+      var slot = $('#examSlot', el);
+      slot.innerHTML = examEditorHtml('Home', true);
+      slot.hidden = false;
+      setBtn.hidden = true;
+      wireExamEditor(slot, 'Home', function () { render(); });
+    });
   }
 
   function statHtml(n, label, icon) {
