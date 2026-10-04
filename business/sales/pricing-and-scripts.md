@@ -29,11 +29,22 @@ Planned increase (brief): after 3-5 case studies, diagnosis moves to $499-$750 a
 | Up to 5 systems, or an inbound AI receptionist | $3,000 |
 | Bigger than that | Split into two add-ons, or quote as a sprint |
 
+### 1b. Owner options (optional)
+
+Packaged from list prices for speed (see `../PLAN-10K.md`). Not on the website, Upwork or Fiverr. Offer them in direct conversations only.
+
+| Option | Price | Delivery | Rules |
+|---|---|---|---|
+| Launch Readiness Package | $2,900 flat ($1,450 deposit, balance on acceptance) | Diagnosis within 48 hours of complete access; sprint starts the next business day and ships within 7 business days (about 10 business days end to end) | Diagnosis + Fix & Ship 10 + priority start. Bought separately the two cost $2,500 after the credit; the extra $400 is the priority-start fee (guaranteed slot, fixed delivery date in writing). Say that plainly. Use the diagnosis SOW and the sprint SOW's Launch Readiness line. |
+| Priority start | +$400 on Fix & Ship 10 | Starts the next business day; ships within 7 business days | For a client who already bought a diagnosis ($2,101 after credit + $400). |
+| Rush fee | +50%: diagnosis $599 (24 hours), Fix & Ship 5 $2,250 (72 hours) | As stated | Only when you have the hours. Only the base price ($399) counts toward the diagnosis credit. Add the rush line in the SOW. |
+| Agency 3-pack | $999 prepaid for 3 diagnoses (about 17% off list) | 48 hours each | Credits expire 90 days after purchase. Unused credits are refundable within 14 days of purchase if none has been used; after the first credit is used, the pack is non-refundable. Each credit covers one diagnosis of one app and is worth $333 toward that app's sprint. Terms in `../legal/sow-white-label.md`. |
+
 ---
 
 ## 2. Discount rules
 
-1. **Intro diagnosis at $199**: first 3 direct clients only, in exchange for a written testimonial after delivery if they're satisfied. Never on Upwork or Fiverr: both prohibit trading discounts for reviews.
+1. **Intro diagnosis at $199**: first 3 direct clients only, in exchange for an honest short written testimonial after delivery, positive or not. Never on Upwork or Fiverr: both prohibit trading discounts for reviews. **Disclose it when you publish it:** every intro testimonial on the site or anywhere else carries a visible note, such as "Received a discounted diagnosis in exchange for honest feedback." A discount is a material connection under the FTC Endorsement Guides.
 2. **Diagnosis credit**: the $399 (or $199) is credited toward a sprint. Owner policy: credit valid for 30 days from report delivery. Say so in the report.
 3. **Agency partners**: 15% off list, 20% from their 4th paid project (owner policy). See `agency-white-label.md`.
 4. **No other discounts.** If a client can't afford a tier, reduce scope, not price: fewer issues, drop the production deploy, or phase it into two sprints.

@@ -25,8 +25,8 @@ Select one:
 
 | Plan | Monthly fee | Small requests per month | Monitoring | Monthly security pass | Turnaround target |
 |---|---|---|---|---|---|
-| [ ] **Maintain** | $500 | 4 | Yes | No | 5 business days |
-| [ ] **Maintain Plus** | $1,000 | 10 | Yes | Yes | 3 business days |
+| [ ] **Keep** | $500 | 4 | Yes | No | 5 business days |
+| [ ] **Grow** | $1,000 | 10 | Yes | Yes | 3 business days |
 | [ ] **Priority** | $1,500 | 10 | Yes | Yes | **48 hours** (business days), priority queue |
 
 ## 3. What is included every month
@@ -35,7 +35,7 @@ Select one:
 2. **Supabase advisor checks:** review the Security and Performance Advisors and fix low-effort warnings (fixes larger than a small request are proposed separately).
 3. **Uptime monitoring:** uptime checks on the live URL and key endpoints, with alerts to Provider; Provider notifies Client of outages it detects.
 4. **Small requests** up to the plan's monthly count (Section 4).
-5. **Monthly security pass** (Maintain Plus and Priority): re-run Provider's repo audit and web scan, review new tables, policies, storage buckets and environment variables added since the last pass.
+5. **Monthly security pass** (Grow and Priority): re-run Provider's repo audit and web scan, review new tables, policies, storage buckets and environment variables added since the last pass.
 6. **Monthly report** summarizing work done, updates applied, findings and recommendations.
 
 ## 4. Small requests
@@ -53,7 +53,7 @@ AI app builders (for example Lovable, Bolt, Base44, Replit, v0 or Cursor) can re
 
 1. Client will tell Provider before re-prompting or regenerating code in areas listed in the handover document as sensitive, where practical.
 2. **Re-fixing work overwritten by a re-prompt is covered only under this retainer.** Each re-fix counts as one or more small requests under Section 4.
-3. Provider's monthly security pass (on plans that include it) is the main way overwritten fixes are detected. On the Maintain plan, Client may use a small request to have Provider check a re-prompted area.
+3. Provider's monthly security pass (on plans that include it) is the main way overwritten fixes are detected. On the Keep plan, Client may use a small request to have Provider check a re-prompted area.
 4. Provider is not responsible for issues introduced by re-prompts, other developers or AI tools Provider did not operate.
 
 ## 6. Fees and term

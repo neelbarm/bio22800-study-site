@@ -39,12 +39,12 @@ a day to a day, L more than a day).
 
 | # | Area | Checks |
 |---|---|---|
-| 1 | Secrets | Every regex in `shared/secret-patterns.json` (Stripe, OpenAI, Anthropic, AWS, GitHub, Resend, SendGrid, Slack, private keys, ...), one level more severe when the file ships to the browser. Generic high-entropy values assigned to names like SECRET / TOKEN / PRIVATE_KEY / PASSWORD (medium). |
-| 2 | Env vars | `VITE_*`, `NEXT_PUBLIC_*`, `REACT_APP_*`, `EXPO_PUBLIC_*` whose names suggest secrets (SERVICE_ROLE, STRIPE_SECRET, OPENAI, ANTHROPIC, PRIVATE_KEY, paid API keys, ...): high or critical. `.env*` files in the repo (critical when they hold real-looking values; Supabase anon keys don't count), example env files with real values, and whether `.gitignore` excludes `.env` (Vite's default `*.local` does not). Reads `.git/index` directly (no git commands) to tell committed files from local ones. |
-| 3 | Supabase | `service_role` referenced in client code (critical). Decodes every `eyJ...` JWT and flags payload `role = service_role` anywhere (critical). Parses all `.sql` files: public tables without `enable row level security` or with RLS disabled (high); policies with `using (true)` / `with check (true)` for writes, or for reads on private-looking tables such as users, profiles, orders, payments, messages, documents (high); write policies `to anon` (high); `security definer` functions without `set search_path` (medium); public storage buckets in SQL or `createBucket(..., { public: true })` (medium). No `supabase/migrations`: an info note plus read-only export SQL in the report appendix. |
-| 4 | Stripe | Secret key, `STRIPE_SECRET*`, or the server `stripe` SDK in client code (critical). Webhook handlers without `constructEvent` / `constructEventAsync` (high); JSON body parsed before verification, or Next.js `pages/api` without `bodyParser: false` (medium); paid/plan/credits flags written from the client success page (high); no event-id idempotency (low). |
-| 5 | Auth | Route handlers / Edge Functions that use the service role without `auth.getUser` / JWT verification (high). `auth.signUp` with no sign of email confirmation, or `enable_confirmations = false` (low). Hard-coded admin emails (high in client code, medium on the server) and `isAdmin` checks that exist only in the browser (high). |
-| 6 | Dangerous code | `dangerouslySetInnerHTML` with non-literal, unsanitized content (medium; shadcn chart CSS and JSON-LD are skipped); `eval(` / `new Function(` (medium); CORS `*` on endpoints that use credentials or the service role, including shared Edge Function CORS headers (medium); `console.log` of tokens / sessions / passwords (low). |
+| 1 | Secrets | Every regex in `shared/secret-patterns.json` (Stripe, OpenAI, Anthropic, AWS, GitHub, Resend, SendGrid, Slack, private keys, ...) plus Supabase `sb_secret_` keys, one level more severe when the file ships to the browser. Placeholders (a key prefix followed by `xxxx...`, `0000...` or words like `your-key-here`) are skipped. Generic high-entropy values assigned to names like SECRET / TOKEN / PRIVATE_KEY / PASSWORD (medium); public-by-design tokens (`pk_live_`, `pk.`, `phc_`, `sb_publishable_`) are skipped. |
+| 2 | Env vars | `VITE_*`, `NEXT_PUBLIC_*`, `REACT_APP_*`, `EXPO_PUBLIC_*` whose names suggest secrets (SERVICE_ROLE, STRIPE_SECRET, OPENAI, ANTHROPIC, PRIVATE_KEY, paid API keys, ...): high or critical. `.env*` files in the repo (critical when they hold real-looking values, including database URLs with a password; Supabase anon keys, Supabase CLI demo keys and documented defaults don't count), example env files with real values, and whether `.gitignore` excludes `.env` (Vite's default `*.local` does not). Reads `.git/index` directly (no git commands) to tell committed files from local ones. |
+| 3 | Supabase | `service_role` referenced in client code (critical). Decodes every `eyJ...` JWT and flags payload `role = service_role` anywhere (critical; the Supabase CLI demo key is an info note). Replays all `.sql` files in order (DROP / ALTER POLICY, CREATE OR REPLACE / ALTER FUNCTION, bucket updates, views) and reports the final state: public tables without `enable row level security` or with RLS disabled (high); policies with `using (true)` / `with check (true)` for writes, or for reads on private-looking tables such as users, profiles, orders, payments, messages, documents (high); policies that only check `auth.uid() is not null` / `auth.role() = 'authenticated'` (high; medium for inserts); write policies `to anon` (high); storage.objects policies with no owner check (high; medium for logged-in inserts); views in public without `security_invoker` (medium, high over private-looking tables); `security definer` functions without `set search_path` (medium); public storage buckets in SQL or `createBucket(..., { public: true })` (medium). No `supabase/migrations`: an info note plus read-only export SQL in the report appendix. |
+| 4 | Stripe | Secret key, `STRIPE_SECRET*`, or the server `stripe` SDK in client code (critical). Webhook endpoints without `constructEvent` / `constructEventAsync`, or that verify only when the signature header or secret is present, or fall back to `JSON.parse(body)` (high); JSON body parsed before verification, or Next.js `pages/api` without `bodyParser: false` (medium); paid/plan/credits flags written from the client success page (high); no event-id idempotency in the route or the modules it imports (low). |
+| 5 | Auth | Route handlers, Edge Functions and `'use server'` actions that use the service role (directly, through `auth.admin.*`, or through an imported admin client such as `createAdminClient()`) without `auth.getUser` / JWT verification (high). `auth.signUp` with no sign of email confirmation, or `enable_confirmations = false` (low). Hard-coded admin emails used in a comparison (high in client code, medium on the server) and `isAdmin` checks that exist only in the browser (high; Next.js server pages and layouts count as server enforcement). |
+| 6 | Dangerous code | `dangerouslySetInnerHTML` with non-literal, unsanitized content (medium; shadcn chart CSS and JSON-LD are skipped); `eval(` / `new Function(` (medium); CORS `*` on endpoints that send credentials or cookies, or that use the service role without checking the caller, including shared Edge Function CORS headers (medium; an info note when every function checks a Bearer token); `console.log` of tokens / auth sessions / passwords (low; Stripe checkout session ids are fine). |
 | 7 | Deploy and hygiene | No security headers in vercel.json / next.config / netlify.toml / `_headers` / middleware (low); production source maps (`productionBrowserSourceMaps: true`, `build.sourcemap: true`, CRA default) (medium); no error monitoring dependency (low); no tests (low); package.json without a lockfile (low); `next` < 15, `react` < 18, `@supabase/supabase-js` < 2 by declared range (low). |
 
 ### Score
@@ -61,7 +61,8 @@ as one hygiene bundle, the rest by finding type) and mapped to the sprint tiers 
 - up to 5 issues -> **$1,500**
 - up to 10 issues, or deploy configuration work -> **$2,500** (includes production deploy)
 - payments rework (client-side fulfillment, Stripe secret in the client), server-side auth/roles
-  rebuild (client-only admin checks), or more than 10 issues -> **$4,000**
+  rebuild (client-only admin checks, only when the repo has migrations and nothing on the server
+  enforces the role), or more than 10 issues -> **$4,000**
 
 The tier is a suggestion. The auditor confirms scope after the manual review. Multi-tenant apps can't
 be detected and should be quoted at the $4,000 tier.
@@ -148,12 +149,18 @@ toolkit/
   settings, Stripe dashboard or hosting env vars. A clean result doesn't mean the app is secure, and
   some findings will turn out to be fine in context.
 - Client vs server is decided by path and directives (`'use client'`, `src/` in Vite apps,
-  `supabase/functions/`, `app/**/route.ts`, `pages/api/`, `*.config.*`, `server-only`). Unusual
-  layouts can be misclassified.
+  `supabase/functions/`, `app/**/route.ts`, `pages/api/`, `*.config.*`, `server-only`). In Next.js,
+  files under `components/` without `'use client'` count as client code unless they show server
+  signals (async component, `next/headers`, non-`NEXT_PUBLIC_` env vars); otherwise findings there
+  say "verify". Monorepos are classified per package (each folder with a `package.json` or its own
+  `supabase/` folder). Unusual layouts can still be misclassified.
+- Migrations are replayed by statement type, not executed. Functions are tracked by name, so
+  overloads with the same name count as one.
 - RLS analysis only sees SQL in the repo. Dashboard edits made after the last migration are
   invisible, so always run the export queries from the report appendix.
 - It scans the working tree only, not git history. A secret deleted last week is still in history.
-- Files over 1 MB, binaries, lockfiles, minified files and build output are skipped.
+- Files over 1 MB, binaries, lockfiles, minified files and build output are skipped. Evidence from
+  very long lines is cut to a window around the match before it is masked.
 - Outdated-version checks read declared ranges in the root `package.json` only.
 - Never promise a client that the app is "secure". The promise is: issues found are documented, and
   the agreed fixes are delivered and tested.

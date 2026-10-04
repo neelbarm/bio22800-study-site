@@ -92,6 +92,7 @@ export function buildFixPlan(findings) {
   } else if (tier4.length) {
     tier = SPRINT_TIERS[2];
     reasons.push(`Findings need a ${tier4.map((t) => (t === 'payments' ? 'payments rework' : t === 'auth' ? 'server-side auth/roles rebuild' : t)).join(' and ')}.`);
+    if (tier4.includes('auth')) reasons.push('The auth/roles finding is a heuristic. Confirm in the manual review that no server route or RLS policy enforces the role before quoting this tier.');
     if (n > 10) reasons.push(`${n} issues: more than the 10 in the standard sprint; confirm scope or split into two sprints.`);
   } else if (n > 10) {
     tier = SPRINT_TIERS[2];
@@ -111,21 +112,41 @@ export function buildFixPlan(findings) {
 function readPackages(files) {
   let pkg = null;
   const allDeps = {};
+  const packageFlags = {};
   for (const f of files.filter((x) => /(^|\/)package\.json$/.test(x.path))) {
     try {
       const json = JSON.parse(f.text);
+      const deps = { ...(json.dependencies || {}), ...(json.devDependencies || {}) };
       if (f.path === 'package.json') pkg = json;
-      Object.assign(allDeps, json.dependencies || {}, json.devDependencies || {});
+      else if (!/(^|\/)supabase\//.test(f.path)) packageFlags[f.path.slice(0, -'package.json'.length)] = { isNext: !!deps.next, isVite: !!deps.vite };
+      Object.assign(allDeps, deps);
     } catch { /* ignore invalid package.json */ }
   }
-  return { pkg, allDeps };
+  return { pkg, allDeps, packageFlags };
+}
+
+/** Nested package directories (monorepos): every folder with a package.json or its own supabase/ folder. */
+function packageRootsOf(files, packageFlags) {
+  const roots = new Set(Object.keys(packageFlags));
+  for (const f of files) {
+    const m = /^(.+\/)supabase\/(?:config\.toml$|migrations\/|functions\/)/.exec(f.path);
+    if (m && !/(^|\/)node_modules\//.test(m[1])) roots.add(m[1]);
+  }
+  for (const f of files) {
+    const m = /^(.+\/)(?:next|vite)\.config\.[cm]?[jt]s$/.exec(f.path);
+    if (m && roots.has(m[1])) {
+      const flags = packageFlags[m[1]] || (packageFlags[m[1]] = { isNext: false, isVite: false });
+      if (/next\.config/.test(f.path)) flags.isNext = true; else flags.isVite = true;
+    }
+  }
+  return [...roots].sort((a, b) => b.length - a.length);
 }
 
 export function audit(repoPath, { exclude = [], now = new Date() } = {}) {
   const root = resolve(repoPath);
   if (!existsSync(root) || !statSync(root).isDirectory()) throw new Error(`Not a directory: ${root}`);
   const { files, skipped } = walkRepo(root, { exclude });
-  const { pkg, allDeps } = readPackages(files);
+  const { pkg, allDeps, packageFlags } = readPackages(files);
   const deps = Object.keys(allDeps);
   const has = (re) => files.some((f) => re.test(f.path));
 
@@ -135,9 +156,11 @@ export function audit(repoPath, { exclude = [], now = new Date() } = {}) {
     files,
     pkg,
     allDeps,
-    isNext: !!allDeps.next || has(/^next\.config\./),
-    isVite: !!allDeps.vite || has(/^vite\.config\./),
-    usesSupabase: deps.some((d) => d.startsWith('@supabase/')) || has(/^supabase\//) || files.some((f) => isCodeFile(f.path) && /@supabase\/supabase-js|\.supabase\.co\b/.test(f.text)),
+    isNext: !!allDeps.next || has(/(^|\/)next\.config\./),
+    isVite: !!allDeps.vite || has(/(^|\/)vite\.config\./),
+    packageRoots: packageRootsOf(files, packageFlags),
+    packageFlags,
+    usesSupabase: deps.some((d) => d.startsWith('@supabase/')) || has(/(^|\/)supabase\//) || files.some((f) => isCodeFile(f.path) && /@supabase\/supabase-js|\.supabase\.co\b/.test(f.text)),
     usesStripe: deps.some((d) => d === 'stripe' || d.startsWith('@stripe/')) || files.some((f) => isCodeFile(f.path) && /\bstripe\b/i.test(f.text)),
     gitTracked: readGitTrackedPaths(root),
     findings: [],
@@ -164,9 +187,6 @@ export function audit(repoPath, { exclude = [], now = new Date() } = {}) {
   };
 
   for (const check of [checkSecrets, checkEnv, checkSupabase, checkStripe, checkAuth, checkCode, checkDeploy]) check(ctx);
-
-  // Client-side hard-coded admin checks are an auth rebuild for pricing purposes.
-  for (const f of ctx.findings) if (f.id === 'auth.hardcoded-admin-email' && f.severity === 'high') f.tier4 = 'auth';
 
   const seen = new Set();
   const findings = ctx.findings

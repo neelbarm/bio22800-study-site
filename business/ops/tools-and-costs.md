@@ -21,8 +21,8 @@ Client-side tools (Supabase, Sentry, Upstash, the client's Vercel/Netlify and St
 
 | Tool | What for | Monthly cost | When |
 |---|---|---|---|
-| Resend | Emailing scan results and lead notifications from the site (`RESEND_API_KEY`) | $0 on free tier (est. ~3,000 emails/month); ~$20 paid (est.) | When the scan "email me results" feature goes live. |
-| Cal.com | Booking link (`NEXT_PUBLIC_CAL_URL`) | $0 (est., free individual plan) | When you start taking calls. |
+| Resend | Emails you a notification for each lead (`RESEND_API_KEY`). The site does not email visitors; you send scan results to prospects yourself. | $0 on free tier (est. ~3,000 emails/month); ~$20 paid (est.) | Day 1 if you want lead alerts by email as well as the webhook. |
+| Cal.com | Booking link (`NEXT_PUBLIC_CAL_URL`; not shown on the site yet, so paste it into emails yourself) | $0 (est., free individual plan) | When you start taking calls. |
 | Slack / Discord / Zapier webhook | Lead alerts (`LEADS_WEBHOOK_URL`) | $0 (est.) | Day 1 if you want instant lead pings on your phone. |
 | UptimeRobot / Better Stack | Uptime checks for your site and retainer clients | $0 free tier; ~$7-$30 paid (est.) | First retainer. |
 | Sentry (your own site) | Errors on the ShipReady site | $0 developer tier (est.) | Week 2. |
@@ -32,7 +32,7 @@ Client-side tools (Supabase, Sentry, Upstash, the client's Vercel/Netlify and St
 
 | Platform | Cost | Notes |
 |---|---|---|
-| Upwork | Variable freelancer service fee, roughly 0-15% of earnings (est.), plus Connects to bid (~$0.15 each, est.; budget ~$20-$40/month) | Prefer hourly $100-$150/hr for first jobs, $500+ budgets, verified payment only (brief). |
+| Upwork | Variable freelancer service fee, roughly 0-15% of earnings (est.), plus Connects to bid (~$0.15 each, est.). A proposal on a $500+ job often costs 10-16 Connects ($1.50-$2.40), more with boosts. At PLAN-10K's volume (about 140 proposals in October) budget ~$130-$350 for the month (est.); ~$20-$40/month at 3-5 proposals a week | Prefer hourly $100-$150/hr for first jobs, $500+ budgets, verified payment only (brief). |
 | Fiverr | 20% of each order (est.) | Price gigs so the net still works: a $399 gig nets ~$319. |
 
 Keep marketplace clients on the platform per its terms (brief).
@@ -52,10 +52,11 @@ Keep marketplace clients on the platform per its terms (brief).
 | Scenario | Monthly |
 |---|---|
 | **Lean start (weeks 1-2):** Claude Pro, Vercel Hobby while private, domain, free tiers | ~$25-$40 (est.) |
-| **Launched (from first paid client):** Claude Max, Vercel Pro, Loom, 1Password, Workspace email, Upwork Connects | ~$170-$300 (est.) |
-| **Plus insurance** | ~$210-$450 (est.) |
+| **Launched (from first paid client):** Claude Max, Vercel Pro, Loom, 1Password, Workspace email, Upwork Connects at a normal pace | ~$170-$300 (est.) |
+| **October push (PLAN-10K):** the same, with Connects at ~$130-$350 | ~$280-$610 (est.) |
+| **Plus insurance** | add ~$40-$150 (est.) |
 
-Break-even: one $399 diagnosis covers a typical month of tools.
+Break-even: one $399 diagnosis (~$387 net) covers a typical month of tools. During the October push it covers most of the month; two cover it.
 
 ## What to set up first (in order)
 

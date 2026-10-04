@@ -19,7 +19,9 @@ like a key, fake or not. So the fixture files only contain placeholders such as
 `{{FAKE_STRIPE_LIVE}}`, `{{FAKE_OPENAI}}`, `{{FAKE_SERVICE_ROLE_JWT}}` and
 `{{FAKE_ANON_JWT}}`. At test time `test/helpers.mjs` copies a fixture into a
 temporary directory (`os.tmpdir()`), builds obviously fake values by string
-concatenation (e.g. the Stripe prefix + `FAKE` repeated), substitutes them, and
+concatenation (e.g. the Stripe prefix + `FAKE` + mixed filler + `FAKE`; a bare
+`FAKEFAKE...` run would be treated as a documentation placeholder and ignored),
+substitutes them, and
 renames `dot-*` files to dot-files (`dot-env` -> `.env`, `dot-gitignore` ->
 `.gitignore`) so the parent repo's `.gitignore` does not swallow them.
 

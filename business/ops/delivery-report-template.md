@@ -102,13 +102,13 @@ Severity: **Critical** exploitable now by anyone, exposes data/money or allows t
 
 ## 7. Fix plan and fixed price
 
-**Recommended: [Sprint 5 / Sprint 10 / Sprint Plus]**
+**Recommended: [Fix & Ship 5 / Fix & Ship 10 / Rebuild-grade]**
 
 | Tier | Includes | Price |
 |---|---|---|
-| Sprint 5 | Up to 5 issues | $1,500 |
-| Sprint 10 | Up to 10 issues + production deploy | $2,500 |
-| Sprint Plus | Up to 10 issues + production deploy + payments, auth rebuild or multi-tenant | $4,000 |
+| Fix & Ship 5 | Up to 5 issues | $1,500 |
+| Fix & Ship 10 | Up to 10 issues + production deploy | $2,500 |
+| Rebuild-grade | Up to 10 issues + production deploy + payments, auth rebuild or multi-tenant | $4,000 |
 
 **Issues included in the recommended tier:** F-01, F-02, F-03, [...]
 

@@ -18,19 +18,15 @@ function majorOf(range) {
 
 export function checkDeploy(ctx) {
   const byPath = new Map(ctx.files.map((f) => [f.path, f]));
-  const find = (re) => ctx.files.find((f) => re.test(f.path));
+  const all = (re) => ctx.files.filter((f) => re.test(f.path));
 
-  // 7a. Security headers
-  const vercel = byPath.get('vercel.json');
-  const netlify = byPath.get('netlify.toml');
-  const nextConfig = find(/^next\.config\.[cm]?[jt]s$/);
-  const middleware = find(/^(src\/)?middleware\.[cm]?[jt]s$/);
+  // 7a. Security headers (root or any nested app in a monorepo)
   const hasHeaders =
-    (vercel && /"headers"\s*:/.test(vercel.text)) ||
-    (netlify && /\[\[\s*headers\s*\]\]/.test(netlify.text)) ||
-    byPath.has('_headers') || byPath.has('public/_headers') || byPath.has('static/_headers') ||
-    (nextConfig && /\bheaders\s*\(|headers\s*:\s*async/.test(nextConfig.text)) ||
-    (middleware && /Content-Security-Policy|X-Frame-Options|Strict-Transport-Security/i.test(middleware.text));
+    all(/(^|\/)vercel\.json$/).some((f) => /"headers"\s*:/.test(f.text)) ||
+    all(/(^|\/)netlify\.toml$/).some((f) => /\[\[\s*headers\s*\]\]/.test(f.text)) ||
+    all(/(^|\/)(?:public\/|static\/)?_headers$/).length > 0 ||
+    all(/(^|\/)next\.config\.[cm]?[jt]s$/).some((f) => /\bheaders\s*\(|headers\s*:\s*async/.test(f.text)) ||
+    all(/(^|\/)(src\/)?middleware\.[cm]?[jt]s$/).some((f) => /Content-Security-Policy|X-Frame-Options|Strict-Transport-Security/i.test(f.text));
   if (!hasHeaders) {
     ctx.add('deploy.no-security-headers', { file: '(repo)', line: null, evidence: 'no headers in vercel.json, netlify.toml, _headers, next.config or middleware' });
   }

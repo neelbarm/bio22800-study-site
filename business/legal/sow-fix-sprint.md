@@ -15,9 +15,15 @@ Select one:
 
 | Tier | Price | Included | Delivery |
 |---|---|---|---|
-| [ ] **Sprint 5** | $1,500 | Up to **5** issues from the fix plan | 5-7 business days |
-| [ ] **Sprint 10** | $2,500 | Up to **10** issues from the fix plan **plus production deploy** | 7-10 business days |
-| [ ] **Sprint Plus** | $4,000 | Up to 10 issues plus production deploy, **plus one** of: payments (Stripe) build or rebuild, auth rebuild, or multi-tenant data isolation | 10 business days |
+| [ ] **Fix & Ship 5** | $1,500 | Up to **5** issues from the fix plan | 5-7 business days |
+| [ ] **Fix & Ship 10** | $2,500 | Up to **10** issues from the fix plan **plus production deploy** | 7-10 business days |
+| [ ] **Rebuild-grade** | $4,000 | Up to 10 issues plus production deploy, **plus one** of: payments (Stripe) build or rebuild, auth rebuild, or multi-tenant data isolation | 10 business days |
+| [ ] **Launch Readiness Package** | $2,900 total, including the diagnosis under SOW [NUMBER] (no diagnosis credit applies) | Fix & Ship 10 scope **plus priority start** | Diagnosis within 48 hours of complete access; sprint starts the next business day after the report and is delivered within 7 business days |
+
+Optional lines (owner options; add to Section 4 if selected):
+
+- **Priority start** (+$400, Fix & Ship 10 only): sprint starts the next business day after the deposit and access are received, and is delivered within 7 business days. Already included in the Launch Readiness Package.
+- **Rush** (+50%, Fix & Ship 5 only, $2,250): delivered within 72 hours of the start date, if Provider confirms capacity in writing before the deposit.
 
 A "Wire-It-Up" integration add-on ($1,000-$3,000 fixed, 3-7 days) may be added as a separate line in Section 4 with its own scope description.
 
@@ -54,26 +60,27 @@ Also included in every tier, where applicable to the app:
 - **Rate limits** on auth and other abuse-prone endpoints identified in the report.
 - **Handover document** covering what changed, how to run tests, how to roll back, open risks and recommended next steps.
 
-**Production deploy** (Sprint 10 and Sprint Plus): Provider will merge approved pull requests, apply migrations to production after Client's written go-ahead, deploy, run smoke tests against production and confirm rollback steps. In Sprint 5, Provider delivers merged-ready pull requests and Client (or Provider, as a change order) deploys to production.
+**Production deploy** (Fix & Ship 10, Rebuild-grade and the Launch Readiness Package): Provider will merge approved pull requests, apply migrations to production after Client's written go-ahead, deploy, run smoke tests against production and confirm rollback steps. In Fix & Ship 5, Provider delivers merged-ready pull requests and Client (or Provider, as a change order) deploys to production.
 
 ## 4. Fees and payment
 
 | Item | Amount |
 |---|---|
-| Sprint tier: [TIER] | $[1,500 / 2,500 / 4,000] |
+| Sprint tier: [TIER] | $[1,500 / 2,500 / 4,000 / 2,900 package] |
+| [OPTIONAL] Priority start (Fix & Ship 10) or Rush (Fix & Ship 5, +50%) | $[400 / 750] |
 | [OPTIONAL] Wire-It-Up add-on: [INTEGRATION SCOPE] | $[1,000-3,000] |
 | [OPTIONAL] White-label discount ([15-20]%) | -$[AMOUNT] |
-| Less: diagnosis fee credit (SOW [NUMBER]) | -$[199 / 399] |
+| Less: diagnosis fee credit (SOW [NUMBER]; not for the Launch Readiness Package) | -$[199 / 399] |
 | **Total** | **$[TOTAL]** |
 
-- **50%** deposit ($[AMOUNT]) is due before work starts. The start date is booked when the deposit is paid.
+- **50%** deposit ($[AMOUNT]) is due before work starts. The start date is booked when the deposit is paid. For the Launch Readiness Package, the $1,450 deposit is due before the diagnosis starts.
 - **50%** balance ($[AMOUNT]) is due on acceptance (Section 6).
 - The deposit is non-refundable once work has started, except as provided in the MSA.
 
 ## 5. Timeline
 
 - **Start date:** [START DATE], or the first business day after the deposit and all access are received, whichever is later.
-- **Target delivery:** [DELIVERY DATE] ([5-10] business days per the tier).
+- **Target delivery:** [DELIVERY DATE] ([5-10] business days per the tier, 7 business days with priority start, 72 hours with rush).
 - Delivery dates move by any delay in Client access, answers or approvals.
 
 ## 6. Acceptance

@@ -6,7 +6,7 @@
 
 ### Summary
 
-TaskNest works well for a single user, but **any visitor can read every team's tasks and every user's email address**, and **the paid plan can be unlocked without paying**. Both are quick to fix. We recommend fixing the 2 critical and 3 high issues before launching the paid plan.
+TaskNest works well for a single user, but **any visitor can read every team's tasks and every user's email address**, and **the paid plan can be unlocked without paying**. Both can be fixed in the first days of a sprint. We recommend fixing the 2 critical and 3 high issues before launching the paid plan.
 
 | Severity | Count |
 |---|---|
@@ -15,7 +15,7 @@ TaskNest works well for a single user, but **any visitor can read every team's t
 | Medium | 3 |
 | Low | 2 |
 
-**Ship-ready score: 31/100.** Target after the fix sprint: 90+.
+**Ship-ready score: 6/100 (Stop: act today).** Scored as 100 minus 25 per Critical, 10 per High, 4 per Medium and 1 per Low. Target after the fix sprint: 90+.
 
 ### Critical findings
 
@@ -24,24 +24,24 @@ TaskNest works well for a single user, but **any visitor can read every team's t
 - **Evidence:** RLS is disabled on `tasks`. On `profiles`, the policy `Enable read access for all users` uses `using (true)`. With only the public anon key, an anonymous request returns all 4,812 tasks and 340 profiles, including email addresses.
 - **Impact:** every customer's data is public. This is a reportable data exposure in many jurisdictions.
 - **Fix:** enable RLS on all 9 public tables. Replace the open policies with `auth.uid() = user_id` for profiles and team-membership checks for tasks. Add a migration with a rollback script and tests that confirm a second user can't read the first user's data.
-- **Effort:** S (half a day including tests)
+- **Effort:** L (half a day including tests)
 
 #### C2. Paid plan is activated on the Stripe success page
 
 - **Evidence:** `src/pages/Success.tsx` sets `profiles.plan = 'pro'` when the page loads. Anyone can open `/success` without paying.
 - **Impact:** free access to the paid plan. Revenue loss and unreliable plan data.
 - **Fix:** move plan changes to a Supabase Edge Function that handles `checkout.session.completed` and `customer.subscription.*` webhooks, verifies the Stripe signature, and is idempotent on event ID. The success page only shows status.
-- **Effort:** M (1 day)
+- **Effort:** L (about a day including tests)
 
 ### High findings
 
 #### H1. Admin dashboard is protected only in the UI
 
-`/admin` is hidden from the menu, but the queries behind it run with the user's own session and the policies allow them. Any signed-in user can call them directly. **Fix:** an `is_admin()` check enforced in policies and Edge Functions. **Effort:** S
+`/admin` is hidden from the menu, but the queries behind it run with the user's own session and the policies allow them. Any signed-in user can call them directly. **Fix:** an `is_admin()` check enforced in policies and Edge Functions. **Effort:** M
 
 #### H2. OpenAI key exposed through a `VITE_` environment variable
 
-`VITE_OPENAI_API_KEY` is compiled into the public JavaScript bundle. **Fix:** rotate the key, set a spend limit, and proxy AI calls through an Edge Function with per-user rate limits. **Effort:** S
+`VITE_OPENAI_API_KEY` is compiled into the public JavaScript bundle. **Fix:** rotate the key, set a spend limit, and proxy AI calls through an Edge Function with per-user rate limits. **Effort:** M
 
 #### H3. Avatar storage bucket is public and writable by any signed-in user
 

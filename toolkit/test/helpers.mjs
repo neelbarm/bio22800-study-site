@@ -17,9 +17,13 @@ function fakeJwt(role) {
   return [header, payload, 'FAKE' + 'signature'.repeat(3)].join('.');
 }
 
+// Mixed filler so the fakes do not look like documentation placeholders (prefix + xxxx...),
+// which the audit deliberately ignores. Still obviously fake: they start and end with FAKE.
+const FILLER = 'Q7m2Xp9Lr4Vt8Kw3Zn6B' + 'd5Jc1Ns0Gy';
+
 export const FAKE = Object.freeze({
-  STRIPE_LIVE: 'sk_' + 'live_' + 'FAKE'.repeat(8),
-  OPENAI: 'sk-' + 'proj-' + 'FAKE'.repeat(12),
+  STRIPE_LIVE: 'sk_' + 'live_' + 'FAKE' + FILLER + 'FAKE',
+  OPENAI: 'sk-' + 'proj-' + 'FAKE' + FILLER + FILLER.slice(0, 12) + 'FAKE',
   SERVICE_ROLE_JWT: fakeJwt('service' + '_role'),
   ANON_JWT: fakeJwt('anon'),
 });
@@ -55,4 +59,29 @@ export function cleanup(dir) {
 /** Assert helper: a string must not contain any full fake secret. */
 export function leakedSecrets(text) {
   return Object.entries(FAKE).filter(([, v]) => text.includes(v)).map(([key]) => key);
+}
+
+/** Write a throwaway repo from { 'path/in/repo': 'contents' } into os.tmpdir(); returns its path. */
+export function makeRepo(files, name = 'case') {
+  const dest = mkdtempSync(join(tmpdir(), `shipready-${name}-`));
+  for (const [rel, text] of Object.entries(files)) {
+    const to = join(dest, ...rel.split('/'));
+    mkdirSync(dirname(to), { recursive: true });
+    writeFileSync(to, text);
+  }
+  return dest;
+}
+
+/** Deterministic mixed filler of length n (not placeholder-shaped), for fake values built at runtime. */
+export function filler(n, seed = 7) {
+  const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  let x = seed;
+  let out = '';
+  for (let i = 0; i < n; i++) { x = (x * 1103515245 + 12345) % 2147483648; out += abc[x % abc.length]; }
+  return out;
+}
+
+/** A JWT-shaped string with the given payload (unsigned; for tests only). */
+export function jwtWith(payload) {
+  return [b64url({ alg: 'HS256', typ: 'JWT' }), b64url(payload), 'FAKE' + 'signature'.repeat(3)].join('.');
 }

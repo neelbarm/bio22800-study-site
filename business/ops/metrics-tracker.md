@@ -12,29 +12,30 @@ Update every week on the same day (e.g. Sunday evening, 15 minutes). Copy the ta
 | Proposals sent | Upwork proposals + Fiverr offers + quotes sent. |
 | Diagnoses sold | Paid diagnoses ($199 or $399), counted on payment. |
 | Sprint conversions | Diagnoses that turned into a paid sprint deposit ($1.5k+). Track against the diagnosis cohort. |
+| Packages sold | Owner options from `pricing-and-scripts.md` section 1b: Launch Readiness Packages (on deposit) and agency 3-packs (on payment). Don't also count them under Diagnoses or Sprints. |
 | Retainers active | Retainer subscriptions paid for the current month. |
 | Agency conversations | Real calls or threaded conversations with agency owners about white-label (not just a sent DM). |
-| Revenue collected | Cash actually received this week (after refunds, before fees). |
+| Revenue collected | Cash actually received this week (after refunds, before fees). A sprint counts net of the diagnosis credit, so a diagnosis fee is never counted twice. |
 | Hours | All owner hours on the business: delivery + sales + content + admin. |
 | Delivery hours | Hours on client work only. Effective rate = delivery revenue / delivery hours. |
 
 ## Weekly scoreboard
 
-| Week | Dates | Leads | Qualified | Scans | Proposals | Diagnoses sold | Sprints sold | Retainers active | Agency convos | Revenue (week) | Revenue (cumulative) | Hours (total) | Hours (delivery) | Notes |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | [DATES] | | | | | | | | | $ | $ | | | |
-| 2 | | | | | | | | | | $ | $ | | | |
-| 3 | | | | | | | | | | $ | $ | | | |
-| 4 | | | | | | | | | | $ | $ | | | |
-| 5 | | | | | | | | | | $ | $ | | | |
-| 6 | | | | | | | | | | $ | $ | | | |
-| 7 | | | | | | | | | | $ | $ | | | |
-| 8 | | | | | | | | | | $ | $ | | | |
-| 9 | | | | | | | | | | $ | $ | | | |
-| 10 | | | | | | | | | | $ | $ | | | |
-| 11 | | | | | | | | | | $ | $ | | | |
-| 12 | | | | | | | | | | $ | $ | | | |
-| 13 | | | | | | | | | | $ | $ | | | |
+| Week | Dates | Leads | Qualified | Scans | Proposals | Diagnoses sold | Sprints sold | Packages sold | Retainers active | Agency convos | Revenue (week) | Revenue (cumulative) | Hours (total) | Hours (delivery) | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | [DATES] | | | | | | | | | | $ | $ | | | |
+| 2 | | | | | | | | | | | $ | $ | | | |
+| 3 | | | | | | | | | | | $ | $ | | | |
+| 4 | | | | | | | | | | | $ | $ | | | |
+| 5 | | | | | | | | | | | $ | $ | | | |
+| 6 | | | | | | | | | | | $ | $ | | | |
+| 7 | | | | | | | | | | | $ | $ | | | |
+| 8 | | | | | | | | | | | $ | $ | | | |
+| 9 | | | | | | | | | | | $ | $ | | | |
+| 10 | | | | | | | | | | | $ | $ | | | |
+| 11 | | | | | | | | | | | $ | $ | | | |
+| 12 | | | | | | | | | | | $ | $ | | | |
+| 13 | | | | | | | | | | | $ | $ | | | |
 
 ## Diagnosis cohort (drives the kill gate)
 
@@ -56,11 +57,19 @@ Update every week on the same day (e.g. Sunday evening, 15 minutes). Copy the ta
 | Reddit / Discord posts | | | $ |
 | X / LinkedIn | | | $ |
 | Agency DMs / white-label | | | $ |
-| Upwork | | | $ |
+| Upwork (also log Connects spent and $ per hire) | | | $ |
 | Fiverr | | | $ |
 | Referral | | | $ |
 
 Double down on the top source each month; cut the bottom one.
+
+## Monthly housekeeping (privacy policy promises)
+
+On the first Sunday of each month, delete what the privacy policy says we no longer keep:
+
+- [ ] Vercel > Storage > your Blob store: delete `leads/` entries for scans older than 90 days and form submissions older than 24 months (unless the person became a client).
+- [ ] The same leads in your inbox (Resend notifications) and in the Slack, Discord or other webhook channel.
+- [ ] Any spreadsheet or CRM copies of those leads.
 
 ## Targets (from the brief)
 

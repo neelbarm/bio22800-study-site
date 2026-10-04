@@ -15,8 +15,8 @@ Everything below is built to make those three things happen. The conversion rate
 
 | Path | What has to happen by Oct 31 | Total |
 |---|---|---|
-| **A. Sprint-led (most likely)** | 6 diagnoses at $399 ($2,394) + 2 Fix & Ship 10 at $2,500 ($5,000) + 1 Fix & Ship 5 at $1,500 + 1 Keep retainer at $500 + 1 Wire-It-Up at $1,000 | **$10,394** |
-| **B. Package-led** | 3 Launch Readiness Packages at $2,900 ($8,700) + 4 diagnoses at $399 ($1,596) | **$10,296** |
+| **A. Sprint-led (most likely)** | 6 diagnoses at $399 ($2,394) + 2 Fix & Ship 10 at $2,500 ($5,000) + 1 Fix & Ship 5 at $1,500, less the $399 diagnosis credit on each of those 3 sprints (-$1,197) + 1 Keep retainer at $500 + 1 Wire-It-Up at $2,000 (a workflow across up to 3 systems) | **$10,197** |
+| **B. Package-led** | 3 Launch Readiness Packages at $2,900 ($8,700, sold to new buyers) + 4 diagnoses at $399 ($1,596) that don't convert this month | **$10,296** |
 | **C. Agency-led** | 2 agency partners × 2 projects each at partner price (~$2,100 avg, 15% off $2,500) ($8,400) + 4 direct diagnoses ($1,596) | **$9,996** |
 
 You don't need to choose a path. Run all three channels and count the money from whichever converts.
@@ -25,16 +25,17 @@ You don't need to choose a path. Run all three channels and count the money from
 - 6 paid diagnoses at a 25% close rate on qualified calls or chats = 24 qualified conversations.
 - 24 qualified conversations at a 10-15% rate from targeted outreach = roughly **200-250 targeted touches**. That means proposals, DMs, helpful replies and cold emails to people with live apps.
 - Over 27 days that is **8-10 targeted touches a day**, plus the free scan doing inbound work.
+- Each of those 3 sprints is billed net of the $399 credit ($2,101 or $1,101 due), and the Path A total already subtracts it. Don't count a diagnosis fee twice.
 - 3 sprints from 6 diagnoses is a 50% conversion. That is ambitious: the kill gate in BRIEF.md is 2 of 5. Make the diagnosis report do the selling: every finding gets a price, and the quote goes out with the report.
 
 ## 2. Add two offers that shorten the path to $10k
 
-Both use pricing already in the kit, packaged for speed. They are owner options, so turn them on in `business/sales/pricing-and-scripts.md` if you agree.
+Both use pricing already in the kit, packaged for speed. They are owner options, written up with their rules in `business/sales/pricing-and-scripts.md` (section 1b) and the SOW templates. Use them if you agree.
 
-1. **Launch Readiness Package: $2,900 flat, 7 days.** It combines the diagnosis and Fix & Ship 10 into one purchase for founders with a launch, demo or security-review deadline. One sale instead of two cuts a full step out of the funnel. Price it just above the diagnosis plus the sprint ($399 + $2,500) because it saves them a decision. Take 50% upfront.
-2. **Rush fee: +50% for a 24-hour diagnosis or a 72-hour Fix & Ship 5.** Deadline buyers pay for speed. Only offer it when you actually have the hours.
+1. **Launch Readiness Package: $2,900 flat.** It combines the diagnosis and Fix & Ship 10 into one purchase, with a priority start, for founders with a launch, demo or security-review deadline. Bought separately, the two cost $2,500 after the diagnosis credit, so the package costs $400 more. Say so, and sell that $400 as the priority-start fee: the sprint starts the business day after the report, and the delivery date is fixed in writing (diagnosis within 48 hours of complete access, then the sprint within 7 business days, about 10 business days end to end). One sale instead of two cuts a full step out of the funnel. Take 50% upfront ($1,450). A client who already bought a diagnosis can add priority start to Fix & Ship 10 for the same $400 ($2,101 + $400).
+2. **Rush fee: +50% for a 24-hour diagnosis ($599) or a 72-hour Fix & Ship 5 ($2,250).** Deadline buyers pay for speed. Only the base price counts toward the diagnosis credit. Only offer it when you actually have the hours.
 
-For agencies, sell a **prepaid 3-pack of diagnoses for $999** (about 17% off). That is cash in hand that they resell under their own brand.
+For agencies, sell a **prepaid 3-pack of diagnoses for $999** (about 17% off list, credits expire 90 days after purchase). That is cash in hand that they resell under their own brand. The pack terms are in `business/legal/sow-white-label.md`.
 
 ## 3. Cash timing (so "made" means money you can actually use)
 
@@ -52,15 +53,15 @@ For agencies, sell a **prepaid 3-pack of diagnoses for $999** (about 17% off). T
 - [ ] Run the free scan on your own site. Confirm a lead shows up in `/admin/leads` and in your webhook.
 
 **Tue Oct 6: build your proof (4 hours)**
-- [ ] Build a deliberately vulnerable demo app in Lovable: Supabase with RLS off, a `VITE_` OpenAI key, payments faked on the success page. Deploy it.
+- [ ] Build a deliberately vulnerable demo app in Lovable: Supabase with RLS off, a Stripe **test-mode** secret key in a `VITE_` variable (as in `loom-scripts.md`), payments faked on the success page, and only fake data. Never put a live or billable key (OpenAI, Stripe live) in it: bots scrape public bundles within hours. Deploy it.
 - [ ] Run `npm run audit:repo -- <demo-repo>` and the free scan against it.
 - [ ] Record the 90-second demo Loom: "I broke this app the way Lovable apps usually break, then found it in 60 seconds." Scripts are in `business/sales/loom-scripts.md`.
-- [ ] Publish teardown post #1 (`business/sales/teardown-posts.md`) on your site's blog, LinkedIn and X.
+- [ ] Publish teardown post #1 (`business/sales/teardown-posts.md`). Its blog version is already live at `[SITE_URL]/guides` once you deploy, so share that link with the LinkedIn and X cuts.
 
 **Wed Oct 7: open the marketplaces (4 hours)**
 - [ ] Upwork: set up the profile and 3 Project Catalog items (`upwork-profile.md`). Set the hourly rate to $100. Apply to **10 jobs** with Looms (`proposal-templates.md`).
 - [ ] Fiverr: publish both gigs (`fiverr-gigs.md`).
-- [ ] Start the daily lead radar: `npm run leads`. Reply helpfully to the 5 best posts, following each community's rules.
+- [ ] Start the daily lead radar: `npm run leads`. Its Reddit source uses Reddit's public JSON without OAuth. Reddit now blocks most of those requests (expect 403s in the terminal), and its Data API terms require an approved, registered app for commercial use. Treat the radar as a Hacker News source and browse /new in each subreddit by hand. Reply helpfully to the 5 best posts, following each community's rules.
 
 **Thu Oct 8: personal network and agencies (4 hours)**
 - [ ] Message 20 people you know who build things: "I'm doing security and launch fixes for Lovable/Bolt apps this month. Know anyone with an app that's live or about to launch?" A warm intro converts roughly 10 times better than a cold one.
@@ -100,8 +101,9 @@ Update `business/ops/metrics-tracker.md` every Sunday night. Then apply these ru
 
 - **Fewer than 30 scans by Oct 11:** distribution is the problem. Double the community and DM volume and post teardown #2. Don't change the product.
 - **Scans are coming in but no diagnosis is sold by Oct 14:** the offer or the follow-up is the problem. Switch to the intro price ($199) and follow up on every critical finding personally, within the hour.
-- **2 or more diagnoses sold but no sprint by Oct 21:** the report isn't selling the fix. Lead the report with the fixed price and a 7-day deadline, and offer the Launch Readiness upgrade on a call.
+- **2 or more diagnoses sold but no sprint by Oct 21:** the report isn't selling the fix. Lead the report with the fixed price and a 7-day deadline, and offer Fix & Ship 10 with priority start ($2,101 after credit + $400) on a call.
 - **An agency sends a project:** give it priority. Agencies send repeat work.
+- **Upwork reply rate under 10% after 40 proposals:** drop to 4-5 proposals a day and move the time to agency DMs. Log Connects spent per hire in the metrics tracker; at $500+ budgets a proposal can cost 10-16 Connects ($1.50-$2.40).
 - **Behind the $10k pace on Oct 24:** stop prospecting new channels. Spend every hour closing open quotes and offering prepaid agency packs and retainers to anyone you have already delivered for.
 
 ## 7. What not to do this month

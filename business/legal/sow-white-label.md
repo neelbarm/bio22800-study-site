@@ -17,16 +17,18 @@ Agency receives **[15 / 20]% off list** on every job ordered under this SOW.
 | Service | List price | Wholesale price ([15]% off) | Wholesale price ([20]% off) | Delivery |
 |---|---|---|---|---|
 | Ship-Ready Diagnosis | $399 | $339 | $319 | 48 hours |
-| Fix & Ship Sprint 5 (up to 5 issues) | $1,500 | $1,275 | $1,200 | 5-7 business days |
-| Fix & Ship Sprint 10 (up to 10 issues + production deploy) | $2,500 | $2,125 | $2,000 | 7-10 business days |
-| Sprint Plus (adds payments, auth rebuild or multi-tenant) | $4,000 | $3,400 | $3,200 | 10 business days |
+| Fix & Ship 5 (up to 5 issues) | $1,500 | $1,275 | $1,200 | 5-7 business days |
+| Fix & Ship 10 (up to 10 issues + production deploy) | $2,500 | $2,125 | $2,000 | 7-10 business days |
+| Rebuild-grade (adds payments, auth rebuild or multi-tenant) | $4,000 | $3,400 | $3,200 | 10 business days |
 | Wire-It-Up add-on | $1,000-$3,000 | list less [15/20]% | list less [15/20]% | 3-7 days |
-| Maintain retainer (4 requests) | $500/mo | $425/mo | $400/mo | monthly |
-| Maintain Plus retainer (10 requests + security pass) | $1,000/mo | $850/mo | $800/mo | monthly |
+| Keep retainer (4 requests) | $500/mo | $425/mo | $400/mo | monthly |
+| Grow retainer (10 requests + security pass) | $1,000/mo | $850/mo | $800/mo | monthly |
 | Priority retainer (48h turnaround) | $1,500/mo | $1,275/mo | $1,200/mo | monthly |
-| Change orders | $150/hr | $[127.50 / 120]/hr | | as agreed |
+| Change orders (not discounted) | $150/hr | $150/hr | $150/hr | as agreed |
 
-The [20]% tier applies once Agency has ordered [3] or more paid jobs in a rolling [90]-day period, or by written agreement. Diagnosis fees paid by Agency are credited toward a sprint for the same End Client app under the same terms as the standard SOWs.
+The 15% tier applies to Agency's first 3 paid jobs. The 20% tier applies from Agency's 4th paid job onward, or earlier by written agreement. Change orders are always billed at $150 per hour or a fixed price agreed in writing, with no partner discount. Diagnosis fees paid by Agency are credited toward a sprint for the same End Client app under the same terms as the standard SOWs.
+
+**Prepaid diagnosis 3-pack (optional):** Agency may prepay **$999 for 3 diagnoses**. Each credit covers one diagnosis of one End Client app and is used by a Job Order. Credits expire [90] days after purchase. Unused credits are refundable within [14] days of purchase if none has been used; once the first credit is used, the pack is non-refundable and unused credits lapse at expiry. Each used credit counts as one paid job for the 20% tier and is worth $333 toward a sprint for the same End Client app.
 
 Agency sets its own resale prices to End Clients. Provider will not undercut Agency's quote to an End Client Agency introduced.
 
@@ -77,7 +79,7 @@ Each job is ordered by email or form containing:
 | Job Order number | [WL-YYYY-NNN] |
 | End Client (name or code name) | [END CLIENT] |
 | App URL and repository | [URL] / [REPO] |
-| Service and tier | [Diagnosis / Sprint 5 / Sprint 10 / Sprint Plus / Retainer plan / Add-on] |
+| Service and tier | [Diagnosis / Diagnosis from 3-pack / Fix & Ship 5 / Fix & Ship 10 / Rebuild-grade / Retainer plan (Keep / Grow / Priority) / Add-on] |
 | Wholesale price | $[AMOUNT] |
 | Branding | [Agency-branded / unbranded] |
 | Communication model | [Agency-only / Provider on Agency's team] |

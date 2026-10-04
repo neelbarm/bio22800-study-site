@@ -1,6 +1,6 @@
 # Maintain & Extend retainer runbook
 
-**Plans (from the brief):** Maintain $500/mo (4 small requests + monitoring), Maintain Plus $1,000/mo (10 requests + monthly security pass), Priority $1,500/mo (priority, 48h turnaround). A small request is up to 2 hours. Unused requests don't roll over. Re-fixes after builder re-prompts are covered only by the retainer.
+**Plans (from the brief; names as on the website):** Keep $500/mo (4 small requests + monitoring), Grow $1,000/mo (10 requests + monthly security pass), Priority $1,500/mo (priority, 48h turnaround). A small request is up to 2 hours. Unused requests don't roll over. Re-fixes after builder re-prompts are covered only by the retainer.
 
 ## Setup (once per client)
 
@@ -34,7 +34,7 @@
    - If a fix was overwritten: tell the client, log it as a re-fix request, fix it.
 6. **Work the queue** during the rest of the week. One PR per request with a preview link.
 
-## Monthly security pass (Maintain Plus and Priority; about 60-90 min)
+## Monthly security pass (Grow and Priority; about 60-90 min)
 
 Run in the first week of each month:
 
@@ -48,7 +48,7 @@ Run in the first week of each month:
 8. Rate each new finding with the severity rubric; fix Low/Medium items that fit the allowance with the client's OK; quote anything larger.
 9. Update the baseline snapshot.
 
-Maintain plan ($500): no monthly pass included; run the free web scan and the RLS query monthly as part of monitoring, and offer the full pass as an upgrade.
+Keep plan ($500): no monthly pass included; run the free web scan and the RLS query monthly as part of monitoring, and offer the full pass as an upgrade.
 
 ## Incidents
 
@@ -63,7 +63,7 @@ Send on the [1st business day] of each month, before or with the invoice.
 ```markdown
 # [APP NAME]: monthly maintenance report, [MONTH YEAR]
 
-**Plan:** [Maintain / Maintain Plus / Priority]   **Requests used:** [X] of [Y]   **Uptime:** [99.xx]%
+**Plan:** [Keep / Grow / Priority]   **Requests used:** [X] of [Y]   **Uptime:** [99.xx]%
 
 ## Summary
 [2-3 sentences: overall health, the most important thing done, anything that needs a decision.]
@@ -79,7 +79,7 @@ Send on the [1st business day] of each month, before or with the invoice.
 - Errors (Sentry): [N new issues; top issue and status]
 - Uptime incidents: [none / date, duration, cause]
 
-## Security pass (Maintain Plus / Priority)
+## Security pass (Grow / Priority)
 | Finding | Severity | Status |
 |---|---|---|
 | [e.g. New table `invites` had RLS off after builder re-prompt] | High | Fixed (PR link) |

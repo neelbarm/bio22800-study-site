@@ -138,8 +138,8 @@ Targets: login/sign-up/password reset (Supabase Auth has built-in limits; review
 
 1. Each PR gets a Vercel/Netlify preview; post the link in the PR. Preview env uses staging Supabase and Stripe test keys.
 2. Client reviews previews against acceptance criteria (5 business days per the SOW).
-3. **Sprint 5:** deliver merge-ready PRs; client merges and deploys (or buy production deploy as a change order).
-4. **Sprint 10 / Sprint Plus:** after written go-ahead:
+3. **Fix & Ship 5:** deliver merge-ready PRs; client merges and deploys (or buy production deploy as a change order).
+4. **Fix & Ship 10 / Rebuild-grade / Launch Readiness:** after written go-ahead:
    - Confirm a fresh production backup.
    - Merge PRs in dependency order (migrations before code that relies on them).
    - Apply production migrations (`supabase link` to prod, `supabase db push`), run by you, from your machine, not by an agent.
@@ -154,7 +154,7 @@ Fill `handover-template.md` and send it with:
 - PR list and status, test commands, env var names (never values), migration and rollback list, rotations done.
 - "Don't re-prompt over these" list: files and areas a builder re-prompt can overwrite (RLS migrations, webhook handler, env handling).
 - Access-removal checklist; remove your access the day the client confirms (or 7 days after acceptance).
-- Retainer offer (Maintain $500 / Maintain Plus $1,000 / Priority $1,500), framed around re-prompt protection.
+- Retainer offer (Keep $500 / Grow $1,000 / Priority $1,500), framed around re-prompt protection.
 
 ## 10. Acceptance
 

@@ -26,7 +26,7 @@ Avoid: hobbyists with no users and $30 budgets.
 1. Free scan tool (inbound): share teardown posts, offer scans in r/lovable, r/vibecoding, r/Supabase, r/SaaS, Lovable/Supabase Discords, X, LinkedIn.
 2. White-label agency partnerships (DMs to agency owners in Skool communities and LinkedIn).
 3. Upwork + Fiverr: review-builder for the first 5-10 jobs. On Upwork prefer hourly contracts at $100-$150/hr for first jobs; only $500+ budgets with verified payment; respond within 15 minutes with a 60-second Loom.
-4. Weekly teardown content ("7 Supabase RLS mistakes in Lovable apps we audit").
+4. Weekly teardown content ("7 Supabase RLS mistakes to check in your Lovable app"). Don't claim audit experience you don't have yet.
 
 ## Market evidence (cite when useful)
 - Fiverr Business Trends Index, June 9 2026: Claude Code specialists +938% (fastest-growing), n8n +125%, Base44 +95%, vibe coding +61%. https://www.globenewswire.com/news-release/2026/06/09/3308866/0/en/Businesses-Race-to-Hire-Claude-Code-Specialists-As-Demand-Surges-938.html
@@ -45,7 +45,7 @@ Avoid: hobbyists with no users and $30 budgets.
 ## Guardrails
 - Staging-only access where possible; never put service-role keys in an AI agent's environment; client owns all accounts; we get collaborator access, removed at handover.
 - Clear scope, fixed issue counts, limitation of liability, no "secure" guarantees, DPA available. Consider E&O insurance.
-- Free scan only on apps the requester owns or is authorized to test (checkbox attestation), passive and minimal; never returns actual row data.
+- Free scan only on apps the requester owns or is authorized to test (checkbox attestation), read-only and minimal; never returns actual row data.
 - Marketplace rules: don't take Upwork/Fiverr clients off-platform in violation of their terms.
 
 ## Owner

@@ -44,13 +44,13 @@ Each post gives the full value in the post body. The link to the scan is optiona
 **Title**
 
 ```text
-7 RLS mistakes I keep finding in Lovable + Supabase apps (with the SQL to fix each)
+7 Supabase RLS mistakes to check in your Lovable app (with the SQL to fix each)
 ```
 
 **Body**
 
 ```text
-I review AI-built apps for a living, and the same row-level security problems come up again and again. Sharing the list in case it saves someone a bad week.
+These are the most common row-level security mistakes in Lovable + Supabase apps, drawn from Supabase's own advisor rules and the apps I've built. Sharing the list in case it saves someone a bad week.
 
 Context: your Supabase anon key is in the browser by design. RLS is the only thing deciding who reads what.
 
@@ -140,7 +140,7 @@ What you get:
 
 Rules:
 - Only for apps you own or are authorised to test. The scan asks you to confirm that.
-- The scan is passive and never pulls your actual data.
+- The scan is read-only: it checks your page, a few well-known paths and whether tables answer anonymous requests (row counts only). It never pulls your actual data.
 - I won't post anything about your app publicly without your written permission.
 - First 5 who comment "scan" and then run it at [SITE_URL]/scan. I'll reply when the 5 are taken.
 
@@ -174,7 +174,7 @@ The pre-launch checklist I run on AI-built apps (auth, payments, data, deploy)
 Paste the four checklist sections from teardown (c) in `teardown-posts.md`, without the code blocks if posting to r/nocode, then add:
 
 ```text
-If you can tick every box, you're ahead of most launches I see. If you want the version with code snippets (SPA rewrite, webhook verification, RLS policies), say so and I'll drop it in the comments.
+If you can tick every box, you've covered the mistakes that most often sink a launch. If you want the version with code snippets (SPA rewrite, webhook verification, RLS policies), say so and I'll drop it in the comments.
 ```
 
 ### Post 5: What breaks when real users arrive (r/vibecoding, r/lovable)
@@ -190,7 +190,7 @@ If you can tick every box, you're ahead of most launches I see. If you want the 
 ```text
 The builder preview tests one user, 20 rows and your own clicks. Here's what tends to break once real people show up, roughly in order:
 
-1. Signup emails stop. Supabase's built-in sender is rate-limited and meant for testing. Set up custom SMTP.
+1. Signup emails never arrive. Without custom SMTP, Supabase only sends auth emails to your own team's addresses (and only a few per hour), so real users get no confirmation or reset emails. Set up custom SMTP before launch.
 2. Login redirects to the preview URL. Update Site URL and Redirect URLs in Supabase Auth, and in Google's console if you use Google login.
 3. Users see each other's data (RLS off or too open), or see nothing (RLS turned on without matching policies).
 4. Lists get slow, then stop at 1,000 rows. That's the API's default row cap plus no pagination or indexes.
@@ -231,7 +231,7 @@ Almost always the URL settings. In Supabase go to Authentication > URL Configura
 **"Confirmation emails aren't arriving"**
 
 ```text
-Supabase's built-in email sender is heavily rate-limited and meant for testing, so it stops once you get real signups. Set up custom SMTP (Authentication settings) with a transactional email provider and send a test from your production domain.
+Without custom SMTP, Supabase only sends auth emails to your own team's addresses (and only a few per hour), so real users never get confirmation or reset emails. Set up custom SMTP (Authentication settings) with a transactional email provider and send a test to an address outside your team.
 ```
 
 **"Stripe payment works but the user doesn't get access"**
@@ -306,5 +306,7 @@ Happy to. Easiest first step: run the free scan on your app at [SITE_URL]/scan (
 | Daily | Answer 3-5 help posts in r/lovable, r/vibecoding, r/Supabase and Discord help channels | 15-20 min |
 | Thu | Post the community version in a second subreddit (rewritten) | 20 min |
 | Fri | Send scan follow-up videos (see `loom-scripts.md`), log leads | 30-45 min |
+
+Finding posts to answer: browse /new in each subreddit by hand. `npm run leads` reads Reddit's public JSON without OAuth, which Reddit now mostly blocks (403) and which its Data API terms don't allow for commercial use without an approved, registered app. Use the radar for Hacker News only unless you get approved API access.
 
 Track: posts made, comments made, scans run from each source (use `?ref=reddit-lovable` style tags on `[SITE_URL]/scan` links where links are allowed), diagnoses sold.

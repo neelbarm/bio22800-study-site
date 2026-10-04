@@ -45,7 +45,7 @@ I recorded a 60-second video on what I would check first in yours: [LOOM_URL]
 | Their symptom | Likely cause | Sentence to paste |
 |---|---|---|
 | Google/OAuth login sends users to localhost or a preview URL | Supabase Auth "Site URL" and "Redirect URLs" still point at the builder preview | "Your redirect is almost certainly still pointing at the preview domain in Supabase Auth's URL settings, so the login works in the builder but not on your real domain." |
-| Signup works but confirmation or reset emails never arrive | Supabase's built-in email sender is rate-limited and meant for testing | "Supabase's default email sender is heavily rate-limited and meant for testing. Once a few real users sign up, emails stop going out. Moving to a proper SMTP provider fixes it." |
+| Signup works but confirmation or reset emails never arrive | No custom SMTP: Supabase's built-in sender only emails the project team's own addresses | "Without custom SMTP, Supabase only sends auth emails to your own team's addresses, a few per hour, so real users never get them. Moving to a proper SMTP provider fixes it." |
 | Password reset link opens the app but nothing happens | No route handles the recovery token, or redirect URL not allow-listed | "The reset link lands on a page that does not handle the recovery session, so the user never sees a 'set new password' form." |
 | Users get logged out randomly / on refresh | Session not restored on load, or multiple Supabase clients created | "That usually means the app creates more than one Supabase client or does not wait for the session to load before deciding the user is logged out." |
 | Works for some users, not others | Email confirmation required for new users only, or RLS blocking the profile row | "When it fails only for new users, the profile row is often blocked by a database policy right after signup, so the app thinks login failed." |
@@ -55,7 +55,7 @@ I recorded a 60-second video on what I would check first in yours: [LOOM_URL]
 ```text
 [0-10s] Hi [CLIENT_NAME], this is about your post: "[THEIR_SYMPTOM]". I'll show you where I'd look first.
 [10-30s] (Your demo Supabase project, Authentication > URL Configuration on screen.) In most [BUILDER] apps this is the culprit: the Site URL and redirect URLs still point at the preview. When you move to your own domain, login sends people back to the wrong place.
-[30-45s] The other two suspects are email delivery, since Supabase's built-in sender is rate-limited, and how the app restores the session on page load.
+[30-45s] The other two suspects are email delivery, since Supabase's built-in sender only emails your own team's addresses, and how the app restores the session on page load.
 [45-60s] I'd confirm which one it is in the first hour, fix it on a branch and give you a preview link to test before anything goes live. Quick question for you in the proposal text.
 ```
 
@@ -66,7 +66,7 @@ How I would run it:
 - Hourly at [RATE]/hr, capped at [CAP] hours this week.
 - First 1-2 hours: find the root cause and confirm it with you in writing.
 - Then fix it on a branch, with a preview deploy you can test on your phone before it goes live.
-- You keep ownership of every account. I need a GitHub invite and a Supabase collaborator invite (staging if you have one).
+- You keep ownership of every account. I need a GitHub invite and a Supabase collaborator invite, ideally to a staging project in its own Supabase organization, since on Free and Pro plans an invite reaches every project in the organization.
 
 If it turns out the app has more going on than auth, I'll tell you and quote a fixed-price fix plan instead of letting hours run.
 ```

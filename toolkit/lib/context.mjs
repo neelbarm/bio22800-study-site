@@ -27,39 +27,167 @@ const SERVER_PATHS = [
   /(^|\/)lib\/server\//,
 ];
 
-export function isServerFile(path, text = '') {
-  if (SERVER_PATHS.some((r) => r.test(path))) return true;
-  const head = text.slice(0, 600);
-  if (/^\s*['"]use server['"]/m.test(head)) return true;
+/**
+ * Monorepos: path rules are written for a single app at the repo root, so a file is
+ * classified by its path inside the nearest package (apps/web/src/x.ts -> src/x.ts).
+ * ctx.packageRoots holds the package directories (with a trailing slash), longest first.
+ */
+export function localPath(path, ctx) {
+  const roots = ctx?.packageRoots;
+  if (!roots?.length) return path;
+  const root = roots.find((r) => path.startsWith(r));
+  return root ? path.slice(root.length) : path;
+}
+
+/** Framework flags for the package that holds `path` (falls back to the repo-wide flags). */
+export function frameworkOf(path, ctx) {
+  const roots = ctx?.packageRoots;
+  const root = roots?.find((r) => path.startsWith(r));
+  const own = root ? ctx.packageFlags?.[root] : null;
+  if (own && (own.isNext || own.isVite)) return own;
+  return { isNext: !!ctx?.isNext, isVite: !!ctx?.isVite };
+}
+
+export const hasUseServer = (text = '') => /^\s*['"]use server['"]/m.test(text.slice(0, 600));
+export const hasUseClient = (text = '') => /^\s*['"]use client['"]/m.test(text.slice(0, 600));
+
+// Server rules are tried on both the repo path and the package-relative path, so a nested
+// server package (functions/, server/) keeps its classification.
+const bothPaths = (path, ctx) => {
+  const p = localPath(path, ctx);
+  return p === path ? [path] : [path, p];
+};
+
+export function isServerFile(path, text = '', ctx = null) {
+  if (bothPaths(path, ctx).some((p) => SERVER_PATHS.some((r) => r.test(p)))) return true;
+  if (hasUseServer(text)) return true;
   if (/import\s+['"]server-only['"]/.test(text)) return true;
   return false;
 }
 
-/** Route handlers / serverless functions that answer HTTP requests. */
-export function isServerHandler(path) {
+/**
+ * Route handlers / serverless functions that answer HTTP requests. Next.js server actions
+ * ('use server' files) count too: every exported action is a public POST endpoint.
+ */
+export function isServerHandler(path, text = '', ctx = null) {
+  return hasUseServer(text) || bothPaths(path, ctx).some((p) =>
+    /^supabase\/functions\/(?!_shared\/)[^/]+\//.test(p) ||
+    /(^|\/)pages\/api\//.test(p) ||
+    /(^|\/)app\/(.*\/)?route\.[cm]?[jt]sx?$/.test(p) ||
+    /^api\//.test(p) ||
+    /(^|\/)netlify\/(edge-)?functions\//.test(p) ||
+    /^functions\//.test(p) ||
+    /^(src\/)?server\//.test(p));
+}
+
+/**
+ * Next.js App Router: files without 'use client' are server components unless a client
+ * file imports them. These signals mean the file can only run on the server.
+ */
+export function hasServerSignals(text = '') {
   return (
-    /^supabase\/functions\/(?!_shared\/)[^/]+\//.test(path) ||
-    /(^|\/)pages\/api\//.test(path) ||
-    /(^|\/)app\/(.*\/)?route\.[cm]?[jt]sx?$/.test(path) ||
-    /^api\//.test(path) ||
-    /(^|\/)netlify\/(edge-)?functions\//.test(path) ||
-    /^functions\//.test(path) ||
-    /^(src\/)?server\//.test(path)
+    /export\s+(?:default\s+)?async\s+function\b/.test(text) || // client components cannot be async
+    /from\s+['"]next\/headers['"]/.test(text) ||
+    /from\s+['"][^'"]*\/supabase\/server['"]/.test(text) ||
+    /\bcreateServerClient\s*\(/.test(text) ||
+    /\bprocess\.env\.(?!NEXT_PUBLIC_|NODE_ENV\b)[A-Z_][A-Z0-9_]*/.test(text) // never inlined into the browser bundle
   );
 }
+
+const NEXT_CLIENT_FOLDER = /(^|\/)(components|hooks|contexts?|providers)\//;
 
 /** Heuristic: does this file end up in the browser bundle? */
 export function isClientFile(path, text, ctx) {
   if (!isCodeFile(path) || isTestFile(path)) return false;
-  if (isServerFile(path, text)) return false;
-  if (/^\s*['"]use client['"]/m.test(text.slice(0, 600))) return true;
-  if (/^public\//.test(path) || /(^|\/)index\.html$/.test(path)) return true;
-  if (ctx.isNext) {
-    if (/(^|\/)pages\//.test(path)) return true; // pages/api already excluded as server
-    if (/(^|\/)(components|hooks|contexts?|providers)\//.test(path)) return true;
+  if (isServerFile(path, text, ctx)) return false;
+  const p = localPath(path, ctx);
+  if (hasUseClient(text)) return true;
+  if (/^public\//.test(p) || /(^|\/)index\.html$/.test(p)) return true;
+  if (frameworkOf(path, ctx).isNext) {
+    if (/(^|\/)pages\//.test(p)) return true; // pages/api already excluded as server
+    if (NEXT_CLIENT_FOLDER.test(p)) return !hasServerSignals(text);
     return false;
   }
-  return /^(src|app|components|hooks|lib|utils|pages|views|screens)\//.test(path);
+  return /^(src|app|components|hooks|lib|utils|pages|views|screens)\//.test(p);
+}
+
+/**
+ * True when isClientFile() only guessed "client" from the folder name: a Next.js file under
+ * components/ (etc.) with no 'use client'. It may be a server component, so findings should
+ * ask the reviewer to verify instead of stating that the code ships to the browser.
+ */
+export function isMaybeClientFile(path, text, ctx) {
+  if (!isClientFile(path, text, ctx) || hasUseClient(text)) return false;
+  const p = localPath(path, ctx);
+  return frameworkOf(path, ctx).isNext && NEXT_CLIENT_FOLDER.test(p) && !/(^|\/)pages\//.test(p);
+}
+
+/** Next.js server component page/layout (App Router, no 'use client'). */
+export function isNextServerPage(path, text, ctx) {
+  return frameworkOf(path, ctx).isNext && /(^|\/)app\/(.*\/)?(page|layout|template|default)\.[cm]?[jt]sx?$/.test(localPath(path, ctx)) && !hasUseClient(text);
+}
+
+const RESOLVE_EXT = ['', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '/index.ts', '/index.tsx', '/index.js', '/index.jsx'];
+
+/** Resolve an import specifier (relative, @/, ~/, src/) to a file in ctx.files, or null. */
+export function resolveSpecifier(fromPath, spec, ctx) {
+  const byPath = ctx._byPath || (ctx._byPath = new Map(ctx.files.map((f) => [f.path, f])));
+  const dir = fromPath.includes('/') ? fromPath.slice(0, fromPath.lastIndexOf('/')) : '';
+  const root = ctx.packageRoots?.find((r) => fromPath.startsWith(r)) || '';
+  let bases;
+  if (spec.startsWith('.')) bases = [normalize(`${dir}/${spec}`)];
+  else if (/^[@~]\//.test(spec)) bases = [`${root}${spec.slice(2)}`, `${root}src/${spec.slice(2)}`];
+  else if (spec.startsWith('src/')) bases = [`${root}${spec}`];
+  else return null;
+  for (const b of bases) {
+    const hit = RESOLVE_EXT.map((e) => byPath.get(b + e)).find(Boolean);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+const IMPORT_RE = /(?:import|export)\s([^'"]*?)from\s*['"]([^'"]+)['"]|import\s*\(\s*['"]([^'"]+)['"]\s*\)|require\(\s*['"]([^'"]+)['"]\s*\)/g;
+
+/**
+ * Import statements of `file`: [{ index, end, spec, module, bindings: [{ imported, local }] }].
+ * `module` is the resolved local file or null; a default import has imported = 'default'.
+ */
+export function importsOf(file, ctx) {
+  const out = [];
+  for (const m of file.text.matchAll(IMPORT_RE)) {
+    const spec = m[2] || m[3] || m[4];
+    const clause = (m[1] || '').replace(/^\s*type\s+/, '').trim();
+    const bindings = [];
+    const braces = /\{([^}]*)\}/.exec(clause);
+    if (braces) {
+      for (const part of braces[1].split(',')) {
+        const [imported, local = imported] = part.replace(/^\s*type\s+/, '').trim().split(/\s+as\s+/);
+        if (imported) bindings.push({ imported, local });
+      }
+    }
+    const outside = clause.replace(/\{[^}]*\}/, ' ');
+    const ns = /\*\s*as\s+([\w$]+)/.exec(outside);
+    if (ns) bindings.push({ imported: '*', local: ns[1] });
+    const def = /^([A-Za-z_$][\w$]*)\s*(?:,|$)/.exec(outside.trim());
+    if (def && m[0].startsWith('import')) bindings.push({ imported: 'default', local: def[1] });
+    out.push({ index: m.index, end: m.index + m[0].length, spec, module: resolveSpecifier(file.path, spec, ctx), bindings });
+  }
+  return out;
+}
+
+/** Local modules imported by `file` (resolved file objects). */
+export function localImports(file, ctx) {
+  return importsOf(file, ctx).map((i) => i.module).filter(Boolean);
+}
+
+function normalize(p) {
+  const parts = [];
+  for (const seg of p.split('/')) {
+    if (!seg || seg === '.') continue;
+    if (seg === '..') parts.pop();
+    else parts.push(seg);
+  }
+  return parts.join('/');
 }
 
 export function lineAt(text, index) {

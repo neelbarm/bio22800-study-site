@@ -25,6 +25,8 @@ Rules for Fiverr:
 - No email, phone, external links or "let's talk on WhatsApp" in gig text or messages. Keep communication and payment on Fiverr.
 - Video walkthroughs: attach the recording as a file in Fiverr's delivery or message if Loom links get flagged.
 - Package price ceilings depend on your seller level and change. If Fiverr will not let you set a package as high as listed, publish the highest allowed price and send the full price as a Custom Offer after the buyer messages you.
+- **Diagnosis credit applies on Fiverr too**, as on every other channel: if a Basic buyer orders fixes within 30 days of the report, send a Custom Offer at the package price less $499 ($1,376 for Fix 5, $2,626 for Fix 10). You still net the direct price after credit (about $1,101 and $2,101).
+- The owner options in `pricing-and-scripts.md` (Launch Readiness Package, priority start, rush fee, agency 3-pack) are not listed on Fiverr. If you add one, gross it up (the package would be $3,625).
 - Fiverr is a review-builder per the brief. After 5-10 completed orders, evaluate whether it is still worth the 20%.
 
 ---
@@ -69,7 +71,7 @@ Package names and descriptions to paste (descriptions kept under 100 characters,
 
 ```text
 Basic: Ship-Ready Diagnosis
-Human audit of repo + Supabase. Ranked report, video and a fixed-price quote.
+Human audit of repo + Supabase: ranked report, video, quote. Fee credited if you order fixes.
 ```
 
 ```text
@@ -116,7 +118,7 @@ Q: Which builders do you support?
 A: Lovable, Bolt, Base44, Replit, v0 and Cursor projects. My fixes target React/Vite or Next.js with Supabase, Stripe and Vercel or Netlify. If your backend lives inside Replit or Base44, I will quote moving it to that stack.
 
 Q: Do I need the Basic package first?
-A: It is the best start if you are not sure what is wrong. If you already know your issues, message me the list and I will confirm which package fits.
+A: It is the best start if you are not sure what is wrong. If you order a fix package within 30 days of your report, I send a Custom Offer with the $499 credited ($1,376 for Fix 5, $2,626 for Fix 10). If you already know your issues, message me the list and I will confirm which package fits.
 
 Q: Will you change my live app?
 A: Not without your approval. Fixes go on separate branches with preview links. You test each one before it is merged.
@@ -135,8 +137,8 @@ A: Yes. Send it before sharing access.
 
 ```text
 1. Your app URL and which builder you used
-2. GitHub repo link, and an invite for [YOUR_GITHUB_USERNAME] (read access for Basic, write for Standard and Premium)
-3. Supabase project invite (a staging project if you have one). Do not paste keys in chat; invite me to the project instead.
+2. GitHub repo link, and an invite for [YOUR_GITHUB_USERNAME]. Basic: read access if the repo is in an organization; personal repos only offer write access, which I won't push to during the review; a zip export also works. Standard and Premium: write access.
+3. Supabase project invite: a staging project in its own organization if you have one (on Free and Pro plans an invite reaches every project in the organization), or a Read-only invite on the Team plan. Do not paste keys in chat; invite me instead.
 4. Does the app have live users? Is Stripe in live mode?
 5. Any deadline (launch, investor demo, customer security review)?
 6. The top 3 things you are worried about

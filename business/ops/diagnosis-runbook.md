@@ -42,18 +42,20 @@ Check the toolkit's README or `--help` for output-format options (for example JS
 
 Then review the output by hand:
 
-- **Confirm every hit.** Open each flagged file. Mark false positives (e.g. a publishable Stripe key or Supabase anon key is expected in the client; a test fixture is not a leak).
+- **Confirm every hit.** Open each flagged file. Mark false positives (e.g. a Stripe publishable key, a Supabase anon key or a Supabase `sb_publishable_` key is expected in the client; a test fixture is not a leak).
 - **Check git history for secrets** the current tree no longer contains:
   ```bash
-  git -C ../clients/[slug]/repo log -p --all -S 'service_role' | head -50
-  git -C ../clients/[slug]/repo log -p --all -S 'sk_live_' | head -50
+  # Key values: any JWT (Supabase legacy keys), Supabase secret keys, Stripe live secret and restricted keys, Stripe webhook secrets
+  git -C ../clients/[slug]/repo log -p --all -G 'eyJ[A-Za-z0-9_-]{10,}\.|sb_secret_|sk_live_|rk_live_|whsec_' | head -200
+  # Variable names, any case (SUPABASE_SERVICE_ROLE_KEY, SUPABASE_SECRET_KEY, STRIPE_SECRET_KEY)
+  git -C ../clients/[slug]/repo log -p --all -i -G 'service_role|supabase_secret_key|stripe_secret' | head -100
   ```
-  Any real secret ever committed counts as exposed: it needs rotation even if deleted later.
+  Searching for the word `service_role` alone does not find the key itself, because inside a JWT the role is base64-encoded. Decode the middle part of every `eyJ...` hit locally, never on a website: `node -e "console.log(Buffer.from(process.argv[1],'base64url').toString())" '<middle part>'`. `"role":"anon"` is expected; `"role":"service_role"` is Critical. Any real secret ever committed counts as exposed: it needs rotation even if deleted later.
 - Note the dependency audit result (`npm audit --omit=dev` or the toolkit's equivalent) for high/critical advisories only.
 
 ## 2. Free web scan on the live URL (5 min)
 
-Run the ShipReady free scan from the website ([SITE URL]) against the client's live URL (client already attested ownership in the SOW). Save a screenshot or the emailed result to `findings/web-scan`. It covers: secrets in JS bundles, Supabase service-role key in the client, tables readable by anonymous users, exposed `.env` / source maps, missing security headers.
+Run the ShipReady free scan from the website ([SITE URL]) against the client's live URL (client already attested ownership in the SOW). Save a screenshot of the browser result to `findings/web-scan`. It covers: secrets in JS bundles, Supabase service-role key in the client, tables readable by anonymous users, exposed `.env` / source maps, missing security headers.
 
 Cross-check its results against the repo audit. Anything the scan flags on the live site is stronger evidence than the repo alone, because it is what attackers see.
 
@@ -176,7 +178,7 @@ Stop at proof. One request that shows the issue is enough evidence; never pull b
 
 Rate on **likelihood x impact for this app**, not generic scary-ness. Note your confidence when a finding is unconfirmed ("likely, needs confirmation on staging").
 
-"Material" for the refund promise: any Critical or High, or 3+ Mediums. If nothing material is found, say so plainly and offer the refund per the SOW.
+"Material" for the refund promise: at least one Critical or High (same definition as the SOW, the FAQ, the Upwork listing and the Loom script). If nothing material is found, say so plainly and refund the fee within 7 days of delivery, per the SOW, without waiting to be asked.
 
 ## 8. Write the report (30 min)
 
@@ -194,10 +196,10 @@ Map findings to sprint tiers. Count each finding the client should fix as one "i
 
 | Situation | Recommend | Price |
 |---|---|---|
-| Up to 5 issues (all Criticals + Highs fit) | **Sprint 5** | $1,500 |
-| 6-10 issues, or the client needs us to do the production deploy | **Sprint 10** | $2,500 |
-| Any of: Stripe checkout/webhooks need building or rebuilding, auth needs rebuilding, or multi-tenant isolation is missing | **Sprint Plus** | $4,000 |
-| More than 10 issues, or a non-Supabase backend (Replit-native, Base44-native) | Phase it (Sprint 10 now for Criticals/Highs, retainer for the rest) or quote a migration separately | custom |
+| Up to 5 issues (all Criticals + Highs fit) | **Fix & Ship 5** | $1,500 |
+| 6-10 issues, or the client needs us to do the production deploy | **Fix & Ship 10** | $2,500 |
+| Any of: Stripe checkout/webhooks need building or rebuilding, auth needs rebuilding, or multi-tenant isolation is missing | **Rebuild-grade** | $4,000 |
+| More than 10 issues, or a non-Supabase backend (Replit-native, Base44-native) | Phase it (Fix & Ship 10 now for Criticals/Highs, retainer for the rest) or quote a migration separately | custom |
 | Integrations requested (CRM, Slack, email, n8n) | Add Wire-It-Up | $1,000-$3,000 |
 
 Always:

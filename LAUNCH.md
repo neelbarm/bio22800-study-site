@@ -15,19 +15,24 @@ These need your identity, money or judgment. Nothing else in this plan works unt
 - [ ] **Create a Stripe account** (verify identity and bank) and **3-5 Payment Links**:
   - [ ] Ship-Ready Diagnosis: **$399** -> `NEXT_PUBLIC_STRIPE_LINK_DIAGNOSIS`
   - [ ] Ship-Ready Diagnosis intro: **$199** (if Stripe offers a payment-count limit on the link, set it to 3; otherwise deactivate it after the 3rd sale) -> `NEXT_PUBLIC_STRIPE_LINK_DIAGNOSIS_INTRO`
-  - [ ] Fix & Ship Sprint deposit: **$750** (50% of the $1,500 tier) -> `NEXT_PUBLIC_STRIPE_LINK_SPRINT_DEPOSIT`. For other tiers and the diagnosis credit, create a per-quote link or invoice.
-  - [ ] Optional: Maintain retainer **$500/month** subscription link.
-  - [ ] Optional: Sprint 10 deposit **$1,250** link.
-  - On each link: collect name and email, set **After payment -> Redirect customers to your website** to `https://[your-domain]/thanks` (that page tells buyers how to share code access), and add a line referencing the SOW and terms.
+  - [ ] Fix & Ship Sprint deposit: **$750** (50% of the $1,500 tier) -> `NEXT_PUBLIC_STRIPE_LINK_SPRINT_DEPOSIT`. The site doesn't show this link yet; paste it into quotes and emails yourself. For other tiers and the diagnosis credit, create a per-quote link or invoice.
+  - [ ] Optional: Keep retainer **$500/month** subscription link.
+  - [ ] Optional: Fix & Ship 10 deposit **$1,250** link.
+  - [ ] Optional: Launch Readiness Package deposit **$1,450** link (owner option, see `business/sales/pricing-and-scripts.md` section 1b). Not shown on the site; send it in direct conversations only.
+  - On each link: collect name and email, and set **After payment -> Redirect customers to your website** to `https://[your-domain]/thanks` (that page tells buyers how to share code access).
+  - **Make buyers accept the contract before they pay.** Today the buyer never sees the MSA or SOW, so the refund rule, the 48-hour clock rules, the liability cap and the no-security-guarantee terms may not bind them. Before taking real payments: (1) fill every placeholder in `business/legal/master-services-agreement.md` and `business/legal/sow-diagnosis.md` (for example `[MSA DATE]`, `[7]`, `[2]`, `[are / are not]`); (2) publish both at a public URL (this needs a website change: ask for a page that renders them, the way `/terms` renders `site-terms.md`); (3) in Stripe, set **Settings > Business > Public details > Terms of service** to that URL; (4) on every Payment Link, turn on **Require customers to accept your terms of service**.
+  - On each link, use Stripe's custom text near the pay button to set expectations: "Next page shows how to share access. We confirm by email within a few hours." Then send the welcome email from `business/ops/onboarding-checklist.md` within a few hours of every payment. Nothing on the site emails the buyer automatically.
 - [ ] **Buy a domain** (and set up email on it, e.g. `hello@[domain]`).
 - [ ] **Connect this repo to Vercel**, add the domain, and **set the environment variables** below for Production (and Preview). Redeploy after changing any `NEXT_PUBLIC_` value, because they are baked in at build time.
+- [ ] **Upgrade the Vercel project to Pro before taking payments.** Hobby is for non-commercial use only.
+- [ ] **Connect a Blob store so leads are kept:** Vercel > Storage > Create > Blob (private) > connect it to this project > redeploy. Without it, leads only reach your webhook or email, and `/admin/leads` returns an error. Then set `ADMIN_PASSWORD`, open `/admin/leads` and confirm a test scan appears.
 - [ ] **Create Upwork and Fiverr profiles** (Claude Code / Supabase / Lovable rescue positioning; see Day 4).
 - [ ] **Record the demo Loom**: a 5-8 minute walkthrough of a sample diagnosis on a demo app you own (never a real client's app).
-- [ ] Optional: **set up Resend** (verify your domain, create an API key) so the site can email scan results and lead notifications.
-- [ ] Optional: **Cal.com booking link** for 15-minute intake calls.
+- [ ] Optional: **set up Resend** (verify your domain, create an API key) so the site emails **you** a notification for each lead. It does not email visitors; you send scan results to prospects yourself.
+- [ ] Optional: **Cal.com booking link** for 15-minute intake calls. The site doesn't show it yet; paste it into emails yourself.
 - [ ] Optional at start: **business entity (LLC) and business bank account**. A sole proprietorship is fine for the first clients; ask an accountant.
 - [ ] **Get an E&O (professional liability) insurance quote.** Buy before the first sprint that touches production.
-- [ ] **Have a lawyer in your state review** `business/legal/` (at least the MSA, sprint SOW, privacy policy and terms) and fill in every `[PLACEHOLDER]`, especially `[STATE]`, your legal name and contact email.
+- [ ] **Have a lawyer in your state review** `business/legal/` (at least the MSA, sprint SOW, privacy policy and terms) and fill in every `[PLACEHOLDER]`, especially `[STATE]`, your legal name and contact email. The website's `/privacy` and `/terms` pages fill their placeholders from the `NEXT_PUBLIC_LEGAL_*` variables below, not from the files, so set those too.
 
 ## Environment variables (website)
 
@@ -40,15 +45,23 @@ Set in Vercel > Project > Settings > Environment Variables. Values shown are exa
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Yes | `hello@shipready.example` | Public contact address on the site, privacy policy and terms. |
 | `NEXT_PUBLIC_STRIPE_LINK_DIAGNOSIS` | Yes | `https://buy.stripe.com/...` | $399 diagnosis Payment Link. |
 | `NEXT_PUBLIC_STRIPE_LINK_DIAGNOSIS_INTRO` | Recommended | `https://buy.stripe.com/...` | $199 intro diagnosis link (first 3 clients). Remove after 3 sales. |
-| `NEXT_PUBLIC_STRIPE_LINK_SPRINT_DEPOSIT` | Recommended | `https://buy.stripe.com/...` | $750 sprint deposit link. |
+| `NEXT_PUBLIC_STRIPE_LINK_SPRINT_DEPOSIT` | Optional | `https://buy.stripe.com/...` | $750 sprint deposit link. Not shown on the site yet; paste the link into quotes and emails yourself. |
 | `NEXT_PUBLIC_INTRO_SPOTS_LEFT` | Optional | `3` | How many $199 founding-price spots to advertise. Set to `0` (and redeploy) after the third sale to hide the offer. |
-| `NEXT_PUBLIC_CAL_URL` | Optional | `https://cal.com/yourname/intake` | Booking link for intake calls. |
-| `RESEND_API_KEY` | Optional | `re_...` | Server-only. Enables emailing scan results and lead notifications. **Never prefix with `NEXT_PUBLIC_`.** |
+| `NEXT_PUBLIC_CAL_URL` | Optional | `https://cal.com/yourname/intake` | Booking link for intake calls. Not shown on the site or in any automatic email yet; paste it into your emails yourself. |
+| `ADMIN_PASSWORD` | Yes | a long random passphrase | Server-only. Password for your private lead inbox at `/admin/leads` (any username). **Must be 12+ characters**, or the inbox stays disabled. Needs a connected Blob store. |
+| `NEXT_PUBLIC_LEGAL_NAME` | Yes, before taking payments | `Jane Doe` or `Jane Doe LLC` | Your legal name on `/privacy` and `/terms`. If empty, the pages show the brand name instead. |
+| `NEXT_PUBLIC_LEGAL_ADDRESS` | Yes, before taking payments | `123 Main St, Austin, TX 78701` | Mailing address on `/privacy` and `/terms`. If empty, the contact section prints no address. |
+| `NEXT_PUBLIC_LEGAL_LOCATION` | Yes, before taking payments | `Austin, Texas` | Where the business is based (privacy policy). Defaults to "the United States". |
+| `NEXT_PUBLIC_LEGAL_STATE` | Yes, before taking payments | `Texas` | Governing law and venue in the terms. |
+| `NEXT_PUBLIC_LEGAL_COUNTY` | Optional | `Travis` | Venue county in the terms. |
+| `RESEND_API_KEY` | Optional | `re_...` | Server-only. Emails you a notification for each lead. It does not email visitors. **Never prefix with `NEXT_PUBLIC_`.** |
 | `LEADS_TO_EMAIL` | Optional (with Resend) | `you@yourmail.com` | Where new-lead emails are sent. |
 | `LEADS_FROM_EMAIL` | Optional (with Resend) | `ShipReady <leads@shipready.example>` | Sender address; must be on a domain verified in Resend. |
-| `LEADS_WEBHOOK_URL` | Optional | `https://hooks.slack.com/services/...` | Server-only. A Slack, Discord or Zapier webhook that receives each new lead, so you can reply within 15 minutes. |
+| `LEADS_WEBHOOK_URL` | Optional | `https://hooks.slack.com/services/...` | Server-only. A Slack, Discord, Zapier, Make or n8n webhook that receives each new lead, so you can reply within 15 minutes. |
 
-Anything with `NEXT_PUBLIC_` is visible to every visitor. Only links, names and public addresses go there.
+Anything with `NEXT_PUBLIC_` is visible to every visitor. Only links, names and public addresses go there. `BLOB_READ_WRITE_TOKEN` is set for you when you connect the Blob store; don't add it by hand.
+
+Redeploy after setting the `NEXT_PUBLIC_LEGAL_*` values, then open `/privacy` and `/terms` and check your legal name and address appear.
 
 ## Targets and kill gates (from the brief)
 
@@ -75,10 +88,10 @@ Assumes part-time, odd hours: about 2-3 focused hours per day.
 ### Day 1: Money and site live
 - [ ] Stripe account + Diagnosis ($399), Intro ($199) and Sprint deposit ($750) Payment Links.
 - [ ] Domain bought; email on the domain.
-- [ ] Repo connected to Vercel; all required env vars set; deployed on the domain.
+- [ ] Repo connected to Vercel on the Pro plan; all required env vars set (including `ADMIN_PASSWORD` and the `NEXT_PUBLIC_LEGAL_*` values); private Blob store connected; deployed on the domain.
 - [ ] `LEADS_WEBHOOK_URL` to Slack/Discord so leads ping your phone.
-- [ ] Privacy policy and terms pages live with placeholders filled (lawyer review scheduled).
-- [ ] Test the full path yourself: run the free scan on your own demo app, submit the form, receive the lead, open each Payment Link (Stripe test mode or a refunded $1 test).
+- [ ] Privacy policy and terms pages live with your legal name and address showing (lawyer review scheduled). MSA and Diagnosis SOW published, and every Payment Link requires accepting them.
+- [ ] Test the full path yourself: run the free scan on your own demo app, submit the form, receive the lead in your webhook and in `/admin/leads`, open each Payment Link (Stripe test mode or a refunded $1 test).
 
 ### Day 2: Tooling and a demo app
 - [ ] Build or reuse a **demo app** you own (Lovable/Bolt + Supabase) with deliberate mistakes: RLS off on one table, an `authenticated using (true)` policy, a public bucket, an unverified Stripe webhook.
@@ -89,8 +102,8 @@ Assumes part-time, odd hours: about 2-3 focused hours per day.
 ### Day 3: Proof assets
 - [ ] Write the demo diagnosis report from `business/ops/delivery-report-template.md` (redacted, demo app).
 - [ ] **Record the demo Loom** (5-8 min) walking through it.
-- [ ] Add the sample report and Loom to the site.
-- [ ] Draft teardown post #1: "7 Supabase RLS mistakes in Lovable apps we audit" (use the demo app, not anyone else's).
+- [ ] The sample report is already live at `/sample-report`. The site has no slot for a Loom yet, so post the demo Loom on Upwork, Fiverr, LinkedIn and X (or ask for a Loom field on the site).
+- [ ] Review teardown post #1, "7 Supabase RLS mistakes to check in your Lovable app". It is already written, and its blog version goes live at `/guides` when you deploy. Use the demo app, not anyone else's.
 
 ### Day 4: Marketplaces
 - [ ] Upwork profile: title like "Claude Code + Supabase specialist: make your AI-built app launch-ready". Portfolio: demo report + Loom.
@@ -99,7 +112,7 @@ Assumes part-time, odd hours: about 2-3 focused hours per day.
 - [ ] Prepare 3 proposal templates + 60-second Loom template. Rule: reply within 15 minutes when awake; prefer hourly $100-$150/hr for first jobs.
 
 ### Day 5: Launch post (inbound)
-- [ ] Publish teardown #1 on your site, then share in r/lovable, r/vibecoding, r/Supabase, r/SaaS (follow each subreddit's self-promotion rules), the Lovable and Supabase Discords, X and LinkedIn.
+- [ ] Teardown #1 is live at `[your-domain]/guides`. Share it in r/lovable, r/vibecoding, r/Supabase, r/SaaS (follow each subreddit's self-promotion rules), the Lovable and Supabase Discords, X and LinkedIn.
 - [ ] Offer: "Reply with your URL and I'll run the free scan and tell you what it means" (owners only).
 - [ ] Reply to every comment. Log leads in the metrics tracker.
 
@@ -129,7 +142,7 @@ Goal: **first paid dollar by day 14.**
 Goal: first sprint sold, and pass the **day-21 gate**.
 - [ ] Follow up on every delivered diagnosis at 2 and 7 business days.
 - [ ] Run the first sprint with `business/ops/sprint-runbook.md` (branch per issue, tests, previews, handover).
-- [ ] Ask every intro client for their testimonial; add it to the site.
+- [ ] Ask every intro client for their honest testimonial, positive or not; add it to the site with a visible note such as "Received a discounted diagnosis in exchange for honest feedback." (A discount is a material connection under the FTC Endorsement Guides.)
 - [ ] Publish teardown #3; post one anonymized "what we found" thread (only with client permission).
 - [ ] 10 more agency DMs; hold 1-2 agency calls.
 - [ ] **Day 21 gate:** no paid diagnosis yet -> pivot decision (agency white-label focus, or hourly fractional engineer). Write it in the metrics tracker.
@@ -137,7 +150,7 @@ Goal: first sprint sold, and pass the **day-21 gate**.
 ## Week 4 (days 22-30): retainer and agencies
 
 Goal: **$2k-$4k collected, 1 retainer, 2 agency conversations by day 30.**
-- [ ] At every sprint handover, pitch the retainer around re-prompt protection (Maintain $500, Maintain Plus $1,000, Priority $1,500). Set up the Stripe subscription.
+- [ ] At every sprint handover, pitch the retainer around re-prompt protection (Keep $500, Grow $1,000, Priority $1,500). Set up the Stripe subscription.
 - [ ] Close at least one agency Job Order (a white-label diagnosis is the easiest first yes).
 - [ ] Remove the $199 intro link after 3 sales; diagnosis is $399 from now on.
 - [ ] Publish teardown #4; reuse your best-performing channel from the tracker.
@@ -152,5 +165,6 @@ Goal: **$2k-$4k collected, 1 retainer, 2 agency conversations by day 30.**
 | Tuesday-Thursday | Delivery (diagnoses, sprints) |
 | Friday | Teardown post + agency outreach |
 | Daily, 20 min | Upwork/Fiverr proposals and lead replies |
+| First Sunday of the month | Delete expired leads per the privacy policy (`business/ops/metrics-tracker.md`, Monthly housekeeping) |
 
 Raise prices after 3-5 case studies (diagnosis $499-$750, sprints $3k-$6k). Update prices in `lib/config.ts`, the Payment Links and the SOW templates together.

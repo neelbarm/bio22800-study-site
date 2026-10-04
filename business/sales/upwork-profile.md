@@ -193,7 +193,7 @@ If I find nothing material, you get a refund.
 
 ```text
 Q: What do you need access to?
-A: Read access to your GitHub repo and a collaborator invite to your Supabase project (staging if you have one). You keep ownership of every account and can remove me at any time.
+A: Access to your GitHub repo (read access if it's in a GitHub organization; personal repos only offer write access, and I won't push anything during the diagnosis), or a zip export. For Supabase: a Read-only invite if you're on the Team plan; otherwise a staging project in its own organization, or a few SQL queries you run and send back. You keep ownership of every account and can remove me at any time.
 
 Q: Will you change anything in my app?
 A: Not during the diagnosis. It is review only. Changes happen in the sprint, on branches, through pull requests you can test first.
@@ -214,8 +214,8 @@ Owner note: the "High or Critical" definition of material is a suggested policy.
 
 ```text
 1. App URL (live or staging) and which builder you used (Lovable, Bolt, Base44, Replit, v0, Cursor, other)
-2. GitHub repo link with read access for [YOUR_GITHUB_USERNAME]
-3. Supabase project invite for [YOUR_EMAIL_ON_UPWORK_MESSAGES_ONLY] as Developer (staging project preferred)
+2. GitHub repo link and a collaborator invite for [YOUR_GITHUB_USERNAME] (read access if the repo is in an organization; personal repos only offer write, which I won't push to during the diagnosis), or a zip export
+3. Supabase invite for [YOUR_EMAIL_ON_UPWORK_MESSAGES_ONLY]: Read-only on the Team plan, or a staging project in its own organization (on Free and Pro an invite reaches every project in the organization, production too). No separate staging? I'll send SQL queries to run instead
 4. Does the app have live users today? Roughly how many?
 5. Is Stripe in live mode?
 6. Any deadline: launch date, investor demo, customer security review?

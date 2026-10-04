@@ -25,12 +25,12 @@ Please do not put passwords, API keys or other secrets in our forms. If you do, 
 
 When you submit a URL to the Scan, you must first confirm that you own the app or are authorized to test it. The Scan then:
 
-1. **Fetches the public web page** at the URL you submit and the **public JavaScript files** it loads, the same files any visitor's browser downloads, and checks them for exposed secrets, exposed configuration files or source maps, and missing security headers.
-2. **For apps backed by Supabase,** reads the public "anon" key that is already present in the page and uses it to make **a small number of read-only requests** to check whether database tables can be read by anonymous visitors. **The Scan never stores or shows any row data from your database.** It records only whether a table appeared readable, not what is in it.
+1. **Fetches the public web page** at the URL you submit and the **public JavaScript files** it loads, and checks them for exposed secrets and missing security headers. It also **checks a few well-known paths** that a normal visit does not load (`/.env`, `/.git/config` and source map files) to see whether they are publicly downloadable.
+2. **For apps backed by Supabase,** uses the public anon or publishable key that is already present in the page to read the project's auth settings and the API's list of tables, then sends **up to 15 read-only requests per project** (HEAD requests asking only for a row count) to check whether tables can be read by anonymous visitors. **The Scan never downloads, stores or shows any row data from your database.** It records which tables appeared readable and how many rows each reported, not what is in them.
 3. **Shows the results to you** in your browser. Where the Scan detects a key or secret, it shows only a shortened, masked excerpt so you can identify it.
-4. **Emails the results to you only if you ask** by entering your email address.
+4. **We email you the results personally, only if you ask** by entering your email address.
 
-The Scan is passive and minimal. It does not log in, submit forms, write, change or delete anything, or attempt to bypass any security control.
+The Scan is non-intrusive, read-only and minimal. It does not log in, submit forms, write, change or delete anything, or attempt to bypass any security control.
 
 ### Information collected automatically
 
@@ -61,9 +61,9 @@ We share information only with providers that help us run the Site, under their 
 |---|---|
 | Vercel | Hosts the Site and the Scan; processes server logs |
 | Stripe | Processes payments |
-| Resend (if configured) | Sends emails such as scan reports and form confirmations |
+| Resend (if configured) | Notifies us by email of form submissions and scans. We may email you your results personally. |
 | Vercel Blob | Stores form submissions and scan summaries privately so we can follow up |
-| Slack, Discord or Zapier (if configured) | Notifies us when you submit a form or run a scan |
+| Slack, Discord, Zapier, Make or n8n (if configured) | Notifies us when you submit a form or run a scan |
 
 We may also disclose information if required by law, to protect our rights or the safety of others, or as part of a sale or reorganization of the business (in which case this policy will continue to apply to your information). **We do not sell your personal information** and do not share it for cross-context behavioral advertising.
 
@@ -71,6 +71,7 @@ We may also disclose information if required by law, to protect our rights or th
 
 - Form submissions and enquiries: up to 24 months after our last contact, unless you become a client.
 - Scan records (the URL scanned, the time, the score and the titles of issues found, plus your email if you entered one; never row data or full secrets): up to 90 days, to follow up if you asked us to and to prevent abuse.
+- We delete expired records once a month, from our storage, our email notifications and our notification channels.
 - Server logs: kept by our hosting provider according to its retention settings.
 - Client and payment records: as long as needed for tax and legal purposes (usually up to 7 years).
 

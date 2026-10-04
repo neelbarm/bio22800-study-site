@@ -18,14 +18,15 @@ Use this the moment a client pays for a diagnosis, sprint deposit or retainer. P
 Ask for the least access that lets you do the job. Send the kickoff message (Section 4) with this list.
 
 ### GitHub
-- [ ] Preferred: client creates a **fork or branch** they own and adds you as **collaborator** (Write access for sprints; Read access is enough for a diagnosis).
+- [ ] Repo in a GitHub **organization**: client adds you with **Read** access for a diagnosis, **Write** for sprints.
+- [ ] Repo on a **personal account**: GitHub only offers collaborators **Write** access on private personal repos. Accept it and don't push during a diagnosis, or ask for a zip export instead.
 - [ ] Alternative: client adds you to their org with access to this repo only.
 - [ ] Branch protection on `main` stays on; you work through pull requests.
 - [ ] If the app lives only in a builder (Lovable, Bolt, etc.): client connects or exports it to a GitHub repo they own first.
 
 ### Supabase
 - [ ] Preferred: access to a **staging project** (a copy of the schema, not real user data).
-- [ ] Production: invite you as a **Read-only** member if their plan offers that role; otherwise Developer on staging only.
+- [ ] Production: the **Read-only** role (and project-scoped roles) exists only on Supabase **Team and Enterprise** plans. On Free and Pro, any invite, Developer included, reaches every project in that organization, production too. On those plans ask for a staging project in a **separate organization** and an invite there, or use the SQL fallback below.
 - [ ] If neither is possible: client runs the SQL queries from `diagnosis-runbook.md` and shares results, or shares screen on a call.
 - [ ] Do **not** ask for the service-role key for a diagnosis. For a sprint, use the Supabase CLI with your own login against staging; never place a service-role key in Claude Code's environment, `.env` files the agent reads, or prompts.
 
@@ -71,8 +72,8 @@ Ask for the least access that lets you do the job. Send the kickoff message (Sec
 > **Timeline:** the clock starts once I have the access below. You'll get [the written report, a Loom walkthrough and a fixed-price fix quote within 48 hours / the first pull requests within X days].
 >
 > **Access I need (all on accounts you own; I'll be removed at the end):**
-> 1. GitHub: add me (`[GITHUB USERNAME]`) as a collaborator on [the repo / a fork or branch you create]. [Read / Write] access is enough.
-> 2. Supabase: invite `[EMAIL]` to [your staging project / your project as Read-only]. If you only have production and no read-only role, tell me and I'll send you a few SQL queries to run instead.
+> 1. GitHub: add me (`[GITHUB USERNAME]`) as a collaborator on the repo. [Diagnosis: if the repo is in a GitHub organization, Read access is enough. On a personal account GitHub only offers Write access; that's fine, I won't push anything during the diagnosis. A zip export also works. / Sprint: Write access.]
+> 2. Supabase: invite `[EMAIL]` to [a staging project in its own organization / your project as Read-only (Team and Enterprise plans only)]. On Free and Pro plans an invite gives access to every project in the organization, production included, so if you don't have a separate staging organization, tell me and I'll send you a few SQL queries to run instead.
 > 3. [Vercel / Netlify]: invite `[EMAIL]` to the project, or send a screenshot of the environment variable *names* (not values).
 > 4. [Stripe: a view-only teammate invite, or screenshots of the Webhooks page.]
 > 5. Two test user accounts on [staging / the live app] so I can check that users can't see each other's data.

@@ -109,7 +109,7 @@ Hi [FIRST_NAME],
 
 Congrats on launching [APP_NAME]. I saw [PUBLIC_SIGNAL, e.g. "your Product Hunt launch last Tuesday"] and that it's built with [BUILDER].
 
-I fix apps built with AI builders once real users arrive. The first week after launch is usually when a few predictable things show up: confirmation emails stop arriving, login redirects to the old preview URL, or one user can see another user's data.
+I fix apps built with AI builders once real users arrive. The first week after launch is usually when a few predictable things show up: confirmation emails never reach real users, login redirects to the old preview URL, or one user can see another user's data.
 
 If you'd like to check yours, I have a free scan you can run on your own app at [SITE_URL]/scan. It checks the live site for exposed keys and database tables readable without login, and never pulls your data.
 
@@ -161,7 +161,7 @@ Hi [FIRST_NAME],
 
 Saw [PUBLIC_SIGNAL, e.g. "your post about your first 20 paying customers"]. Nice milestone.
 
-I help founders with [BUILDER]-built apps get payments and data right once money is moving. The issue I see most at your stage: access granted on the "payment successful" page instead of by Stripe's webhook, so customers who close the tab early pay and don't get access, and the webhook doesn't verify Stripe's signature.
+I help founders with [BUILDER]-built apps get payments and data right once money is moving. The most common issue at your stage: access granted on the "payment successful" page instead of by Stripe's webhook, so customers who close the tab early pay and don't get access, and the webhook doesn't verify Stripe's signature.
 
 Do you know offhand whether yours grants access from the webhook or the success page?
 
@@ -264,7 +264,7 @@ From your [Product Hunt launch / post on X about X]. I look for founders who've 
 **"Did you scan my app?" / "Are you saying my app is insecure?"**
 
 ```text
-No. I haven't looked at your app beyond the public homepage, and I'd never test it without your permission. These are the patterns I see most in [BUILDER] apps in general. If you want to know about yours, you can run the free scan on it yourself at [SITE_URL]/scan.
+No. I haven't looked at your app beyond the public homepage, and I'd never test it without your permission. These are the most common patterns in [BUILDER] apps in general. If you want to know about yours, you can run the free scan on it yourself at [SITE_URL]/scan.
 ```
 
 **"Not interested."**

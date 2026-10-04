@@ -2,16 +2,18 @@
 
 Four long-form articles, each with a blog version (800-1,200 words), an X thread cut and a LinkedIn cut. Publish one per week per the brief's weekly teardown cadence.
 
+**The blog versions are live.** The site publishes each "### Blog version" section at `[SITE_URL]/guides` on the next deploy (the title becomes the page title and its URL). Edit them with care, and don't rename a heading once its link has been shared.
+
 Before publishing:
 
-- Replace `[SITE_URL]`.
+- In the X and LinkedIn cuts, replace `[SITE_URL]` by hand. The site fills it in automatically in the blog versions.
 - Every example below uses placeholder names. Never name or screenshot a real person's app without their written permission.
 - Code is shown for apps you own. Tell readers to test only their own projects.
 - Supabase and Stripe dashboards move menu items around. Check menu paths against the live dashboard before each post goes out.
 
 ---
 
-## (a) 7 Supabase row-level security mistakes we find in Lovable apps
+## (a) 7 Supabase row-level security mistakes to check in your Lovable app
 
 ### Blog version
 
@@ -192,8 +194,6 @@ Separate policies, separate mistakes. Private files in a public bucket, or polic
 Free scan for apps you own: [SITE_URL]/scan
 ```
 
-Note: the marker is the only emoji in the kit. Delete it if you prefer none.
-
 ### LinkedIn version
 
 ```text
@@ -222,7 +222,7 @@ A free scan for apps you own: [SITE_URL]/scan
 
 ### Blog version
 
-Here is a pattern we see in AI-built apps. You ask the builder to "add Stripe checkout". It needs a key. You paste your Stripe secret key into a variable called something like `VITE_STRIPE_SECRET_KEY`. The checkout works. You launch.
+Here is a common pattern in AI-built apps. You ask the builder to "add Stripe checkout". It needs a key. You paste your Stripe secret key into a variable called something like `VITE_STRIPE_SECRET_KEY`. The checkout works. You launch.
 
 That key is now in the JavaScript file every visitor downloads. Anyone who opens DevTools can copy it and call the Stripe API as you: read your customers, issue refunds, create charges.
 
@@ -401,7 +401,7 @@ Print it, tick it, and fix anything you can't tick before launch day.
 
 - [ ] **Site URL and Redirect URLs** in Supabase (Authentication > URL Configuration) point at your production domain, not the builder preview. This is the top cause of "login works in preview, not on my domain".
 - [ ] **OAuth providers** (Google, GitHub) have your production URLs in their own consoles, and the Supabase callback URL is authorised there.
-- [ ] **Custom SMTP is set up.** Supabase's built-in email sender is heavily rate-limited and meant for testing. Without your own provider, confirmation and reset emails stop arriving once real signups start.
+- [ ] **Custom SMTP is set up.** Without custom SMTP, Supabase only sends auth emails to your own team's addresses (and only a few per hour), so real users never get confirmation or reset emails.
 - [ ] **Password reset tested end to end** on the production domain: request, email arrives, link opens a "set new password" screen, new password works.
 - [ ] **Protected pages are protected by data rules**, not only hidden in the UI. A route guard in React is a convenience. The real lock is RLS.
 - [ ] **Admin roles live somewhere users can't edit**: `app_metadata` or a roles table, never `user_metadata`.
@@ -465,7 +465,7 @@ Auth, payments, data, deploy
 
 2/ AUTH
 - Supabase Site URL + Redirect URLs = production domain
-- Custom SMTP (built-in email is rate-limited, testing only)
+- Custom SMTP (the built-in sender only emails your own team)
 - Password reset tested on the real domain
 - Admin roles in app_metadata, never user_metadata
 
@@ -499,7 +499,7 @@ Free scan for apps you own: [SITE_URL]/scan
 ```text
 Launching an app built with Lovable, Bolt or another AI builder? Four areas to check before real users and real money arrive.
 
-Auth: production URLs set in Supabase, a real email provider (the built-in one is rate-limited), password reset tested on your live domain.
+Auth: production URLs set in Supabase, a real email provider (the built-in one only emails your own team), password reset tested on your live domain.
 
 Payments: only the publishable key in the browser, webhooks that verify Stripe's signature, access granted from the webhook rather than the "thank you" page.
 
@@ -520,11 +520,11 @@ It worked in the preview. It worked when you showed your co-founder. It worked o
 
 This isn't bad luck, and it isn't that AI builders are bad. The preview tests a very specific situation: one user (you), a few rows of test data, your browser, your fast connection, and only the clicks you thought to make. Real users bring everything the preview never saw. Here is what usually breaks, roughly in the order it shows up.
 
-#### 1. Signup emails stop arriving
+#### 1. Signup emails never arrive
 
-The first ten signups get their confirmation email. Then they stop. Supabase's built-in email sender is heavily rate-limited and meant for testing. Real signups hit the limit fast, and new users sit on a "check your email" screen forever.
+You tested signup with your own address and the confirmation email arrived. Your first real user gets nothing. Without custom SMTP, Supabase only sends auth emails to your own team's addresses (and only a few per hour), so real users never get confirmation or reset emails, and they sit on a "check your email" screen forever.
 
-Fix: connect a transactional email provider through Supabase's custom SMTP settings before launch, and send a test from the production domain.
+Fix: connect a transactional email provider through Supabase's custom SMTP settings before launch, and send a test to an address outside your team.
 
 #### 2. Login sends people to the wrong place
 
@@ -597,7 +597,7 @@ Want a quick outside read before you do? Run the free Ship-Ready Scan on an app 
 1/ Why your Lovable app breaks when real users arrive.
 The preview tests one user, 20 rows, your browser and your clicks. Launch tests everything else
 
-2/ Signup emails stop. Supabase's built-in sender is rate-limited and meant for testing. Set up custom SMTP before launch.
+2/ Signup emails never arrive. Without custom SMTP, Supabase only emails your own team's addresses, a few per hour. Set up custom SMTP before launch.
 
 3/ Login redirects to the preview URL. Site URL + Redirect URLs in Supabase still point at the old domain. Test logged out, in a private window.
 
@@ -622,7 +622,7 @@ The preview tests one user, 20 rows, your browser and your clicks. Launch tests 
 The preview in an AI builder tests one user, a few rows of data and the clicks you thought to make. Real users bring everything else.
 
 What usually breaks first:
-- Signup emails stop (the default email sender is rate-limited)
+- Signup emails never arrive (without custom SMTP, Supabase only emails your own team)
 - Login redirects to the old preview URL
 - Users see each other's data, or nothing at all
 - Lists slow down and silently stop at 1,000 rows

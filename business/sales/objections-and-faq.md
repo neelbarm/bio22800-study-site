@@ -87,7 +87,7 @@ If budget is tight, run the free scan first at [SITE_URL]/scan. It covers the mo
 During the first 3 clients only (intro offer from the brief, direct clients only, never on Upwork or Fiverr):
 
 ```text
-I'm taking on 3 clients at $199 in exchange for a written testimonial after delivery, if you're happy with the work. Interested?
+I'm taking on 3 clients at $199 in exchange for an honest written testimonial after delivery, positive or not. I'll note the discount wherever I publish it. Interested?
 ```
 
 ---
@@ -136,7 +136,7 @@ Phrases to never use (in proposals, gigs, reports, posts or chat):
 ## Refunds
 
 ```text
-Diagnosis: if I don't find anything material, you get a full refund. "Material" means at least one issue rated High or Critical in the report.
+Diagnosis: if I don't find anything material, I refund you in full within 7 days of delivery, without you having to ask. "Material" means at least one issue rated High or Critical in the report.
 
 Fix & Ship Sprint: you're paying for the agreed fixes, delivered and tested. If I can't deliver an agreed fix, you get a refund for that part. Work already delivered and accepted isn't refunded.
 
@@ -147,7 +147,7 @@ Wire-It-Up: same as sprints, refundable for any agreed part I can't deliver.
 
 Owner notes:
 
-- The "High or Critical" definition of material is a suggested policy; it is used the same way in `upwork-profile.md`. Change both together.
+- The "High or Critical" definition of material is a suggested policy; it is used the same way in `upwork-profile.md`, `loom-scripts.md`, `../legal/sow-diagnosis.md` and `../ops/diagnosis-runbook.md`. Change all of them together.
 - On Upwork and Fiverr, the marketplace's own refund and dispute process applies. Don't promise anything that conflicts with it.
 
 ---
@@ -193,7 +193,7 @@ No. I build inbound AI receptionists only: answering, capturing details and book
 **"Do you work with agencies?"**
 
 ```text
-Yes, under your brand at partner rates. See the partner offer: [SITE_URL]/partners
+Yes, under your brand at partner rates. See the partner offer: [SITE_URL]/agencies
 ```
 
 **"Can you just look at it for free?"**

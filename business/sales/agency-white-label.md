@@ -64,6 +64,7 @@ Maintain & Extend (monthly)   $500 /    $425 /          $400 /
 Changes outside scope: $150/hr or fixed quote.
 
 Partner rate starts at 15% off. It moves to 20% off from your fourth paid project.
+Optional: prepay 3 diagnoses for $999 (credits valid 90 days).
 
 WHAT YOU CAN COUNT ON
 - Fixed scope and fixed price, agreed in writing before work starts
@@ -77,7 +78,7 @@ We don't promise any app is "secure" or "guaranteed". We promise that issues fou
 
 NEXT STEP
 Send one project you're worried about. We'll start with a Diagnosis at partner rate.
-[YOUR_NAME] | [CONTACT_EMAIL] | [SITE_URL]/partners
+[YOUR_NAME] | [CONTACT_EMAIL] | [SITE_URL]/agencies
 ```
 
 ---
@@ -90,6 +91,7 @@ Send one project you're worried about. We'll start with a Diagnosis at partner r
 | Volume discount | 20% off list from the partner's 4th paid project (owner policy; adjust if you prefer a different trigger) |
 | What's discounted | Diagnosis, sprints, Wire-It-Up, retainers |
 | What's not discounted | Change orders ($150/hr), migrations from Replit-native or Base44-native backends (quote separately) |
+| Prepaid diagnosis 3-pack (owner option) | $999 for 3 diagnoses (about 17% off list). Credits expire 90 days after purchase. Refundable within 14 days only if no credit has been used; non-refundable after the first use. Each credit is one diagnosis of one app, counts as one paid project, and is worth $333 toward that app's sprint. Terms in `../legal/sow-white-label.md`. |
 | Intro offer | The $199 testimonial price does not apply to partners |
 | Agency resale price | Agency sets its own. Suggest they charge at least our list price. |
 | Payment terms (suggested) | Diagnosis prepaid. Sprints 50% to start, 50% on delivery. Retainers monthly in advance. |

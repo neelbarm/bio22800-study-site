@@ -110,12 +110,76 @@ export function splitTopLevel(str) {
   return parts;
 }
 
-const isTrueExpr = (expr) => {
+const stripParens = (e) => {
+  let out = e.trim();
+  while (out.startsWith('(') && out.endsWith(')') && balancedParen(out, 0)?.end === out.length) out = out.slice(1, -1).trim();
+  return out;
+};
+
+const normExpr = (expr) =>
+  stripParens(
+    String(expr)
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .replace(/\(\s*select\s+(auth\.\w+\(\s*\))\s*\)/g, '$1') // (select auth.uid()) -> auth.uid()
+      .replace(/\(\s*(auth\.\w+\(\s*\))\s*\)/g, '$1')
+      .replace(/"/g, ''),
+  );
+
+export const isTrueExpr = (expr) => {
   if (expr == null) return false;
-  let e = expr.trim().toLowerCase();
-  while (e.startsWith('(') && e.endsWith(')')) e = e.slice(1, -1).trim();
+  const e = normExpr(expr);
   return e === 'true' || e === '1 = 1' || e === '1=1';
 };
+
+/** Split on top-level AND (outside parentheses and quotes). */
+function splitAnd(e) {
+  const parts = [];
+  let depth = 0;
+  let cur = '';
+  for (let i = 0; i < e.length; i++) {
+    const ch = e[i];
+    if (ch === "'") { const end = e.indexOf("'", i + 1); const stop = end < 0 ? e.length - 1 : end; cur += e.slice(i, stop + 1); i = stop; continue; }
+    if (ch === '(') depth++;
+    if (ch === ')') depth--;
+    if (depth === 0 && /^\sand\s/.test(e.slice(i, i + 5))) { parts.push(cur.trim()); cur = ''; i += 4; continue; }
+    cur += ch;
+  }
+  if (cur.trim()) parts.push(cur.trim());
+  return parts.map(stripParens);
+}
+
+const ANY_USER_TERMS = [
+  /^auth\.uid\(\) is not null$/,
+  /^auth\.role\(\) = 'authenticated'$/,
+  /^'authenticated' = auth\.role\(\)$/,
+  /^auth\.jwt\(\) ->> 'role' = 'authenticated'$/,
+  /^\(?auth\.jwt\(\) ->> 'role'\)?(?:::text)? = 'authenticated'$/,
+];
+const ANYONE_TERMS = [/^auth\.role\(\) = 'anon'$/, /^true$/, /^1 ?= ?1$/];
+const BUCKET_TERM = /^bucket_id = '([^']+)'$/;
+
+/**
+ * Classify a policy expression that does not tie rows to the caller.
+ * Returns null when the expression restricts rows (ownership, roles table, ...), or
+ * { who: 'anyone' | 'any-user', bucket } when every AND-ed term is only one of:
+ * true, auth.uid() is not null, auth.role() = 'authenticated' / 'anon', bucket_id = '...'.
+ */
+export function openExpr(expr) {
+  if (expr == null) return null;
+  const e = normExpr(expr);
+  if (/\bor\b/.test(e.replace(/'[^']*'/g, "''"))) return null; // an OR can hide an owner check; stay quiet
+  let who = 'anyone';
+  let bucket = null;
+  for (const term of splitAnd(e)) {
+    const b = BUCKET_TERM.exec(term);
+    if (b) { bucket = b[1]; continue; }
+    if (ANY_USER_TERMS.some((r) => r.test(term))) { who = 'any-user'; continue; }
+    if (ANYONE_TERMS.some((r) => r.test(term))) continue;
+    return null;
+  }
+  return { who, bucket };
+}
 
 /**
  * Parse one statement. Returns a typed object or null:
@@ -123,8 +187,18 @@ const isTrueExpr = (expr) => {
  *  { type: 'rls', table, enabled }
  *  { type: 'drop-table', table }
  *  { type: 'policy', name, table, cmd, roles, using, check, usingTrue, checkTrue }
+ *  { type: 'drop-policy', name, table }
+ *  { type: 'alter-policy', name, table, rename?, roles?, using?, check? }
  *  { type: 'function', name, securityDefiner, hasSearchPath }
+ *  { type: 'drop-function', name }
+ *  { type: 'alter-function', name, securityDefiner?, hasSearchPath? }
  *  { type: 'bucket', buckets: [{ name, public }] }
+ *  { type: 'bucket-update', name (null = every bucket), public }
+ *  { type: 'bucket-delete', name }
+ *  { type: 'view', view, securityInvoker, sources: [table full names] }
+ *  { type: 'alter-view', view, securityInvoker }
+ *  { type: 'drop-view', views: [...] }
+ *  { type: 'revoke', object, roles }
  */
 export function parseStatement(sql) {
   const s = sql.replace(/\s+/g, ' ').trim();
@@ -151,13 +225,57 @@ export function parseStatement(sql) {
     const rest = m[3];
     const cmdM = /\bfor\s+(all|select|insert|update|delete)\b/i.exec(rest);
     const cmd = cmdM ? cmdM[1].toLowerCase() : 'all';
-    const toM = /\bto\s+([\w\s,"]+?)(?=\s+using\b|\s+with\s+check\b|$)/i.exec(rest);
-    const roles = toM ? toM[1].split(',').map((r) => r.trim().replace(/"/g, '').toLowerCase()).filter(Boolean) : ['public'];
-    const usingM = /\busing\s*\(/i.exec(rest);
-    const using = usingM ? balancedParen(rest, usingM.index)?.inner ?? null : null;
-    const checkM = /\bwith\s+check\s*\(/i.exec(rest);
-    const check = checkM ? balancedParen(rest, checkM.index)?.inner ?? null : null;
-    return { type: 'policy', name, table: parseIdent(m[2]), cmd, roles, using, check, usingTrue: isTrueExpr(using), checkTrue: isTrueExpr(check) };
+    const { roles, using, check } = policyClauses(rest);
+    return { type: 'policy', name, table: parseIdent(m[2]), cmd, roles: roles || ['public'], using, check, usingTrue: isTrueExpr(using), checkTrue: isTrueExpr(check) };
+  }
+  if ((m = new RegExp(`^drop\\s+policy\\s+(?:if\\s+exists\\s+)?("[^"]+"|\\S+)\\s+on\\s+${QUALIFIED}`, 'i').exec(s))) {
+    return { type: 'drop-policy', name: m[1].replace(/^"|"$/g, ''), table: parseIdent(m[2]) };
+  }
+  if ((m = new RegExp(`^alter\\s+policy\\s+("[^"]+"|\\S+)\\s+on\\s+${QUALIFIED}(.*)$`, 'i').exec(s))) {
+    const out = { type: 'alter-policy', name: m[1].replace(/^"|"$/g, ''), table: parseIdent(m[2]) };
+    const rename = /^\s*rename\s+to\s+("[^"]+"|\S+)/i.exec(m[3]);
+    if (rename) return { ...out, rename: rename[1].replace(/^"|"$/g, '') };
+    const { roles, using, check } = policyClauses(m[3]);
+    if (roles) out.roles = roles;
+    if (using != null) out.using = using;
+    if (check != null) out.check = check;
+    return out;
+  }
+  if ((m = new RegExp(`^drop\\s+function\\s+(?:if\\s+exists\\s+)?${QUALIFIED}`, 'i').exec(s))) {
+    return { type: 'drop-function', name: parseIdent(m[1]).full };
+  }
+  if ((m = new RegExp(`^alter\\s+function\\s+${QUALIFIED}(.*)$`, 'i').exec(s))) {
+    const out = { type: 'alter-function', name: parseIdent(m[1]).full };
+    if (/\bset\s+search_path\b/i.test(m[2])) out.hasSearchPath = true;
+    if (/\breset\s+(?:search_path|all)\b/i.test(m[2])) out.hasSearchPath = false;
+    if (/\bsecurity\s+definer\b/i.test(m[2])) out.securityDefiner = true;
+    if (/\bsecurity\s+invoker\b/i.test(m[2])) out.securityDefiner = false;
+    return out;
+  }
+  if ((m = new RegExp(`^create\\s+(?:or\\s+replace\\s+)?(?:(?:temp|temporary)\\s+)?(?:recursive\\s+)?view\\s+(?:if\\s+not\\s+exists\\s+)?${QUALIFIED}(.*)$`, 'i').exec(s))) {
+    if (/^create\s+(?:or\s+replace\s+)?(?:temp|temporary)\s/i.test(s)) return null;
+    const rest = m[2];
+    const asAt = rest.search(/\bas\b/i);
+    const opts = asAt >= 0 ? rest.slice(0, asAt) : rest;
+    const body = asAt >= 0 ? rest.slice(asAt) : '';
+    const sources = [];
+    const re = new RegExp(`\\b(?:from|join)\\s+(?:only\\s+)?${QUALIFIED}`, 'gi');
+    let src;
+    while ((src = re.exec(body))) sources.push(parseIdent(src[1]).full);
+    return { type: 'view', view: parseIdent(m[1]), securityInvoker: INVOKER_ON.test(opts), sources };
+  }
+  if ((m = new RegExp(`^alter\\s+view\\s+(?:if\\s+exists\\s+)?${QUALIFIED}\\s+(.*)$`, 'i').exec(s))) {
+    if (INVOKER_ON.test(m[2])) return { type: 'alter-view', view: parseIdent(m[1]), securityInvoker: true };
+    if (/\bsecurity_invoker\s*=\s*(?:false|off|0)\b/i.test(m[2]) || /\breset\s*\([^)]*security_invoker/i.test(m[2])) {
+      return { type: 'alter-view', view: parseIdent(m[1]), securityInvoker: false };
+    }
+    return null;
+  }
+  if ((m = /^drop\s+view\s+(?:if\s+exists\s+)?(.*?)(?:\s+(?:cascade|restrict))?$/i.exec(s))) {
+    return { type: 'drop-view', views: splitTopLevel(m[1]).map((v) => parseIdent(v).full) };
+  }
+  if ((m = new RegExp(`^revoke\\s+(?:all|select)(?:\\s+privileges)?(?:\\s*,\\s*\\w+)*\\s+on\\s+(?:table\\s+)?${QUALIFIED}\\s+from\\s+(.*)$`, 'i').exec(s))) {
+    return { type: 'revoke', object: parseIdent(m[1]).full, roles: m[2].split(',').map((r) => r.trim().replace(/"/g, '').replace(/\s+cascade$/i, '').toLowerCase()) };
   }
   if ((m = new RegExp(`^create\\s+(?:or\\s+replace\\s+)?function\\s+${QUALIFIED}`, 'i').exec(s))) {
     // Look only outside the function body for the attributes.
@@ -188,9 +306,28 @@ export function parseStatement(sql) {
     return { type: 'bucket', buckets };
   }
   if ((m = /^update\s+storage\s*\.\s*buckets\s+set\s+(.*)$/i.exec(s))) {
-    const pub = /\bpublic\s*=\s*true\b/i.test(m[1]);
+    const [set, where = ''] = m[1].split(/\bwhere\b/i);
+    const pub = /\bpublic\s*=\s*(true|false)\b/i.exec(set);
+    if (!pub) return null;
+    const nameM = /\b(?:id|name)\s*=\s*'([^']+)'/i.exec(where);
+    return { type: 'bucket-update', name: nameM ? nameM[1] : where.trim() ? '(unknown)' : null, public: pub[1].toLowerCase() === 'true' };
+  }
+  if ((m = /^delete\s+from\s+storage\s*\.\s*buckets\b(.*)$/i.exec(s))) {
     const nameM = /\b(?:id|name)\s*=\s*'([^']+)'/i.exec(m[1]);
-    return { type: 'bucket', buckets: pub ? [{ name: nameM ? nameM[1] : '(unknown)', public: true }] : [] };
+    return nameM ? { type: 'bucket-delete', name: nameM[1] } : null;
   }
   return null;
+}
+
+const INVOKER_ON = /\bsecurity_invoker\s*(?:=\s*(?:true|on|1|'true'|'on')\b|(?=[,)]))/i;
+
+/** TO / USING / WITH CHECK clauses of CREATE or ALTER POLICY. */
+function policyClauses(rest) {
+  const toM = /\bto\s+([\w\s,"]+?)(?=\s+using\b|\s+with\s+check\b|$)/i.exec(rest);
+  const roles = toM ? toM[1].split(',').map((r) => r.trim().replace(/"/g, '').toLowerCase()).filter(Boolean) : null;
+  const usingM = /\busing\s*\(/i.exec(rest);
+  const using = usingM ? balancedParen(rest, usingM.index)?.inner ?? null : null;
+  const checkM = /\bwith\s+check\s*\(/i.exec(rest);
+  const check = checkM ? balancedParen(rest, checkM.index)?.inner ?? null : null;
+  return { roles, using, check };
 }

@@ -92,6 +92,30 @@ export const CATALOG = {
     why: '`using (true)` / `with check (true)` makes the policy match every row for every caller it applies to. For writes, any user (often anyone) can change or delete other people\'s data; for private tables, anyone can read all of it.',
     fix: 'Replace `true` with an ownership check such as `auth.uid() = user_id`, restrict the role with `to authenticated`, and use separate policies for reads and writes.',
   },
+  'supabase.policy-unrestricted': {
+    category: 'supabase', severity: 'high', effort: 'S',
+    title: 'RLS policy only checks that the caller is logged in',
+    why: 'A policy such as `using (auth.uid() is not null)` or `auth.role() = \'authenticated\'` does not tie rows to their owner. Anyone can sign up, so any user can change or delete every row (for writes) or read all of it (for private tables).',
+    fix: 'Compare the row to the caller, for example `using ((select auth.uid()) = user_id)` and the same `with check`, or check a role in a roles table for admin-only access. Test as a second ordinary user.',
+  },
+  'supabase.storage-policy-open': {
+    category: 'supabase', severity: 'high', effort: 'S',
+    title: 'Storage policy with no owner check',
+    why: 'A storage.objects policy that only tests `bucket_id` (or only that the caller is logged in) applies to every file in the bucket. Without `to authenticated` it also covers logged-out visitors. A private bucket only means there is no public URL; the Storage API still follows these policies.',
+    fix: 'Add `to authenticated` and an owner check, for example `bucket_id = \'documents\' and (storage.foldername(name))[1] = (select auth.uid())::text`, and upload files under a folder named after the user id.',
+  },
+  'supabase.view-bypasses-rls': {
+    category: 'supabase', severity: 'medium', effort: 'S',
+    title: 'View in the public schema bypasses RLS',
+    why: 'On Postgres 15 (Supabase), a view runs with its owner\'s rights unless it is created with `security_invoker = true`. The REST API exposes views in public, so the view returns rows that RLS would hide on the underlying tables. The Supabase security advisor reports this as an error (security_definer_view).',
+    fix: 'Recreate the view with `create view ... with (security_invoker = true) as ...` or run `alter view public.<view> set (security_invoker = true)`. If it must stay a definer view, move it out of the public schema or `revoke select on public.<view> from anon, authenticated`.',
+  },
+  'supabase.demo-service-role-key': {
+    category: 'supabase', severity: 'info', effort: 'S',
+    title: 'Supabase CLI demo service_role key (local development only)',
+    why: 'This is the published service_role key of the Supabase CLI local stack (issuer "supabase-demo"). It only works against a local Supabase, so it is not a leak. It is a problem only on a self-hosted Supabase that still uses the default JWT secret.',
+    fix: 'Nothing to do for local development. If the app talks to a self-hosted Supabase, confirm it uses its own JWT secret and keys.',
+  },
   'supabase.policy-anon-write': {
     category: 'supabase', severity: 'high', effort: 'S',
     title: 'RLS policy lets anonymous users write',
@@ -129,6 +153,12 @@ export const CATALOG = {
     title: 'Stripe webhook handler does not verify the signature',
     why: 'Without `stripe.webhooks.constructEvent`, anyone can POST a fake `checkout.session.completed` event to this URL and get paid features, credits or orders for free.',
     fix: 'Read the raw request body, call `stripe.webhooks.constructEvent(rawBody, signatureHeader, STRIPE_WEBHOOK_SECRET)` (use `constructEventAsync` in Deno / Edge runtimes), and return 400 when it throws.',
+  },
+  'stripe.webhook-optional-verification': {
+    category: 'stripe', severity: 'high', effort: 'S',
+    title: 'Stripe webhook skips signature verification in some cases',
+    why: 'The handler only verifies the signature when the signature header or secret is present, or falls back to parsing the body when verification fails. An attacker leaves out the stripe-signature header and posts a fake `checkout.session.completed` event to get paid features for free.',
+    fix: 'Always call `stripe.webhooks.constructEvent(rawBody, signatureHeader, STRIPE_WEBHOOK_SECRET)`. Return 400 when the header or secret is missing or verification throws, and remove the JSON.parse / req.json() fallback.',
   },
   'stripe.webhook-parsed-body': {
     category: 'stripe', severity: 'medium', effort: 'S',

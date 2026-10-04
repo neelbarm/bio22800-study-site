@@ -8,6 +8,8 @@
 **Provider:** [YOUR LEGAL NAME OR BUSINESS ENTITY], d/b/a ShipReady
 **Governing agreement:** Master Services Agreement dated [MSA DATE] (the "MSA"). Capitalized terms not defined here have the meaning in the MSA. If no MSA has been signed, the MSA template attached to this SOW applies by reference when Client accepts this SOW.
 
+**Standard version for self-serve purchases:** when this SOW is published on the website and linked from the Payment Link's terms, the SOW number is the Stripe payment reference, the Client is the person or business named at checkout, the MSA is the version published alongside it, and Section 1 is completed from the intake form and the access Client shares.
+
 ## 1. Application in scope
 
 | Item | Details |
@@ -43,20 +45,22 @@ Provider reviews only. Provider will not change code, data or configuration duri
 
 ## 4. Timeline
 
-Delivery within **48 hours** after the later of (a) payment and (b) Provider receiving all access listed in the onboarding checklist. Weekends and US federal holidays [are / are not] counted. If access is incomplete, Provider will notify Client within [12] hours and the clock starts when access is complete.
+Delivery within **48 hours** (or **24 hours** if the rush option in Section 5 is selected) after the later of (a) payment and (b) Provider receiving all access listed in the onboarding checklist. Weekends and US federal holidays [are / are not] counted. If access is incomplete, Provider will notify Client within [12] hours and the clock starts when access is complete.
 
 ## 5. Fees
 
 | Item | Amount |
 |---|---|
 | Ship-Ready Diagnosis (list) | $399 |
-| [OPTIONAL] Intro price for one of the first 3 clients, in exchange for a written testimonial Client approves | $199 |
-| **Fee for this SOW** | **$[399 / 199]** |
+| [OPTIONAL] Intro price for one of the first 3 clients, in exchange for an honest written testimonial | $199 |
+| [OPTIONAL] Rush: delivery within 24 hours instead of 48 (+50% of list) | $599 |
+| [OPTIONAL] Included in a Launch Readiness Package (fee is part of the package price in the Fix & Ship Sprint SOW) | $0 here |
+| **Fee for this SOW** | **$[399 / 199 / 599 / 0]** |
 
 - **Payment:** 100% in advance via Stripe Payment Link or invoice. Work starts after payment.
-- **Credit toward sprint:** the diagnosis fee is credited in full against a Fix & Ship Sprint SOW signed within [30] days of report delivery.
-- **Refund if nothing material found:** if the report contains no finding rated critical or high, and no more than [2] findings rated medium, Client may request a full refund within [7] days of delivery.
-- **Testimonial (intro price only):** Client will provide a short written testimonial within [14] days of delivery. Client approves the final wording and may choose to be anonymous (for example "Founder, B2B SaaS").
+- **Credit toward sprint:** the base diagnosis fee ($399 or $199; any rush fee is not credited) is credited in full against a Fix & Ship Sprint SOW signed within [30] days of report delivery. No credit applies under a Launch Readiness Package, which already includes the diagnosis.
+- **Refund if nothing material found:** "material" means at least one finding rated critical or high. If the report contains none, Provider refunds the fee in full (including any rush fee) within [7] days of delivery, without Client having to ask. Under a Launch Readiness Package, Provider instead refunds the full package deposit and the sprint is cancelled.
+- **Testimonial (intro price only):** Client will provide an honest short written testimonial, positive or not, within [14] days of delivery. Client approves the final wording and may choose to be anonymous (for example "Founder, B2B SaaS"). Wherever Provider publishes it, Provider will note that Client received a discounted diagnosis in exchange for feedback.
 
 ## 6. Acceptance
 
@@ -64,7 +68,7 @@ The diagnosis is complete and accepted when the report, Loom and quote are deliv
 
 ## 7. Client responsibilities
 
-- Provide repository read access (GitHub collaborator on the repo or a fork), Supabase access (read-only member role if the plan allows, or a staging project), and hosting dashboard access, as listed in the onboarding checklist.
+- Provide repository access (read access if the repo belongs to a GitHub organization; on a personal account GitHub only offers write access, which Provider will use read-only and never push to; or a zip export), Supabase access (Read-only role on Team or Enterprise plans; on Free or Pro, a staging project in a separate organization, or Client runs the review queries Provider sends), and hosting dashboard access, as listed in the onboarding checklist.
 - Share credentials only through a secure share link, never in chat or email.
 - Confirm Client owns, or is authorized to allow testing of, the app and all services in Section 1.
 - Do not share a Supabase service-role key or Stripe live secret key with Provider unless Provider specifically asks for it in writing and explains why.
@@ -79,7 +83,7 @@ This diagnosis is a time-boxed review of the code version and configuration as o
 
 ## Acceptance
 
-Client accepts this SOW by signing below, by confirming by email, or by paying the Payment Link that references this SOW number.
+Client accepts this SOW by signing below, by confirming by email, by paying the Payment Link that references this SOW number, or by accepting the terms at checkout on a Payment Link that links to the published standard version of this SOW.
 
 | | Provider | Client |
 |---|---|---|

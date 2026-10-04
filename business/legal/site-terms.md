@@ -14,7 +14,7 @@ You must be at least 18 years old and able to enter into a contract. If you use 
 
 ### What it does
 
-The Scan is an automated, passive check of a live web address you submit. It fetches the public web page and the public JavaScript files it loads and looks for common problems such as exposed secrets, exposed configuration files or source maps, and missing security headers. For apps backed by Supabase, it uses the public anon key found in the page to make a small number of read-only requests that check whether tables can be read by anonymous visitors. It never stores or shows row data. Our [Privacy Policy](/privacy) explains what information the Scan collects.
+The Scan is an automated, non-intrusive, read-only check of a live web address you submit. It fetches the public web page and the public JavaScript files it loads and looks for common problems such as exposed secrets and missing security headers. It also checks a few well-known paths (`/.env`, `/.git/config` and source map files) to see whether they are publicly downloadable. For apps backed by Supabase, it uses the public anon or publishable key found in the page to read the auth settings and the API's table list, then sends up to 15 HEAD requests per project asking only for row counts, to check whether tables can be read by anonymous visitors. It never downloads, stores or shows row data. Our [Privacy Policy](/privacy) explains what information the Scan collects.
 
 ### Authorization is required
 

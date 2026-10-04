@@ -3,3 +3,4 @@
 import './unit.test.mjs';
 import './audit.test.mjs';
 import './cli.test.mjs';
+import './regressions.test.mjs';
