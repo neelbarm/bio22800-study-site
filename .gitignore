@@ -1,2 +1,14 @@
 .DS_Store
 **/.DS_Store
+.vercel/
+dist/
+node_modules/
+.vercel
+.env*
+.next/
+next-env.d.ts
+*.tsbuildinfo
+shipready-audit/
+!.env.example
+leads/*.md
+!leads/README.md

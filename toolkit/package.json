@@ -1,0 +1,16 @@
+{
+  "name": "shipready-toolkit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dependency-free repo audit CLI for AI-built apps (React/Vite or Next.js + Supabase + Stripe + Vercel/Netlify).",
+  "type": "module",
+  "bin": {
+    "shipready-audit": "bin/shipready-audit.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
