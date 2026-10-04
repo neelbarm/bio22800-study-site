@@ -176,3 +176,17 @@ test('table exposure is tested from code-discovered names even when the API hide
   assert.ok(t, JSON.stringify(r.findings.map(f => f.id)))
   assert.match(t!.detail, /customers \(58 rows\)/)
 })
+
+test('admin auth: disabled without a strong password, 401 without credentials, allows correct password', async () => {
+  const { requireAdmin } = await import('../lib/adminauth.ts')
+  const req = (auth?: string) => new Request('https://x/admin/leads', { headers: auth ? { authorization: auth } : {} })
+  const prev = process.env.ADMIN_PASSWORD
+  delete process.env.ADMIN_PASSWORD
+  assert.equal(requireAdmin(req())?.status, 503)
+  process.env.ADMIN_PASSWORD = 'correct horse battery'
+  assert.equal(requireAdmin(req())?.status, 401)
+  assert.equal(requireAdmin(req('Basic ' + Buffer.from('a:wrong password!!').toString('base64')))?.status, 401)
+  assert.equal(requireAdmin(req('Basic ' + Buffer.from('anyone:correct horse battery').toString('base64'))), null)
+  if (prev === undefined) delete process.env.ADMIN_PASSWORD
+  else process.env.ADMIN_PASSWORD = prev
+})

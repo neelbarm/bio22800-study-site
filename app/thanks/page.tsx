@@ -27,7 +27,7 @@ export default function ThanksPage() {
         ))}
       </ol>
       <p className="muted" style={{ marginTop: 24 }}>
-        Questions? Email <a href={`mailto:${config.contactEmail}`}>{config.contactEmail}</a>. <Link href="/">Back to home</Link>
+        {config.contactEmail ? <>Questions? Email <a href={`mailto:${config.contactEmail}`}>{config.contactEmail}</a>. </> : <>Questions? Reply to your Stripe receipt email and we’ll get it. </>}<Link href="/">Back to home</Link>
       </p>
     </div>
   )

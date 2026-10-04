@@ -44,7 +44,7 @@ export default async function DiagnosisPage({ searchParams }: { searchParams: SP
           successText={
             payments.length
               ? 'Pay below to reserve your slot. The 48-hour clock starts once we have payment and access to your code. You will get an email with access instructions right away.'
-              : `We'll reply within one business day with a payment link and access instructions. If anything is urgent, email ${config.contactEmail}.`
+              : `We'll reply within one business day with a payment link and access instructions. ${config.contactEmail ? `If anything is urgent, email ${config.contactEmail}.` : ''}`
           }
           payments={payments}
           fields={[

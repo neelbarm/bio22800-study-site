@@ -2,5 +2,5 @@ import type { MetadataRoute } from 'next'
 import { config } from '@/lib/config.ts'
 
 export default function robots(): MetadataRoute.Robots {
-  return { rules: [{ userAgent: '*', allow: '/', disallow: ['/api/', '/thanks'] }], sitemap: `${config.siteUrl}/sitemap.xml` }
+  return { rules: [{ userAgent: '*', allow: '/', disallow: ['/api/', '/thanks', '/admin/'] }], sitemap: `${config.siteUrl}/sitemap.xml` }
 }

@@ -1,7 +1,10 @@
+import { saveLead } from './leadstore.ts'
+
 /**
  * Delivers a lead (form submission or scan) to you. Uses whatever is configured:
  * - LEADS_WEBHOOK_URL: posts JSON (works with Slack/Discord incoming webhooks, Zapier, Make, n8n)
  * - RESEND_API_KEY + LEADS_TO_EMAIL (+ LEADS_FROM_EMAIL): sends you an email
+ * - A private Vercel Blob store, if connected: every lead is saved and listed at /admin/leads
  * Always logs to the server console (visible in Vercel logs) as a fallback.
  */
 export interface Lead {
@@ -24,6 +27,7 @@ export async function deliverLead(lead: Lead): Promise<{ delivered: string[] }> 
   ].filter(Boolean)
   const text = lines.join('\n')
   console.log('[lead]', JSON.stringify({ ...lead, at: new Date().toISOString() }))
+  if (await saveLead(lead)) delivered.push('store')
 
   const hook = process.env.LEADS_WEBHOOK_URL
   if (hook) {

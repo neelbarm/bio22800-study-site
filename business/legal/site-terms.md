@@ -77,7 +77,7 @@ We may change or stop the Site or Scan at any time. We may update these terms; t
 
 ## 12. Governing law
 
-These terms are governed by the laws of the State of [STATE], without regard to conflict-of-laws rules. Disputes will be resolved in the state or federal courts located in [COUNTY], [STATE], and you consent to their jurisdiction.
+These terms are governed by the laws of [GOVERNING LAW], without regard to conflict-of-laws rules. Disputes will be resolved in the state or federal courts located in [VENUE], and you consent to their jurisdiction.
 
 ## 13. General
 

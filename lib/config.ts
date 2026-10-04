@@ -8,8 +8,17 @@ export const config = {
   brand: env('NEXT_PUBLIC_BRAND_NAME', 'ShipReady'),
   tagline: 'Your AI-built app, made safe to launch.',
   siteUrl: env('NEXT_PUBLIC_SITE_URL', 'http://localhost:3000').replace(/\/$/, ''),
-  contactEmail: env('NEXT_PUBLIC_CONTACT_EMAIL', 'hello@example.com'),
+  /** Empty until you set it; the site then points people to the forms instead of showing an address. */
+  contactEmail: env('NEXT_PUBLIC_CONTACT_EMAIL'),
   calUrl: env('NEXT_PUBLIC_CAL_URL'),
+  /** Shown in the privacy policy and terms. Set these before you take real payments. */
+  legal: {
+    name: env('NEXT_PUBLIC_LEGAL_NAME'),
+    address: env('NEXT_PUBLIC_LEGAL_ADDRESS'),
+    location: env('NEXT_PUBLIC_LEGAL_LOCATION', 'the United States'),
+    state: env('NEXT_PUBLIC_LEGAL_STATE'),
+    county: env('NEXT_PUBLIC_LEGAL_COUNTY'),
+  },
   stripe: {
     diagnosis: env('NEXT_PUBLIC_STRIPE_LINK_DIAGNOSIS'),
     diagnosisIntro: env('NEXT_PUBLIC_STRIPE_LINK_DIAGNOSIS_INTRO'),

@@ -51,7 +51,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="site-footer">
           <div className="wrap">
             <span>
-              © {new Date().getFullYear()} {config.brand}. Questions: <a href={`mailto:${config.contactEmail}`}>{config.contactEmail}</a>
+              © {new Date().getFullYear()} {config.brand}.{' '}
+              {config.contactEmail ? <>Questions: <a href={`mailto:${config.contactEmail}`}>{config.contactEmail}</a></> : <>Questions? <Link href="/diagnosis">Send us a note</Link>.</>}
             </span>
             <nav aria-label="Footer">
               <Link href="/scan">Free scan</Link>

@@ -4,7 +4,7 @@
 
 Last updated: October 2026
 
-This policy explains what information ShipReady ("we", "us") collects through our website at [SITE URL] (the "Site") and our free Ship-Ready Scan (the "Scan"), how we use it, and the choices you have. ShipReady is operated by [BUSINESS LEGAL NAME], based in [CITY, STATE], United States. If you have questions, email us at [CONTACT EMAIL].
+This policy explains what information ShipReady ("we", "us") collects through our website at [SITE URL] (the "Site") and our free Ship-Ready Scan (the "Scan"), how we use it, and the choices you have. ShipReady is operated by [BUSINESS LEGAL NAME], based in [CITY, STATE]. If you have questions, email us at [CONTACT EMAIL].
 
 This policy covers the Site and the Scan. Paid engagements are also covered by the confidentiality and data protection terms of our client agreements.
 
@@ -34,7 +34,7 @@ The Scan is passive and minimal. It does not log in, submit forms, write, change
 
 ### Information collected automatically
 
-Like most websites, our hosting provider records basic technical information when you visit, such as IP address, browser type, pages requested and timestamps. We use this to run the Site, keep it secure, and prevent abuse of the Scan (for example rate limiting). [IF YOU ADD ANALYTICS: We use [ANALYTICS PROVIDER] to understand how visitors use the Site. It [does / does not] use cookies.] We do not use advertising cookies or sell data to advertisers.
+Like most websites, our hosting provider records basic technical information when you visit, such as IP address, browser type, pages requested and timestamps. We use this to run the Site, keep it secure, and prevent abuse of the Scan (for example rate limiting). We do not use analytics, tracking or advertising cookies, and we do not sell data to advertisers.
 
 ### Payments
 
@@ -62,18 +62,17 @@ We share information only with providers that help us run the Site, under their 
 | Vercel | Hosts the Site and the Scan; processes server logs |
 | Stripe | Processes payments |
 | Resend (if configured) | Sends emails such as scan reports and form confirmations |
-| [OPTIONAL: lead notification tool, e.g. Slack, Discord or Zapier] | Notifies us when you submit a form |
-| [OPTIONAL: booking tool, e.g. Cal.com] | Lets you book a call |
-| [OPTIONAL: analytics provider] | Site usage statistics |
+| Vercel Blob | Stores form submissions and scan summaries privately so we can follow up |
+| Slack, Discord or Zapier (if configured) | Notifies us when you submit a form or run a scan |
 
 We may also disclose information if required by law, to protect our rights or the safety of others, or as part of a sale or reorganization of the business (in which case this policy will continue to apply to your information). **We do not sell your personal information** and do not share it for cross-context behavioral advertising.
 
 ## How long we keep information
 
-- Form submissions and enquiries: up to [24] months after our last contact, unless you become a client.
-- Scan records (the URL scanned, time, and the types of issues found, never row data or full secrets): up to [90] days, to deliver results and prevent abuse. [ADJUST TO MATCH WHAT THE SCAN ACTUALLY STORES.]
+- Form submissions and enquiries: up to 24 months after our last contact, unless you become a client.
+- Scan records (the URL scanned, the time, the score and the titles of issues found, plus your email if you entered one; never row data or full secrets): up to 90 days, to follow up if you asked us to and to prevent abuse.
 - Server logs: kept by our hosting provider according to its retention settings.
-- Client and payment records: as long as needed for tax and legal purposes (usually up to [7] years).
+- Client and payment records: as long as needed for tax and legal purposes (usually up to 7 years).
 
 ## Security
 
@@ -81,7 +80,7 @@ We use reasonable measures to protect information, including encryption in trans
 
 ## Your choices and rights
 
-You can ask us to access, correct or delete the personal information we hold about you, or to stop sending you emails, by writing to [CONTACT EMAIL]. We will respond within [30] days. Depending on where you live (for example California or other US states with privacy laws, or the EEA/UK), you may have additional rights, including the right to know what we collect, to opt out of sale or sharing (we do neither), and not to be discriminated against for using your rights. We will verify your request using the email address you used with us.
+You can ask us to access, correct or delete the personal information we hold about you, or to stop sending you emails, by writing to [CONTACT EMAIL]. We will respond within 30 days. Depending on where you live (for example California or other US states with privacy laws, or the EEA/UK), you may have additional rights, including the right to know what we collect, to opt out of sale or sharing (we do neither), and not to be discriminated against for using your rights. We will verify your request using the email address you used with us.
 
 If you are in the EEA or UK, we process your information to respond to your requests and provide services you ask for (contract), for our legitimate interests in running and securing the Site, and with your consent where required. You may complain to your local data protection authority. Our servers and providers are in the United States.
 

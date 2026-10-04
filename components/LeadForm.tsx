@@ -55,7 +55,7 @@ export default function LeadForm({
       setSubmitted({ email: body.email || '', ref: data.ref || '' })
       setState('done')
     } catch {
-      setError(`Could not send the form. Please email ${contactEmail} instead.`)
+      setError(contactEmail ? `Could not send the form. Please email ${contactEmail} instead.` : 'Could not send the form. Please try again in a minute.')
       setState('idle')
     }
   }
@@ -80,7 +80,7 @@ export default function LeadForm({
             })}
           </div>
         )}
-        <p className="note">Reference: <span className="mono">{submitted.ref}</span>. Questions? <a href={`mailto:${contactEmail}`}>{contactEmail}</a></p>
+        <p className="note">Reference: <span className="mono">{submitted.ref}</span>.{contactEmail && <> Questions? <a href={`mailto:${contactEmail}`}>{contactEmail}</a></>}</p>
       </div>
     )
   }
