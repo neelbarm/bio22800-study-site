@@ -2,6 +2,7 @@ import dns from 'node:dns'
 import { lookup } from 'node:dns/promises'
 import { isIP } from 'node:net'
 import { Agent, fetch as undiciFetch } from 'undici'
+import { getDomain } from 'tldts'
 
 export class ScanBlockedError extends Error {}
 
@@ -47,6 +48,11 @@ export function normalizeTarget(raw: string): URL {
 /** Hostname for keying limits and comparisons: lower case, no IPv6 brackets, no trailing dots. */
 export function targetHost(u: URL): string {
   return u.hostname.toLowerCase().replace(/^\[|\]$/g, '').replace(/\.+$/, '')
+}
+
+/** Registrable domain for per-site limits, so a.victim.com and b.victim.com share one; the host itself for IPs and suffixes. */
+export function targetSite(host: string): string {
+  return getDomain(host, { allowPrivateDomains: true }) || host
 }
 
 function withTimeout<T>(p: Promise<T>, ms: number, err: () => Error): Promise<T> {

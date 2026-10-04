@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/seo.ts'
 import ScanClient from '@/components/ScanClient.tsx'
 import { config } from '@/lib/config.ts'
 
 export const metadata: Metadata = {
   title: 'Free security scan for Lovable, Bolt and Supabase apps',
   description: 'Check in 60 seconds whether your AI-built app leaks API keys, exposes database tables or ships source maps. Free, no signup.',
+  ...pageMeta('/scan'),
 }
 
 export default function ScanPage() {

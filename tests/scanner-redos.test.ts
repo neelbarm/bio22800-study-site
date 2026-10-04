@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { extractPageLinks, extractScripts, findSecrets, findSupabase } from '../lib/scanner/analyze.ts'
+import { collectSupabase, extractPageLinks, extractScripts, findSecrets, findSupabase } from '../lib/scanner/analyze.ts'
 
 // The scanner runs regexes over attacker-controlled bodies: the page (up to 3 MB) and each chunk
 // (up to 5 MB, 25 of them). Several regexes backtrack quadratically, and regex execution is synchronous,
@@ -68,4 +68,45 @@ test('3 MB hostile bodies stay within budget', () => {
     const ms = timed(fn)
     assert.ok(ms < 1000, `${name}: ${Math.round(ms)} ms on 3 MB`)
   }
+})
+
+// collectSupabase did quadratic non-regex work: a linear search over every project URL and over every key
+// already stored, with no cap. 60k distinct sb_publishable_ keys (2.5 MB) took 80 s.
+
+const b64url = (o: object) => Buffer.from(JSON.stringify(o)).toString('base64url')
+const distinct = (i: number, width = 26) => i.toString(36).padStart(width, '0')
+
+test('collectSupabase stays linear on tens of thousands of distinct publishable keys', () => {
+  const keys = Array.from({ length: 60_000 }, (_, i) => `"${'sb_' + 'publishable_' + distinct(i)}"`).join(',') // ~2.5 MB
+  let refs: ReturnType<typeof collectSupabase> = []
+  const ms = timed(() => (refs = collectSupabase([{ text: keys, where: 'x' }])))
+  assert.ok(ms < 1000, `collectSupabase took ${Math.round(ms)} ms on 60k distinct keys`)
+  const total = refs.reduce((n, r) => n + r.keys.length, 0)
+  assert.ok(total > 0 && total <= 100, `kept ${total} keys`)
+})
+
+test('collectSupabase stays linear on forged no-ref iss:supabase JWTs', () => {
+  const head = b64url({ alg: 'HS256', typ: 'JWT' })
+  const jwts = Array.from({ length: 20_000 }, (_, i) => `"${head}.${b64url({ iss: 'supabase', role: 'anon', n: i })}.${'s'.repeat(20)}"`).join(',')
+  const ms = timed(() => collectSupabase([{ text: `createClient("https://abcdefghijklmnopqrst.supabase.co",x);` + jwts, where: 'x' }]))
+  assert.ok(ms < 1000, `collectSupabase took ${Math.round(ms)} ms on 20k forged JWTs`)
+})
+
+test('collectSupabase stays linear on tens of thousands of distinct project URLs, with keys between them', () => {
+  const parts: string[] = []
+  for (let i = 0; i < 20_000; i++) parts.push(`"https://p${distinct(i, 12)}.supabase.co"`, i % 10 === 0 ? `"${'sb_' + 'publishable_' + distinct(i)}"` : '')
+  let refs: ReturnType<typeof collectSupabase> = []
+  const ms = timed(() => (refs = collectSupabase([{ text: parts.join(','), where: 'x' }, { text: parts.join(';'), where: 'y' }])))
+  assert.ok(ms < 1000, `collectSupabase took ${Math.round(ms)} ms on 20k distinct URLs`)
+  assert.ok(refs.filter(r => r.url).length <= 50, `kept ${refs.length} project URLs`)
+  for (const r of refs) assert.ok(r.keys.length <= 20, `${r.url} kept ${r.keys.length} keys`)
+})
+
+test('the same key repeated many times is paired once and still found', () => {
+  const key = 'sb_' + 'publishable_' + distinct(7)
+  const text = `createClient("https://abcdefghijklmnopqrst.supabase.co","${key}");` + `k="${key}";`.repeat(100_000)
+  let refs: ReturnType<typeof collectSupabase> = []
+  const ms = timed(() => (refs = collectSupabase([{ text, where: 'x' }])))
+  assert.ok(ms < 1000, `took ${Math.round(ms)} ms`)
+  assert.deepEqual(refs.map(r => [r.url, r.keys.length]), [['https://abcdefghijklmnopqrst.supabase.co', 1]])
 })

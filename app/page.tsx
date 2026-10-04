@@ -1,5 +1,9 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { PRICES, config, usd } from '@/lib/config.ts'
+import { pageMeta } from '@/lib/seo.ts'
+
+export const metadata: Metadata = pageMeta('/')
 
 const ISSUES = [
   {
@@ -114,7 +118,7 @@ export default function Home() {
           {[
             ['01', 'Free scan', '60 seconds', 'Paste your live URL. See what your site exposes to anyone, ranked by severity.'],
             ['02', 'Diagnosis', `${usd(PRICES.diagnosis)} · 48 hours`, 'An engineer reviews your code, database policies, auth and payments. You get a written report, a video walkthrough and a fixed quote. The fee is credited to the fix.'],
-            ['03', 'Fix & Ship sprint', `from ${usd(PRICES.sprint[0].price)} · 5–10 days`, `We fix what we found and add tests that catch regressions, with preview deploys for review and a production deploy on ${PRICES.sprint[1].name} and up.`],
+            ['03', 'Fix & Ship sprint', `from ${usd(PRICES.sprint[0].price)} · 5–10 days`, `We fix what we found and add tests that catch regressions. Every sprint has preview deploys for review; the production deploy is included from ${PRICES.sprint[1].name} (not in ${PRICES.sprint[0].name}).`],
             ['04', 'Keep it healthy', `from ${usd(PRICES.retainer[0].price)}/mo`, 'Updates, monitoring and small changes every month, so new prompts and new features don’t undo the work. Re-fixes after builder re-prompts are covered.'],
           ].map(([n, t, p, b]) => (
             <article className="card step" key={n}>
@@ -151,7 +155,7 @@ export default function Home() {
             <Link href="/diagnosis" className="btn btn-primary">Book the diagnosis</Link>
             {config.introAvailable && (
               <p className="note">
-                Founding offer: {usd(PRICES.diagnosisIntro)} for {config.introSpotsLeft} more client{config.introSpotsLeft > 1 ? 's' : ''} in exchange for a short testimonial.
+                Founding offer: {usd(PRICES.diagnosisIntro)} for {config.introSpotsLeft} more client{config.introSpotsLeft > 1 ? 's' : ''} in exchange for an honest testimonial, positive or not.
               </p>
             )}
           </article>

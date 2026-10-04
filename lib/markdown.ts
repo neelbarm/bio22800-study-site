@@ -3,15 +3,18 @@ import path from 'node:path'
 import { marked } from 'marked'
 import { config } from './config.ts'
 
-/** Reads a Markdown file from the business/ folder at build time and returns HTML. Replaces [BRAND], [SITE_URL] and [CONTACT_EMAIL]. */
-export async function renderMarkdownFile(rel: string): Promise<string> {
+/**
+ * Reads a Markdown file from the business/ folder at build time and returns HTML. Replaces [BRAND], [SITE_URL] and
+ * [CONTACT_EMAIL]; `transform` runs first (for example to fill an agreement's own placeholders).
+ */
+export async function renderMarkdownFile(rel: string, transform: (md: string) => string = md => md): Promise<string> {
   let md: string
   try {
     md = await readFile(path.join(process.cwd(), 'business', rel.replace(/^business\//, '')), 'utf8')
   } catch {
     return `<p>This page is being updated. ${config.contactEmail ? `Email <a href="mailto:${config.contactEmail}">${config.contactEmail}</a> with any questions.` : 'Use the contact form on this site with any questions.'}</p>`
   }
-  return renderMarkdownString(md)
+  return renderMarkdownString(transform(md))
 }
 
 /** Renders trusted Markdown from this repo to HTML, filling brand, URL, contact and legal placeholders. */

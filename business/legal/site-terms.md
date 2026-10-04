@@ -43,7 +43,7 @@ We may suspend or block access, without notice, to anyone who breaks these rules
 
 ## 4. Paid services
 
-Paid services (for example the Ship-Ready Diagnosis, Fix & Ship Sprint and retainers) are governed by a separate Master Services Agreement and statement of work, which control if they conflict with these terms. Prices on the Site may change, and the price you pay is the one shown at checkout or in your statement of work.
+Paid services (for example the Ship-Ready Diagnosis, Fix & Ship Sprint and retainers) are governed by our separate [Master Services Agreement]([SITE URL]/legal/service-agreement) and the statement of work for the service (for the diagnosis, the [Ship-Ready Diagnosis terms]([SITE URL]/legal/diagnosis-terms)), which control if they conflict with these terms. Paying for a service means you accept them. Prices on the Site may change, and the price you pay is the one shown at checkout or in your statement of work.
 
 Payments are processed by Stripe under Stripe's terms. Refunds follow the terms of the service you buy; for example, the Ship-Ready Diagnosis is refunded if we find nothing material, as described in its statement of work. For anything else, contact us at [CONTACT EMAIL].
 

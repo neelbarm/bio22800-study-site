@@ -6,6 +6,8 @@ import { safeFetch } from '../lib/scanner/net.ts'
 import { scanUrl } from '../lib/scanner/scan.ts'
 
 // Real HTTP round trip against local servers: a vulnerable Vite-style app and a mock Supabase API.
+// The mock still serves the OpenAPI listing to the anon key, like an older self-hosted Supabase/PostgREST
+// (hosted Supabase stopped doing that in April 2025), so table names and RPCs come from the listing here.
 const b64 = (o: object) => Buffer.from(JSON.stringify(o)).toString('base64url')
 const REF = 'zyxwvutsrqponmlkjihg'
 const ANON = `${b64({ alg: 'HS256' })}.${b64({ iss: 'supabase', ref: REF, role: 'anon' })}.${'a'.repeat(43)}`
@@ -55,6 +57,10 @@ test('scan over real HTTP with redirects, chunks, HEAD counts and size caps', as
   const tableReqs = seen.filter(x => /\/rest\/v1\/\w/.test(x.url))
   assert.ok(tableReqs.length === 2 && tableReqs.every(x => x.method === 'HEAD'))
   assert.ok(r.passed.some(p => /Email confirmation/.test(p)))
+  // The open listing is itself a (low) finding, and its RPCs are reported as functions callable from the browser.
+  const schema = r.findings.find(f => f.id === 'supabase-schema-public')
+  assert.equal(schema?.severity, 'low')
+  assert.ok(r.notes.some(n => /database functions directly from the browser: x\b/.test(n)), r.notes.join(' / '))
 })
 
 test('safeFetch blocks private targets without the test flag', async () => {

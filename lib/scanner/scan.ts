@@ -11,6 +11,7 @@ import {
   isLikelyPublicTable,
   isSensitiveTable,
   isSupabaseProjectUrl,
+  sameSite,
   rpcFromCode,
   rpcFromOpenApi,
   scoreFindings,
@@ -33,6 +34,8 @@ export interface ScanOptions {
   /** Inject a fetcher for tests. */
   fetcher?: typeof safeFetch
   deadlineMs?: number
+  /** Called once the target has passed validation (public address), before the first request. Throw to stop the scan. */
+  onStart?: (normalizedUrl: string) => void | Promise<void>
   /** Called with the final page URL (after redirects) before anything else is fetched. Throw to stop the scan. */
   onFinalUrl?: (finalUrl: string) => void | Promise<void>
 }
@@ -55,6 +58,7 @@ export async function scanUrl(rawUrl: string, opts: ScanOptions = {}): Promise<S
     throw new ScanBlockedError('That does not look like a valid URL.')
   }
   if (!opts.fetcher) await assertPublicUrl(normalized)
+  await opts.onStart?.(normalized)
 
   const page = await get(normalized, { timeoutMs: 10_000 })
   if (page.status >= 400) throw new Error(`The site returned HTTP ${page.status}. Make sure the URL is public and try again.`)
@@ -211,8 +215,15 @@ export async function scanUrl(rawUrl: string, opts: ScanOptions = {}): Promise<S
 
   const publicKeys = (r: SupabaseRef) => r.keys.filter(k => k.kind === 'anon' || k.kind === 'publishable')
   if (supa.some(r => r.keys.length) && !backendAll.includes('Supabase')) backendAll.push('Supabase')
+  // A custom-domain origin is only a guess from a string next to the key, so it is contacted only when it belongs
+  // to the scanned site (api.<site>, db.<site>); anything else may be an unrelated third party.
+  const siteHost = new URL(finalUrl).hostname
+  const offSite = supa.filter(r => r.unverified && r.url && !sameSite(new URL(r.url).hostname, siteHost) && publicKeys(r).length)
+  for (const r of offSite.slice(0, 2)) {
+    notes.push(`Found a Supabase public key next to ${new URL(r.url).host}, which is not part of the scanned site, so it was not contacted. If that is your Supabase custom domain, the diagnosis checks it directly.`)
+  }
   const projects = supa
-    .filter(r => r.url && !r.storageOnly && (isSupabaseProjectUrl(r.url) || r.unverified))
+    .filter(r => r.url && !r.storageOnly && (isSupabaseProjectUrl(r.url) || (r.unverified && !offSite.includes(r))))
     .sort((a, b) => Number(publicKeys(b).length > 0) - Number(publicKeys(a).length > 0))
   const supabaseSeen = projects.length > 0 || backendAll.includes('Supabase')
   const rpcNames = new Set(supabaseSeen ? bodies.flatMap(b => rpcFromCode(b.text)) : [])
@@ -231,7 +242,7 @@ export async function scanUrl(rawUrl: string, opts: ScanOptions = {}): Promise<S
       }
       await probeSupabase({ projectUrl: ref.url, host, keys: keys.map(k => k.value), unverified: !!ref.unverified, get, findings, passed, notes, deadline, codeTables, rpcNames })
     }
-  } else if (supa.some(r => publicKeys(r).length)) {
+  } else if (!offSite.length && supa.some(r => publicKeys(r).length)) {
     notes.push("Found a Supabase public key, but could not identify which project URL it belongs to, so the database exposure check was skipped.")
   } else if (backendAll.includes('Supabase')) {
     notes.push('Supabase is referenced but the project URL was not found in the scanned files.')

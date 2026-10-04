@@ -78,7 +78,7 @@ export const PRICES = {
   diagnosis: 399,
   diagnosisIntro: 199,
   sprint: [
-    { name: 'Fix & Ship 5', price: 1500, items: ['Up to 5 issues from your diagnosis', 'Tests for every fixed path', 'One reviewed pull request per issue', 'Handover notes'] },
+    { name: 'Fix & Ship 5', price: 1500, items: ['Up to 5 issues from your diagnosis', 'Tests for every fixed path', 'One reviewed pull request per issue', 'Preview deploys for review (you deploy to production)', 'Handover notes'] },
     { name: 'Fix & Ship 10', price: 2500, items: ['Up to 10 issues', 'Everything in Fix & Ship 5', 'Production deploy on Vercel or Netlify', 'Error monitoring set up'] },
     { name: 'Rebuild-grade', price: 4000, items: ['Payments, auth rebuild or multi-tenant work', 'Everything in Fix & Ship 10', 'Database policy migration with rollback', 'Load and abuse checks'] },
   ],

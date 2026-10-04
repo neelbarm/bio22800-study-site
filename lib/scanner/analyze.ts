@@ -214,11 +214,17 @@ interface UrlHit {
   storage: boolean
 }
 
+/** Bounds on what one scan collects, so a hostile page full of distinct URLs or keys stays linear. */
+const MAX_URL_HITS_PER_BODY = 1000
+const MAX_SUPABASE_URLS = 50
+const MAX_KEYS_PER_PROJECT = 20
+const MAX_SUPABASE_KEYS = 100
+
 function supabaseUrlsIn(text: string): UrlHit[] {
   const out: UrlHit[] = []
   SUPA_URL_RE.lastIndex = 0
   let m: RegExpExecArray | null
-  while ((m = SUPA_URL_RE.exec(text))) {
+  while (out.length < MAX_URL_HITS_PER_BODY && (m = SUPA_URL_RE.exec(text))) {
     const end = m.index + m[0].length
     out.push({ url: `https://${m[1]}.supabase.co`, index: m.index, storage: /^\/storage\/v1\/(?:object|render)\//.test(text.slice(end, end + 40)) })
   }
@@ -231,45 +237,88 @@ function supabaseUrlsIn(text: string): UrlHit[] {
  * Keys without a project ref are paired, in order, with: the nearest project URL in the same file; a custom
  * API origin passed right next to the key (createClient("https://db.example.com", key)); the only project
  * on the site; or, when there are several, every project as a candidate.
+ * Work is linear in the input: URLs and keys are deduplicated with a Map and Sets, and capped per project and
+ * in total (a real app has a handful), after which matching stops.
  */
 export function collectSupabase(bodies: { text: string; where: string }[], acc: SupabaseRef[] = []): SupabaseRef[] {
-  const perBody = bodies.map(b => supabaseUrlsIn(b.text))
-  const ensure = (url: string): SupabaseRef => {
-    let r = acc.find(x => x.url === url)
+  type Key = SupabaseRef['keys'][number]
+  const byUrl = new Map<string, SupabaseRef>()
+  const keysOf = new Map<SupabaseRef, Set<string>>()
+  const seenKeys = new Set<string>()
+  for (const r of acc) {
+    if (r.url && !byUrl.has(r.url)) byUrl.set(r.url, r)
+    keysOf.set(r, new Set(r.keys.map(k => k.value)))
+    for (const k of r.keys) seenKeys.add(k.value)
+  }
+  /** The entry for a URL, or null once MAX_SUPABASE_URLS distinct URLs are known. */
+  const ensure = (url: string): SupabaseRef | null => {
+    let r = byUrl.get(url)
     if (!r) {
+      if (byUrl.size >= MAX_SUPABASE_URLS) return null
       r = { url, keys: [], storageOnly: true }
       acc.push(r)
+      byUrl.set(url, r)
+      keysOf.set(r, new Set())
     }
     return r
   }
-  for (const hits of perBody) for (const h of hits) {
-    const r = ensure(h.url)
-    if (!h.storage) r.storageOnly = false
+  const perBody = bodies.map(b =>
+    supabaseUrlsIn(b.text).filter(h => {
+      const r = ensure(h.url)
+      if (r && !h.storage) r.storageOnly = false
+      return !!r
+    }),
+  )
+  const add = (r: SupabaseRef, key: Key) => {
+    const set = keysOf.get(r)!
+    if (set.has(key.value) || set.size >= MAX_KEYS_PER_PROJECT) return
+    set.add(key.value)
+    r.keys.push(key)
   }
-  const add = (r: SupabaseRef, key: SupabaseRef['keys'][number]) => {
-    if (!r.keys.some(k => k.value === key.value)) r.keys.push(key)
+  /** A non-supabase.co API origin found next to a key (custom domain); null if invalid or over the URL cap. */
+  const customOrigin = (raw: string): SupabaseRef | null => {
+    let u: URL
+    try {
+      u = new URL(raw)
+    } catch {
+      return null
+    }
+    if (/\.supabase\.(?:co|in)$/.test(u.hostname)) return null
+    const r = ensure(u.origin)
+    if (!r) return null
+    r.storageOnly = false
+    r.unverified = true
+    return r
   }
 
-  bodies.forEach((b, bi) => {
+  for (let bi = 0; bi < bodies.length && seenKeys.size < MAX_SUPABASE_KEYS; bi++) {
+    const b = bodies[bi]
     const text = b.text
     const apiHits = perBody[bi].filter(h => !h.storage)
-    const pair = (key: SupabaseRef['keys'][number], index: number) => {
+    /** Each distinct key is paired once per body; new keys stop being accepted at MAX_SUPABASE_KEYS. */
+    const handled = new Set<string>()
+    const admit = (value: string): boolean => {
+      if (handled.has(value)) return false
+      if (!seenKeys.has(value) && seenKeys.size >= MAX_SUPABASE_KEYS) return false
+      handled.add(value)
+      seenKeys.add(value)
+      return true
+    }
+    const pair = (key: Key, index: number) => {
       // (a) nearest project URL in the same file: just before the key (createClient(url, key)), else after it.
       if (apiHits.length) {
-        const before = apiHits.filter(h => h.index < index)
-        const near = before.length && index - before[before.length - 1].index <= 2000 ? before[before.length - 1] : apiHits.find(h => h.index > index) ?? before[before.length - 1]
-        return add(ensure(near.url), key)
+        let last = -1
+        while (last + 1 < apiHits.length && apiHits[last + 1].index < index) last++
+        const before = last >= 0 ? apiHits[last] : undefined
+        const near = before && index - before.index <= 2000 ? before : apiHits[last + 1] ?? before!
+        return add(byUrl.get(near.url)!, key)
       }
       // (b) a custom-domain API origin passed as the argument right before the key.
       if (key.kind === 'publishable' || key.kind === 'anon') {
         const lead = text.slice(Math.max(0, index - 300), index)
         const call = /["'`](https:\/\/[a-z0-9.-]+(?::443)?)\/?["'`]\s*,\s*["'`]$/.exec(lead)
-        if (call && !/\.supabase\.(?:co|in)$/.test(new URL(call[1]).hostname)) {
-          const r = ensure(new URL(call[1]).origin)
-          r.storageOnly = false
-          r.unverified = true
-          return add(r, key)
-        }
+        const r = call ? customOrigin(call[1]) : null
+        if (r) return add(r, key)
       }
       const projects = acc.filter(r => r.url && !r.storageOnly && !r.unverified)
       // (c) the only project on the site.
@@ -281,42 +330,42 @@ export function collectSupabase(bodies: { text: string; where: string }[], acc: 
         const lead = text.slice(Math.max(0, index - 400), index)
         const lits = [...lead.matchAll(/["'`](https:\/\/[a-z0-9.-]+)(?::443)?\/?["'`]/g)]
         if (lits.length) {
-          const r = ensure(new URL(lits[lits.length - 1][1]).origin)
-          r.storageOnly = false
-          r.unverified = true
-          return add(r, key)
+          const r = customOrigin(lits[lits.length - 1][1])
+          if (r) return add(r, key)
         }
       }
       let orphan = acc.find(r => !r.url)
       if (!orphan) {
         orphan = { url: '', keys: [] }
         acc.push(orphan)
+        keysOf.set(orphan, new Set())
       }
       add(orphan, key)
     }
 
     let m: RegExpExecArray | null
     JWT_RE.lastIndex = 0
-    while ((m = JWT_RE.exec(text))) {
+    while (seenKeys.size < MAX_SUPABASE_KEYS && (m = JWT_RE.exec(text))) {
+      if (handled.has(m[0])) continue
       const payload = decodeJwtPayload(m[0])
-      if (!payload || payload.iss !== 'supabase') continue
+      if (!payload || payload.iss !== 'supabase' || !admit(m[0])) continue
       const role = String(payload.role || '')
       // The token is unsigned as far as we can tell, so only accept a real project ref shape as a probe target.
       const ref = typeof payload.ref === 'string' && /^[a-z0-9]{20}$/.test(payload.ref) ? payload.ref : undefined
       const kind: SupabaseKeyKind = role === 'service_role' ? 'service_role' : role === 'anon' ? 'anon' : 'other'
       const key = { kind, value: m[0], where: b.where, projectRef: ref }
-      if (ref) {
-        const r = ensure(`https://${ref}.supabase.co`)
+      const r = ref ? ensure(`https://${ref}.supabase.co`) : null
+      if (r) {
         r.storageOnly = false
         add(r, key)
       } else pair(key, m.index)
     }
     NEW_KEY_RE.lastIndex = 0
-    while ((m = NEW_KEY_RE.exec(text))) {
-      if (SUPA_PLACEHOLDER_RE.test(m[2])) continue
+    while (seenKeys.size < MAX_SUPABASE_KEYS && (m = NEW_KEY_RE.exec(text))) {
+      if (SUPA_PLACEHOLDER_RE.test(m[2]) || !admit(m[0])) continue
       pair({ kind: m[1] === 'secret' ? 'secret' : 'publishable', value: m[0], where: b.where }, m.index)
     }
-  })
+  }
   return acc
 }
 
@@ -325,13 +374,16 @@ export function findSupabase(text: string, where: string, acc: SupabaseRef[] = [
   return collectSupabase([{ text, where }], acc)
 }
 
-/** True when a pk_live_/pk_test_ key decodes to a Clerk frontend API host ("<slug>.clerk.accounts.dev$"). */
+/**
+ * True when a pk_live_/pk_test_ key decodes to a Clerk frontend API host: "<slug>.clerk.accounts.dev$" for
+ * development instances, "clerk.<your-domain>$" for production ones.
+ */
 export function isClerkPublishableKey(k: string): boolean {
   const m = /^pk_(?:live|test)_([A-Za-z0-9+/=_-]+)$/.exec(k)
   if (!m) return false
   try {
     const decoded = Buffer.from(m[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8')
-    return decoded.endsWith('$') && (decoded.includes('.clerk.') || decoded.includes('clerk.accounts.dev'))
+    return /^(?:[a-z0-9-]+\.)*clerk\.[a-z0-9-]+(?:\.[a-z0-9-]+)+\$$/i.test(decoded)
   } catch {
     return false
   }

@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import Link from 'next/link'
 import { Archivo, IBM_Plex_Mono } from 'next/font/google'
 import { config } from '@/lib/config.ts'
+import { OG_BASE } from '@/lib/seo.ts'
+import { LEGAL_LINKS } from '@/lib/legal.ts'
 import './globals.css'
 
 const display = Archivo({ subsets: ['latin'], axes: ['wdth'], variable: '--font-display', display: 'swap' })
@@ -12,11 +14,7 @@ export const metadata: Metadata = {
   title: { default: `${config.brand}: make your AI-built app safe to launch`, template: `%s | ${config.brand}` },
   description:
     'Free security scan and fixed-price fixes for apps built with Lovable, Bolt, Base44, v0 and Cursor. We find open databases, leaked keys and broken auth and payments, then fix them.',
-  openGraph: {
-    title: `${config.brand}: make your AI-built app safe to launch`,
-    description: 'Free scan for apps built with Lovable, Bolt, Base44, v0 and Cursor. Find open databases and leaked keys in 60 seconds.',
-    type: 'website',
-  },
+  openGraph: OG_BASE,
 }
 
 export const viewport: Viewport = {
@@ -61,6 +59,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/guides">Guides</Link>
               <Link href="/privacy">Privacy</Link>
               <Link href="/terms">Terms</Link>
+              <Link href={LEGAL_LINKS.serviceAgreement}>Service agreement</Link>
+              <Link href={LEGAL_LINKS.diagnosisTerms}>Diagnosis terms</Link>
             </nav>
           </div>
         </footer>

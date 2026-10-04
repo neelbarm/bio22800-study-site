@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { cleanFields, deliverLead, isEmail, type Lead } from '@/lib/leads.ts'
-import { rateLimit, clientIp } from '@/lib/ratelimit.ts'
+import { rateLimitShared, clientIp } from '@/lib/ratelimit.ts'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -10,7 +10,7 @@ const FIELDS = ['appUrl', 'builder', 'stack', 'users', 'revenue', 'deadline', 'p
 
 export async function POST(req: Request) {
   const ip = clientIp(req)
-  if (!rateLimit(`lead:${ip}`, 8, 3600_000).ok) return NextResponse.json({ error: 'Too many submissions. Please email us instead.' }, { status: 429 })
+  if (!(await rateLimitShared(`lead:${ip}`, 8, 3600_000)).ok) return NextResponse.json({ error: 'Too many submissions. Please email us instead.' }, { status: 429 })
   let parsed: unknown
   try {
     parsed = await req.json()

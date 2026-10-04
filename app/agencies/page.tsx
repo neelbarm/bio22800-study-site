@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/seo.ts'
 import LeadForm from '@/components/LeadForm.tsx'
 import { PRICES, config, usd } from '@/lib/config.ts'
 
 export const metadata: Metadata = {
   title: 'White-label partner program for AI agencies',
   description: 'Sold an AI build you can’t ship? We diagnose, fix and deploy under your brand at 15–20% off list.',
+  ...pageMeta('/agencies'),
 }
 
 export default function AgenciesPage() {

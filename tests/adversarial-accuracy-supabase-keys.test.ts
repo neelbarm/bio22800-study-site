@@ -74,7 +74,7 @@ test('publishable key found in an earlier chunk than the project URL is still us
   assert.ok(ids.includes('supabase-tables-public'), `findings=${ids.join(',')} notes=${r.notes.join(' / ')}`)
 })
 
-test('Supabase behind a custom domain with a publishable key is probed (or at least reported)', async () => {
+test('Supabase behind a custom domain with a publishable key is probed', async () => {
   // Custom domains and vanity subdomains are documented Supabase features
   // (https://supabase.com/docs/guides/platform/custom-domains). With a legacy JWT the ref is
   // recoverable from the token; with sb_publishable_ nothing ties the key to *.supabase.co,
@@ -88,6 +88,6 @@ test('Supabase behind a custom domain with a publishable key is probed (or at le
   })
   const r = await scanUrl(site, { fetcher: fn as never })
   const ids = r.findings.map(f => f.id)
-  const mentioned = ids.includes('supabase-tables-public') || r.notes.some(n => n.includes('db.custom.example.com'))
-  assert.ok(mentioned, `custom-domain Supabase project silently ignored. backend=${r.backend.join(',')} findings=${ids.join(',')} notes=${r.notes.join(' / ')}`)
+  assert.ok(ids.includes('supabase-tables-public'), `custom-domain Supabase project not probed. backend=${r.backend.join(',')} findings=${ids.join(',')} notes=${r.notes.join(' / ')}`)
+  assert.ok(r.backend.includes('Supabase'), `backend=${r.backend.join(',')}`)
 })

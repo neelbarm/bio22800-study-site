@@ -33,6 +33,8 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/privacy': ['./business/legal/site-privacy.md'],
     '/terms': ['./business/legal/site-terms.md'],
+    '/legal/service-agreement': ['./business/legal/master-services-agreement.md'],
+    '/legal/diagnosis-terms': ['./business/legal/sow-diagnosis.md'],
     '/sample-report': ['./business/sample-report.md'],
     '/guides': ['./business/sales/teardown-posts.md'],
     '/guides/[slug]': ['./business/sales/teardown-posts.md'],

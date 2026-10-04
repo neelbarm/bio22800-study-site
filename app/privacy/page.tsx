@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/seo.ts'
 import { renderMarkdownFile } from '@/lib/markdown.ts'
 
-export const metadata: Metadata = { title: 'Privacy policy' }
+export const metadata: Metadata = { title: 'Privacy policy', ...pageMeta('/privacy') }
 
 export default async function PrivacyPage() {
   const html = await renderMarkdownFile('business/legal/site-privacy.md')

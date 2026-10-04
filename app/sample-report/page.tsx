@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/seo.ts'
 import Link from 'next/link'
 import { renderMarkdownFile } from '@/lib/markdown.ts'
 import { PRICES, usd } from '@/lib/config.ts'
@@ -6,6 +7,7 @@ import { PRICES, usd } from '@/lib/config.ts'
 export const metadata: Metadata = {
   title: 'Sample diagnosis report',
   description: 'See exactly what the 48-hour Ship-Ready Diagnosis delivers: findings ranked by severity, evidence, fixes and a fixed-price quote.',
+  ...pageMeta('/sample-report'),
 }
 
 export default async function SampleReportPage() {

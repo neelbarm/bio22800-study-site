@@ -22,6 +22,7 @@ export default function LeadForm({
   successTitle,
   successText,
   payments = [],
+  paymentTerms,
   contactEmail,
 }: {
   kind: string
@@ -30,6 +31,8 @@ export default function LeadForm({
   successTitle: string
   successText: string
   payments?: PaymentOption[]
+  /** Shown right under the payment buttons, e.g. which agreement paying accepts. */
+  paymentTerms?: React.ReactNode
   contactEmail: string
 }) {
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle')
@@ -82,6 +85,7 @@ export default function LeadForm({
                 {p.note && <span className="note">{p.note}</span>}
               </div>
             ))}
+            {paymentTerms && <p className="note">{paymentTerms}</p>}
           </div>
         )}
         {payments.length > 0 && links.length === 0 && (

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { loadGuides, renderGuide } from '@/lib/guides.ts'
+import { pageMeta } from '@/lib/seo.ts'
 
 type Params = Promise<{ slug: string }>
 
@@ -14,7 +15,7 @@ export const dynamicParams = false
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params
   const g = (await loadGuides()).find(x => x.slug === slug)
-  return g ? { title: g.title, description: g.description } : {}
+  return g ? { title: g.title, description: g.description, ...pageMeta(`/guides/${g.slug}`) } : {}
 }
 
 export default async function GuidePage({ params }: { params: Params }) {

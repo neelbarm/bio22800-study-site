@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/seo.ts'
 import Link from 'next/link'
 import { loadGuides } from '@/lib/guides.ts'
 
 export const metadata: Metadata = {
   title: 'Guides for shipping AI-built apps safely',
   description: 'Practical guides on Supabase row-level security, leaked keys, Stripe webhooks and launching apps built with Lovable, Bolt and other AI builders.',
+  ...pageMeta('/guides'),
 }
 
 export default async function GuidesPage() {

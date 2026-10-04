@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/seo.ts'
 import Link from 'next/link'
 import LeadForm, { type PaymentOption } from '@/components/LeadForm.tsx'
 import { PRICES, config, usd } from '@/lib/config.ts'
 import { parseScanParams } from '@/lib/scan-params.ts'
+import { LEGAL_LINKS } from '@/lib/legal.ts'
 
 export const metadata: Metadata = {
   title: 'Book a Ship-Ready Diagnosis',
   description: `A 48-hour engineering review of your AI-built app: database policies, auth, secrets and payments. ${usd(PRICES.diagnosis)}, credited to the fix.`,
+  ...pageMeta('/diagnosis'),
 }
 
 type SP = Promise<Record<string, string | string[] | undefined>>
@@ -16,7 +19,7 @@ export default async function DiagnosisPage({ searchParams }: { searchParams: SP
   const { appUrl: url, host, score } = parseScanParams(sp)
   const payments: PaymentOption[] = []
   if (config.introAvailable) {
-    payments.push({ label: `Pay the founding price: ${usd(PRICES.diagnosisIntro)}`, href: config.stripe.diagnosisIntro, primary: true, note: `For the next ${config.introSpotsLeft} client${config.introSpotsLeft > 1 ? 's' : ''}, in exchange for a short testimonial if you're happy.` })
+    payments.push({ label: `Pay the founding price: ${usd(PRICES.diagnosisIntro)}`, href: config.stripe.diagnosisIntro, primary: true, note: `For the next ${config.introSpotsLeft} client${config.introSpotsLeft > 1 ? 's' : ''}, in exchange for an honest testimonial, positive or not.` })
   }
   if (config.stripe.diagnosis) {
     payments.push({ label: `Pay ${usd(PRICES.diagnosis)} and book your slot`, href: config.stripe.diagnosis, primary: payments.length === 0 })
@@ -44,10 +47,15 @@ export default async function DiagnosisPage({ searchParams }: { searchParams: SP
           successTitle={payments.length ? 'Thanks. One last step.' : 'Thanks. We got it.'}
           successText={
             payments.length
-              ? "Pay below to reserve your slot. After payment you'll see how to share access, and we'll email you within one business day (usually the same day) to confirm and start. The 48-hour clock starts once we have payment and access to your code."
+              ? "Pay below to reserve your slot. The page after payment explains how to share access to your code and database. We'll then email you ourselves within one business day (usually the same day) to confirm and start. The 48-hour clock starts once we have payment and access to your code."
               : `We'll reply within one business day with a payment link and access instructions. ${config.contactEmail ? `If anything is urgent, email ${config.contactEmail}.` : ''}`
           }
           payments={payments}
+          paymentTerms={
+            <>
+              Paying means you accept our <Link href={LEGAL_LINKS.serviceAgreement}>service agreement</Link> and the <Link href={LEGAL_LINKS.diagnosisTerms}>diagnosis terms</Link>.
+            </>
+          }
           fields={[
             { name: 'name', label: 'Your name', type: 'text', required: true, autoComplete: 'name' },
             { name: 'email', label: 'Email', type: 'email', required: true, autoComplete: 'email' },
@@ -77,7 +85,7 @@ export default async function DiagnosisPage({ searchParams }: { searchParams: SP
           <div className="card" style={{ padding: 22 }}>
             <h3 style={{ marginBottom: 10 }}>How we handle access</h3>
             <p className="muted" style={{ fontSize: 15 }}>
-              We ask for GitHub collaborator access (or a code export) and read-only access to a staging or production database. We never ask for passwords in chat, never put your keys into AI tools, and remove our access when we're done.
+              We ask for access to your GitHub repo (or a code export) and to your database, ideally a staging copy. We use it to read, never to change anything during the diagnosis. We never ask for passwords in chat, never put your keys into AI tools, and remove our access when we're done.
             </p>
           </div>
           <p className="note">

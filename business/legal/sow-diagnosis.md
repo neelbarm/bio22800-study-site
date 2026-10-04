@@ -1,4 +1,4 @@
-> **Template, not legal advice. Have a lawyer in your state review before use.**
+<!-- Template, not legal advice. Have a lawyer in your state review before use. The website publishes a standard version of this file with its placeholders filled from the NEXT_PUBLIC_LEGAL_* settings (see lib/legal.ts). This comment is not shown on the website. -->
 
 # Statement of Work: Ship-Ready Diagnosis
 

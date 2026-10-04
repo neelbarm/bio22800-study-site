@@ -104,13 +104,14 @@ test('scanUrl end to end on a vulnerable Lovable-style app (fake network)', asyn
   const { fn, calls } = fakeFetcher({
     [site]: { text: `<!doctype html><script type="module" src="/assets/index-a1.js"></script>`, headers: new Headers({ 'content-type': 'text/html' }) },
     'https://demo-app.lovable.app/assets/index-a1.js': {
-      text: `const s=createClient("${supa}","${ANON}");const stripe="${STRIPE_LIVE}";import("./Admin-b2.js")\n//# sourceMappingURL=index-a1.js.map`,
+      text: `const s=createClient("${supa}","${ANON}");s.from("profiles").select("*");s.from("products").select("*");s.from("empty_table").select("id");const stripe="${STRIPE_LIVE}";import("./Admin-b2.js")\n//# sourceMappingURL=index-a1.js.map`,
     },
     'https://demo-app.lovable.app/assets/Admin-b2.js': { text: `const admin="${SERVICE}"` },
     'https://demo-app.lovable.app/assets/index-a1.js.map': { text: '{"version":3,"sources":["src/App.tsx"],"mappings":"AAAA"}' },
     'https://demo-app.lovable.app/.env': { text: 'VITE_SUPABASE_URL=x\nSTRIPE_SECRET=y' },
     [`${supa}/auth/v1/settings`]: { text: JSON.stringify({ mailer_autoconfirm: true, disable_signup: false }) },
-    [`${supa}/rest/v1/`]: { text: JSON.stringify({ paths: { '/': {}, '/profiles': {}, '/products': {}, '/empty_table': {} } }) },
+    // Hosted Supabase has refused the schema listing to public keys since April 2025; table names come from the code.
+    [`${supa}/rest/v1/`]: { status: 401, text: '{"message":"Access to schema is forbidden"}' },
     [`${supa}/rest/v1/profiles*`]: { status: 206, headers: new Headers({ 'content-range': '0-0/1342' }) },
     [`${supa}/rest/v1/products*`]: { status: 200, headers: new Headers({ 'content-range': '0-0/12' }) },
     [`${supa}/rest/v1/empty_table*`]: { status: 200, headers: new Headers({ 'content-range': '*/0' }) },
@@ -123,6 +124,7 @@ test('scanUrl end to end on a vulnerable Lovable-style app (fake network)', asyn
   assert.equal(tables.severity, 'critical')
   assert.match(tables.detail, /profiles \(1,342 rows\)/)
   assert.doesNotMatch(tables.detail, /empty_table/)
+  assert.ok(!ids.includes('supabase-schema-public'), 'a refused listing was reported as a public schema')
   assert.equal(r.grade, 'not-ready')
   assert.equal(r.score, 0)
   assert.ok(r.platform.includes('Lovable'))

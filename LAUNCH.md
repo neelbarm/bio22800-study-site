@@ -19,9 +19,12 @@ These need your identity, money or judgment. Nothing else in this plan works unt
   - [ ] Optional: Keep retainer **$500/month** subscription link.
   - [ ] Optional: Fix & Ship 10 deposit **$1,250** link.
   - [ ] Optional: Launch Readiness Package deposit **$1,450** link (owner option, see `business/sales/pricing-and-scripts.md` section 1b). Not shown on the site; send it in direct conversations only.
-  - On each link: collect name and email, and set **After payment -> Redirect customers to your website** to `https://[your-domain]/thanks` (that page tells buyers how to share code access).
-  - **Make buyers accept the contract before they pay.** Today the buyer never sees the MSA or SOW, so the refund rule, the 48-hour clock rules, the liability cap and the no-security-guarantee terms may not bind them. Before taking real payments: (1) fill every placeholder in `business/legal/master-services-agreement.md` and `business/legal/sow-diagnosis.md` (for example `[MSA DATE]`, `[7]`, `[2]`, `[are / are not]`); (2) publish both at a public URL (this needs a website change: ask for a page that renders them, the way `/terms` renders `site-terms.md`); (3) in Stripe, set **Settings > Business > Public details > Terms of service** to that URL; (4) on every Payment Link, turn on **Require customers to accept your terms of service**.
-  - On each link, use Stripe's custom text near the pay button to set expectations: "Next page shows how to share access. We confirm by email within a few hours." Then send the welcome email from `business/ops/onboarding-checklist.md` within a few hours of every payment. Nothing on the site emails the buyer automatically.
+  - On each link: collect name and email, and set **After payment -> Redirect customers to your website** to the page for that product, so buyers see the right next steps:
+    - both diagnosis links ($399 and $199): `https://[your-domain]/thanks?p=diagnosis`
+    - sprint deposit links: `https://[your-domain]/thanks?p=sprint`
+    - retainer subscription links: `https://[your-domain]/thanks?p=retainer`
+  - **Make buyers accept the contract before they pay.** The site publishes the standard MSA at `/legal/service-agreement` and the standard Diagnosis SOW at `/legal/diagnosis-terms`, and links them in the footer and next to every payment button on `/diagnosis`. Their names, governing law and venue come from the `NEXT_PUBLIC_LEGAL_*` variables; per-client blanks read "as given at checkout" or "in the intake form"; bracketed defaults such as `[7]` are published as the number shown; and the SOW says weekends and holidays **are counted** in the 48 hours (matching the site's promise). Before taking real payments: (1) have your lawyer check those defaults in `business/legal/master-services-agreement.md`, `business/legal/sow-diagnosis.md` and `lib/legal.ts`, and set the `NEXT_PUBLIC_LEGAL_*` values; (2) in Stripe, set **Settings > Business > Public details > Terms of service** to `https://[your-domain]/legal/service-agreement`; (3) on every Payment Link, turn on **Require customers to accept your terms of service**.
+  - On each link, use Stripe's custom text near the pay button to set expectations: "Next page shows how to share access. We confirm by email within one business day (usually the same day)." Then send the welcome email from `business/ops/onboarding-checklist.md` within a few hours of every payment. Nothing on the site emails the buyer automatically.
 - [ ] **Buy a domain** (and set up email on it, e.g. `hello@[domain]`).
 - [ ] **Connect this repo to Vercel**, add the domain, and **set the environment variables** below for Production (and Preview). Redeploy after changing any `NEXT_PUBLIC_` value, because they are baked in at build time.
 - [ ] **Upgrade the Vercel project to Pro before taking payments.** Hobby is for non-commercial use only.
@@ -29,10 +32,10 @@ These need your identity, money or judgment. Nothing else in this plan works unt
 - [ ] **Create Upwork and Fiverr profiles** (Claude Code / Supabase / Lovable rescue positioning; see Day 4).
 - [ ] **Record the demo Loom**: a 5-8 minute walkthrough of a sample diagnosis on a demo app you own (never a real client's app).
 - [ ] Optional: **set up Resend** (verify your domain, create an API key) so the site emails **you** a notification for each lead. It does not email visitors; you send scan results to prospects yourself.
-- [ ] Optional: **Cal.com booking link** for 15-minute intake calls. The site doesn't show it yet; paste it into emails yourself.
+- [ ] Optional: **Cal.com booking link** for 15-minute kickoff calls. It appears on `/thanks` after payment (as an optional call) once `NEXT_PUBLIC_CAL_URL` is set; nothing emails it, so paste it into your own emails too.
 - [ ] Optional at start: **business entity (LLC) and business bank account**. A sole proprietorship is fine for the first clients; ask an accountant.
 - [ ] **Get an E&O (professional liability) insurance quote.** Buy before the first sprint that touches production.
-- [ ] **Have a lawyer in your state review** `business/legal/` (at least the MSA, sprint SOW, privacy policy and terms) and fill in every `[PLACEHOLDER]`, especially `[STATE]`, your legal name and contact email. The website's `/privacy` and `/terms` pages fill their placeholders from the `NEXT_PUBLIC_LEGAL_*` variables below, not from the files, so set those too.
+- [ ] **Have a lawyer in your state review** `business/legal/` (at least the MSA, sprint SOW, privacy policy and terms) and fill in every `[PLACEHOLDER]`, especially `[STATE]`, your legal name and contact email. The website's `/privacy`, `/terms`, `/legal/service-agreement` and `/legal/diagnosis-terms` pages fill their placeholders from the `NEXT_PUBLIC_LEGAL_*` variables below, not from the files, so set those too.
 
 ## Environment variables (website)
 
@@ -47,7 +50,7 @@ Set in Vercel > Project > Settings > Environment Variables. Values shown are exa
 | `NEXT_PUBLIC_STRIPE_LINK_DIAGNOSIS_INTRO` | Recommended | `https://buy.stripe.com/...` | $199 intro diagnosis link (first 3 clients). Remove after 3 sales. |
 | `NEXT_PUBLIC_STRIPE_LINK_SPRINT_DEPOSIT` | Optional | `https://buy.stripe.com/...` | $750 sprint deposit link. Not shown on the site yet; paste the link into quotes and emails yourself. |
 | `NEXT_PUBLIC_INTRO_SPOTS_LEFT` | Optional | `3` | How many $199 founding-price spots to advertise. Set to `0` (and redeploy) after the third sale to hide the offer. |
-| `NEXT_PUBLIC_CAL_URL` | Optional | `https://cal.com/yourname/intake` | Booking link for intake calls. Not shown on the site or in any automatic email yet; paste it into your emails yourself. |
+| `NEXT_PUBLIC_CAL_URL` | Optional | `https://cal.com/yourname/intake` | Booking link for kickoff calls, shown on `/thanks` after payment. Not sent in any automatic email; paste it into your emails yourself. |
 | `ADMIN_PASSWORD` | Yes | a long random passphrase | Server-only. Password for your private lead inbox at `/admin/leads` (any username). **Must be 12+ characters**, or the inbox stays disabled. Needs a connected Blob store. |
 | `NEXT_PUBLIC_LEGAL_NAME` | Yes, before taking payments | `Jane Doe` or `Jane Doe LLC` | Your legal name on `/privacy` and `/terms`. If empty, the pages show the brand name instead. |
 | `NEXT_PUBLIC_LEGAL_ADDRESS` | Yes, before taking payments | `123 Main St, Austin, TX 78701` | Mailing address on `/privacy` and `/terms`. If empty, the contact section prints no address. |
@@ -57,11 +60,14 @@ Set in Vercel > Project > Settings > Environment Variables. Values shown are exa
 | `RESEND_API_KEY` | Optional | `re_...` | Server-only. Emails you a notification for each lead. It does not email visitors. **Never prefix with `NEXT_PUBLIC_`.** |
 | `LEADS_TO_EMAIL` | Optional (with Resend) | `you@yourmail.com` | Where new-lead emails are sent. |
 | `LEADS_FROM_EMAIL` | Optional (with Resend) | `ShipReady <leads@shipready.example>` | Sender address; must be on a domain verified in Resend. |
-| `LEADS_WEBHOOK_URL` | Optional | `https://hooks.slack.com/services/...` | Server-only. A Slack, Discord, Zapier, Make or n8n webhook that receives each new lead, so you can reply within 15 minutes. |
+| `LEADS_WEBHOOK_URL` | Optional | `https://hooks.slack.com/services/...` | Server-only. A Slack, Discord, Zapier, Make or n8n webhook that receives each new lead, so you can reply within 15 minutes. Scans reach it only when the visitor leaves an email. |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Recommended | set by the integration | Server-only. A Redis store for rate limits shared by every server instance: add **Upstash for Redis** from the Vercel Marketplace (it sets these), or set `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`. Without it, the free scan's limits (3 a minute and 20 a day per visitor, 6 an hour per scanned site) are counted per instance and reset on cold starts. |
 
 Anything with `NEXT_PUBLIC_` is visible to every visitor. Only links, names and public addresses go there. `BLOB_READ_WRITE_TOKEN` is set for you when you connect the Blob store; don't add it by hand.
 
-Redeploy after setting the `NEXT_PUBLIC_LEGAL_*` values, then open `/privacy` and `/terms` and check your legal name and address appear.
+Redeploy after setting the `NEXT_PUBLIC_LEGAL_*` values, then open `/privacy`, `/terms`, `/legal/service-agreement` and `/legal/diagnosis-terms` and check your legal name and address appear.
+
+**Rate limits on the free scan.** Connect the shared store above, and add a Vercel Firewall rule as a backstop: Vercel > Project > Firewall > Configure > New rule: *Request path* equals `/api/scan` -> **Rate limit**, fixed window, 60 seconds, 10 requests, keyed on IP, action **Deny** (429). The app's own limits still apply on top.
 
 ## Targets and kill gates (from the brief)
 
