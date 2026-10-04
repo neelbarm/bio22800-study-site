@@ -200,7 +200,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--ink); }
 .prose li { margin-bottom: 6px; }
 .prose code { font: 0.9em var(--mono); background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: 1px 5px; }
 .prose table { margin-bottom: 18px; }
+.prose pre { margin: 0 0 18px; padding: 14px 16px; overflow-x: auto; max-width: 100%; background: var(--sheet); border: 1px solid var(--rule); border-radius: 8px; font: 13.5px/1.55 var(--mono); }
+.prose pre code { background: none; border: 0; padding: 0; font: inherit; }
+.prose :not(pre) > code { overflow-wrap: anywhere; }
 .page-head { padding-block: 48px 24px; display: grid; gap: 14px; max-width: 780px; }
+.page-head > * { min-width: 0; }
 .callout { padding: 20px 22px; display: grid; gap: 10px; border-left: 6px solid var(--mark); }
 
 /* Header fixes: keep the CTA readable and the header compact on phones */
