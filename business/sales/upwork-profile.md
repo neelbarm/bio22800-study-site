@@ -70,7 +70,7 @@ Async-first and written. You get a short update at the end of each working sessi
 If your post describes a specific bug, I will reply with a short video on what I would check first in your app.
 ```
 
-Character count check: paste into a counter before publishing. As written it sits around 3,100 characters (estimate), which leaves room for a line about your background.
+Character count: about 2,900 as written, which leaves room for a line about your background. Recheck in Upwork's editor before publishing.
 
 Optional line to add near the end, written by you:
 
@@ -140,14 +140,14 @@ After real projects: replace demo items with client case studies (with written p
 
 ## 6. Project Catalog listings
 
-Three listings mirroring the brief's SKUs. Upwork shows three tiers per project. Delivery days follow the brief.
+Three listings mirroring the brief's SKUs. Upwork shows three tiers per project. Delivery days follow the brief. Titles are kept under 70 characters; Upwork's limits change, so check in the editor.
 
 ### Listing 1: Ship-Ready Diagnosis
 
 **Title**
 
 ```text
-You will get a security and launch audit of your Lovable, Bolt or AI-built app
+You will get a launch-readiness audit of your Lovable or Bolt app
 ```
 
 **Category:** Web Development > Web & App Security (or the closest available)
@@ -231,7 +231,7 @@ Note on item 3: share your email for the Supabase invite only after the contract
 **Title**
 
 ```text
-You will get your AI-built app fixed and deployed: Supabase, Stripe, auth, Vercel
+You will get your AI-built app fixed and deployed: Supabase, Stripe
 ```
 
 **Tiers**
@@ -308,7 +308,7 @@ A: Yes, but re-prompts can overwrite fixes. Re-fixes after handover are covered 
 **Title**
 
 ```text
-You will get your app wired to your CRM, Stripe, Slack, Google or n8n workflows
+You will get your app connected to your CRM, Slack, Google or n8n
 ```
 
 **Tiers** (brief range: $1,000-$3,000 fixed, 3-7 days; the split below is a suggested mapping)

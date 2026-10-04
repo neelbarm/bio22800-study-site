@@ -31,10 +31,10 @@ Rules for Fiverr:
 
 ## Gig 1: Lovable / Bolt / Base44 app rescue (security + deploy)
 
-**Title** (Fiverr titles start with "I will", max 80 characters)
+**Title** (Fiverr titles start with "I will", max 80 characters). Avoid the verb "secure" in the title: it reads as a promise the brief rules out.
 
 ```text
-I will fix and secure your Lovable, Bolt or Base44 app for launch
+I will fix security, auth and deploy issues in your Lovable or Bolt app
 ```
 
 **Category:** Programming & Tech > Website Development or Bug Fixes (pick the closest current category; Fiverr also has AI development subcategories worth checking)
@@ -65,24 +65,24 @@ Swap one tag every few weeks with `base44` or `stripe integration` and keep whic
 | Production deploy (Vercel/Netlify) | No | No | Yes |
 | Handover doc | No | Yes | Yes |
 
-Package names to paste:
+Package names and descriptions to paste (descriptions kept under 100 characters, Fiverr's usual limit):
 
 ```text
 Basic: Ship-Ready Diagnosis
-Human-reviewed audit of your repo and Supabase. Severity-ranked report, video walkthrough and a fixed-price fix quote. Review only, no changes.
+Human audit of repo + Supabase. Ranked report, video and a fixed-price quote.
 ```
 
 ```text
 Standard: Fix & Ship (5 issues)
-I fix up to 5 agreed issues: one pull request per fix with preview deploys, RLS migrations, secrets moved server-side, Sentry, handover doc.
+Up to 5 agreed fixes, one PR each with preview links, plus Sentry and a handover doc.
 ```
 
 ```text
 Premium: Fix & Ship (10 issues + deploy)
-Up to 10 agreed issues fixed, plus a clean production deploy on Vercel or Netlify with environment variables set up correctly.
+Up to 10 agreed fixes plus a clean production deploy on Vercel or Netlify.
 ```
 
-**Description** (Fiverr max 1,200 characters; this is about 1,150 estimate, check in the editor)
+**Description** (Fiverr max 1,200 characters; this is about 1,150, check in the editor)
 
 ```text
 Your app works in the builder preview. Then real users arrive and something breaks: logins fail, Stripe takes money but nothing unlocks, the deploy fails, or worse, one user can see another user's data.
@@ -182,21 +182,21 @@ claude code, n8n, supabase, stripe integration, api integration
 
 The split of systems per tier is a suggested mapping of the brief's $1,000-$3,000 Wire-It-Up range.
 
-Package names to paste:
+Package names and descriptions to paste:
 
 ```text
 Basic: One integration
-Connect your app to one service: Stripe, HubSpot, Slack, Google Workspace or an email provider. Error alerts and retries included.
+Connect your app to one service (Stripe, HubSpot, Slack, Google). Alerts and retries.
 ```
 
 ```text
 Standard: Automation workflow
-An n8n workflow or in-app integration across up to 3 systems, with alerts, retries and a written runbook.
+n8n workflow or integration across up to 3 systems, with alerts and a runbook.
 ```
 
 ```text
 Premium: Multi-system build
-Up to 5 systems, or an inbound AI receptionist that answers, captures details and books meetings. Full runbook and video handover.
+Up to 5 systems, or an inbound AI receptionist. Runbook and video handover.
 ```
 
 **Description**
