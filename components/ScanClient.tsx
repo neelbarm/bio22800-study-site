@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import type { ScanResult, Finding } from '@/lib/scanner/types.ts'
+import { scanFailure, scanOutcome } from '@/lib/scan-response.ts'
 
 const STEPS = [
   'Loading your site like a visitor would…',
@@ -12,8 +13,6 @@ const STEPS = [
   'Checking exposed files and security headers…',
   'Scoring the results…',
 ]
-
-const TOO_SLOW = 'The scan took too long. Try again, or book a diagnosis and we will check it by hand.'
 
 export default function ScanClient({ brand }: { brand: string }) {
   const [url, setUrl] = useState('')
@@ -69,18 +68,16 @@ export default function ScanClient({ brand }: { brand: string }) {
         body: JSON.stringify({ url, email, consent, website }),
         signal: AbortSignal.timeout(75_000),
       })
-      const data = await r.json().catch(() => null)
-      if (r.status === 504 || !data) {
-        // The platform timed out (or sent a non-JSON error page).
-        setSlow(true)
-        setError(TOO_SLOW)
-      } else if (!r.ok) setError(data.error || 'The scan failed. Please try again.')
-      else setResult(data)
+      const outcome = scanOutcome<ScanResult>(r.status, await r.json().catch(() => null))
+      if (outcome.kind === 'result') setResult(outcome.result)
+      else {
+        setSlow(outcome.slow)
+        setError(outcome.message)
+      }
     } catch (err) {
-      if ((err as Error)?.name === 'TimeoutError') {
-        setSlow(true)
-        setError(TOO_SLOW)
-      } else setError('Could not reach the scan service. Check your connection and try again.')
+      const f = scanFailure(err)
+      setSlow(f.slow)
+      setError(f.message)
     } finally {
       setLoading(false)
     }

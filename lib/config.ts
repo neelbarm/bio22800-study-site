@@ -12,7 +12,8 @@ export function normalizeSiteUrl(raw: string | undefined): string {
   if (!v) return ''
   try {
     const u = new URL(/^https?:\/\//i.test(v) ? v : `https://${v}`)
-    if (u.protocol === 'http:' || u.protocol === 'https:') return u.origin
+    const hostOk = /^[a-z0-9.-]+$/i.test(u.hostname) && (u.hostname.includes('.') || u.hostname === 'localhost')
+    if ((u.protocol === 'http:' || u.protocol === 'https:') && hostOk) return u.origin
   } catch {
     /* invalid */
   }
@@ -35,6 +36,11 @@ export function parseSpots(v: string | undefined): number {
   if (v === undefined) return 3
   const n = Math.floor(Number(v.trim()))
   return Number.isFinite(n) && n > 0 && v.trim() !== '' ? n : 0
+}
+
+/** The $199 offer is shown only when spots remain AND a Payment Link exists to honour it. */
+export function introOffer(spotsLeft: number, introLink: string): boolean {
+  return spotsLeft > 0 && Boolean(introLink)
 }
 
 /** Reads a Stripe Payment Link variable; invalid values are dropped (with a log) so pages fall back to "we'll send a link". */
@@ -70,8 +76,7 @@ export const config = {
   stripe,
   /** Set NEXT_PUBLIC_INTRO_SPOTS_LEFT to 0 once the 3 intro diagnoses are sold. */
   introSpotsLeft,
-  /** The $199 offer is shown only when spots remain AND a Payment Link exists to honour it. */
-  introAvailable: introSpotsLeft > 0 && Boolean(stripe.diagnosisIntro),
+  introAvailable: introOffer(introSpotsLeft, stripe.diagnosisIntro),
 }
 
 export const PRICES = {
