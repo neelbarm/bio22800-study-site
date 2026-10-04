@@ -10,3 +10,5 @@ next-env.d.ts
 *.tsbuildinfo
 shipready-audit/
 !.env.example
+leads/*.md
+!leads/README.md
