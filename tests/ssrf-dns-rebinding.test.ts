@@ -54,13 +54,16 @@ test('safeFetch must not connect to a private address when DNS changes between c
   try {
     const { safeFetch } = await import('../lib/scanner/net.ts')
     let result: unknown = null
+    let error: unknown = null
     try {
       result = await safeFetch(`http://${host}/`, { timeoutMs: 2000 })
-    } catch {
-      /* blocking is the correct outcome */
+    } catch (e) {
+      error = e // blocking is the correct outcome
     }
     assert.ok(validationLookups > 0, 'validation lookup should have run')
     assert.equal(internalHits, 0, `scanner connected to 127.0.0.1 after validating ${PUBLIC}; got ${JSON.stringify(result && (result as { text: string }).text)}`)
+    // The user sees the SSRF message, not a generic "could not connect".
+    assert.match(String((error as Error)?.message), /Only public websites/)
   } finally {
     server.close()
   }

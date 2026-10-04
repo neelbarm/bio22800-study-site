@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import ScanClient from '@/components/ScanClient.tsx'
 import { config } from '@/lib/config.ts'
 
@@ -18,9 +17,7 @@ export default function ScanPage() {
           Paste the URL of your deployed app. We load it like a visitor would and check the code it ships, your Supabase tables, exposed files and security headers. Takes about a minute.
         </p>
       </div>
-      <Suspense>
-        <ScanClient brand={config.brand} />
-      </Suspense>
+      <ScanClient brand={config.brand} />
     </div>
   )
 }

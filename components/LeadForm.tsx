@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { paymentLink } from '@/lib/payment-link.ts'
 
 export type FieldDef =
   | { name: string; label: string; type: 'text' | 'email' | 'url'; required?: boolean; placeholder?: string; hint?: string; autoComplete?: string; defaultValue?: string }
@@ -34,6 +35,12 @@ export default function LeadForm({
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle')
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState<{ email: string; ref: string } | null>(null)
+  const doneRef = useRef<HTMLHeadingElement>(null)
+
+  // The form (and the focused submit button) is replaced on success; move focus to the new heading.
+  useEffect(() => {
+    if (state === 'done') doneRef.current?.focus()
+  }, [state])
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -61,24 +68,24 @@ export default function LeadForm({
   }
 
   if (state === 'done' && submitted) {
+    // A malformed link is skipped rather than crashing the page at the moment someone is ready to pay.
+    const links = payments.map(p => ({ ...p, url: paymentLink(p.href, { email: submitted.email, ref: submitted.ref }) })).filter(p => p.url)
     return (
-      <div className="card callout" role="status">
-        <h2 style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}>{successTitle}</h2>
+      <div className="card callout">
+        <h2 ref={doneRef} tabIndex={-1} style={{ fontSize: 'clamp(22px, 3vw, 28px)' }}>{successTitle}</h2>
         <p className="muted">{successText}</p>
-        {payments.length > 0 && (
+        {links.length > 0 && (
           <div className="grid" style={{ gap: 10 }}>
-            {payments.map(p => {
-              const u = new URL(p.href)
-              if (submitted.email) u.searchParams.set('prefilled_email', submitted.email)
-              if (submitted.ref) u.searchParams.set('client_reference_id', submitted.ref)
-              return (
-                <div key={p.label} className="grid" style={{ gap: 4 }}>
-                  <a className={`btn ${p.primary ? 'btn-primary' : 'btn-secondary'}`} href={u.toString()} style={{ justifySelf: 'start' }}>{p.label}</a>
-                  {p.note && <span className="note">{p.note}</span>}
-                </div>
-              )
-            })}
+            {links.map(p => (
+              <div key={p.label} className="grid" style={{ gap: 4 }}>
+                <a className={`btn ${p.primary ? 'btn-primary' : 'btn-secondary'}`} href={p.url} style={{ justifySelf: 'start' }}>{p.label}</a>
+                {p.note && <span className="note">{p.note}</span>}
+              </div>
+            ))}
           </div>
+        )}
+        {payments.length > 0 && links.length === 0 && (
+          <p className="muted">The payment link is not available right now. We'll email you a payment link instead{contactEmail ? <>, or write to <a href={`mailto:${contactEmail}`}>{contactEmail}</a></> : null}.</p>
         )}
         <p className="note">Reference: <span className="mono">{submitted.ref}</span>.{contactEmail && <> Questions? <a href={`mailto:${contactEmail}`}>{contactEmail}</a></>}</p>
       </div>

@@ -45,3 +45,23 @@ test('Slack webhook text escapes control sequences', async () => {
   const b = bodies[0] as { text: string }
   assert.doesNotMatch(b.text, /<!channel>|<https?:\/\/[^>]*\|/, `Slack text carries raw control sequences: ${b.text}`)
 })
+
+test('Discord content escapes markdown so masked links cannot render', async () => {
+  const { base, bodies } = await capture()
+  process.env.LEADS_WEBHOOK_URL = `${base}/discord.com/api/webhooks/1/abc`
+  await deliverLead({ kind: 'contact', name: 'M', email: 'm@example.com', fields: { message: 'click [Stripe dashboard](https://evil.example) now' } })
+  const b = bodies[0] as { content: string; flags?: number }
+  assert.ok(b.content.includes('\\[Stripe dashboard\\]\\(https://evil.example\\)'), b.content)
+  assert.equal(b.flags, 4)
+  assert.ok(b.content.length <= 2000)
+})
+
+test('Slack payload keeps the raw lead object for automation tools', async () => {
+  const { base, bodies } = await capture()
+  process.env.LEADS_WEBHOOK_URL = `${base}/hooks/zapier`
+  await deliverLead(lead)
+  const b = bodies[0] as { text: string; lead: typeof lead }
+  assert.equal(b.lead.fields.message, lead.fields.message)
+  assert.match(b.text, /&lt;!channel&gt;/)
+  delete process.env.LEADS_WEBHOOK_URL
+})

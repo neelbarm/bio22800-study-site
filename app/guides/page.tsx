@@ -14,7 +14,7 @@ export default async function GuidesPage() {
       <div className="page-head">
         <p className="eyebrow">Guides</p>
         <h1>What we check before an AI-built app goes live</h1>
-        <p className="lede">The problems we find most often, how to check for them yourself, and how to fix them.</p>
+        <p className="lede">Common problems in AI-built apps, how to check for them yourself, and how to fix them.</p>
       </div>
       <div className="grid grid-2">
         {guides.map(g => (

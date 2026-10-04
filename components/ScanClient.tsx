@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import type { ScanResult, Finding } from '@/lib/scanner/types.ts'
 
 const STEPS = [
@@ -14,16 +13,30 @@ const STEPS = [
   'Scoring the results…',
 ]
 
+const TOO_SLOW = 'The scan took too long. Try again, or book a diagnosis and we will check it by hand.'
+
 export default function ScanClient({ brand }: { brand: string }) {
-  const params = useSearchParams()
-  const [url, setUrl] = useState(params.get('url') || '')
+  const [url, setUrl] = useState('')
   const [email, setEmail] = useState('')
   const [consent, setConsent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(0)
   const [error, setError] = useState('')
+  const [slow, setSlow] = useState(false)
+  const [consentError, setConsentError] = useState(false)
   const [result, setResult] = useState<ScanResult | null>(null)
-  const resultRef = useRef<HTMLDivElement>(null)
+  const resultRef = useRef<HTMLHeadingElement>(null)
+  const consentRef = useRef<HTMLInputElement>(null)
+
+  // Prefill from ?url= after mount. Reading it here (not with useSearchParams) keeps the form in the server HTML.
+  useEffect(() => {
+    try {
+      const u = new URLSearchParams(window.location.search).get('url')
+      if (u) setUrl(u.slice(0, 300))
+    } catch {
+      /* ignore */
+    }
+  }, [])
 
   useEffect(() => {
     if (!loading) return
@@ -39,9 +52,12 @@ export default function ScanClient({ brand }: { brand: string }) {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError('')
+    setSlow(false)
     setResult(null)
     if (!consent) {
+      setConsentError(true)
       setError('Please confirm you own this app or are authorized to test it.')
+      consentRef.current?.focus()
       return
     }
     setLoading(true)
@@ -51,12 +67,20 @@ export default function ScanClient({ brand }: { brand: string }) {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ url, email, consent, website }),
+        signal: AbortSignal.timeout(75_000),
       })
-      const data = await r.json().catch(() => ({ error: 'The scan service returned an unexpected response.' }))
-      if (!r.ok) setError(data.error || 'The scan failed. Please try again.')
+      const data = await r.json().catch(() => null)
+      if (r.status === 504 || !data) {
+        // The platform timed out (or sent a non-JSON error page).
+        setSlow(true)
+        setError(TOO_SLOW)
+      } else if (!r.ok) setError(data.error || 'The scan failed. Please try again.')
       else setResult(data)
-    } catch {
-      setError('Could not reach the scan service. Check your connection and try again.')
+    } catch (err) {
+      if ((err as Error)?.name === 'TimeoutError') {
+        setSlow(true)
+        setError(TOO_SLOW)
+      } else setError('Could not reach the scan service. Check your connection and try again.')
     } finally {
       setLoading(false)
     }
@@ -89,7 +113,18 @@ export default function ScanClient({ brand }: { brand: string }) {
           <span className="hint">Add it if you want us to follow up on what the scan finds. No newsletter.</span>
         </div>
         <label className="consent" htmlFor="scan-consent">
-          <input id="scan-consent" type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} />
+          <input
+            id="scan-consent"
+            ref={consentRef}
+            type="checkbox"
+            checked={consent}
+            aria-invalid={consentError || undefined}
+            aria-describedby={consentError ? 'scan-error' : undefined}
+            onChange={e => {
+              setConsent(e.target.checked)
+              if (e.target.checked) setConsentError(false)
+            }}
+          />
           <span>
             I own this app or have permission to test it. I understand the scan makes a small number of read-only requests, including to the app's database API using the public key the site already shares with every visitor, and never downloads data. See the <Link href="/terms">terms</Link>.
           </span>
@@ -98,9 +133,21 @@ export default function ScanClient({ brand }: { brand: string }) {
           <label htmlFor="scan-website">Leave this empty</label>
           <input id="scan-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
         </div>
-        {error && <p className="error" role="alert">{error}</p>}
+        {error && (
+          <p className="error" role="alert" id="scan-error">
+            {error}
+            {slow && (
+              <>
+                {' '}
+                <Link href={`/diagnosis?url=${encodeURIComponent(url)}`}>Book a diagnosis</Link>
+              </>
+            )}
+          </p>
+        )}
+        {/* Always mounted, so screen readers announce each step as its text changes. */}
+        <p className="sr-only" role="status" aria-live="polite">{loading ? STEPS[step] : ''}</p>
         {loading && (
-          <div className="progress" aria-live="polite">
+          <div className="progress" aria-hidden="true">
             {STEPS.slice(0, step + 1).map((s, i) => (
               <span key={s} className={i === step ? 'now' : ''}>{i < step ? '✓ ' : '› '}{s}</span>
             ))}
@@ -109,8 +156,8 @@ export default function ScanClient({ brand }: { brand: string }) {
       </form>
 
       {result && (
-        <div ref={resultRef} tabIndex={-1} aria-live="polite" className="grid" style={{ gap: 16, outline: 'none' }}>
-          <Results result={result} brand={brand} email={email} />
+        <div className="grid" style={{ gap: 16 }}>
+          <Results result={result} brand={brand} email={email} headingRef={resultRef} />
         </div>
       )}
     </div>
@@ -140,7 +187,7 @@ const GRADE: Record<ScanResult['grade'], { label: string; text: string; cls: str
   ready: { label: 'Looks good from outside', text: 'Nothing serious is visible from the outside. The riskiest problems usually live where a scan can’t see: database policies, auth and payment code.', cls: 'sev-pass' },
 }
 
-function Results({ result, brand, email }: { result: ScanResult; brand: string; email: string }) {
+function Results({ result, brand, email, headingRef }: { result: ScanResult; brand: string; email: string; headingRef: React.RefObject<HTMLHeadingElement | null> }) {
   const g = GRADE[result.grade]
   const host = (() => {
     try {
@@ -157,7 +204,10 @@ function Results({ result, brand, email }: { result: ScanResult; brand: string; 
         <Dial score={result.score} />
         <div className="grid" style={{ gap: 10 }}>
           <span className={`sev ${g.cls}`} style={{ justifySelf: 'start' }}>{g.label}</span>
-          <h2 style={{ fontSize: 'clamp(22px, 3vw, 30px)' }}>{host}</h2>
+          <h2 ref={headingRef} tabIndex={-1} style={{ fontSize: 'clamp(22px, 3vw, 30px)', outline: 'none' }}>
+            <span className="sr-only">Scan results for </span>
+            {host}
+          </h2>
           <p className="muted">{g.text}</p>
           <p className="mono small muted">
             {result.counts.critical} critical · {result.counts.high} high · {result.counts.medium} medium · {result.counts.low} low
@@ -179,7 +229,7 @@ function Results({ result, brand, email }: { result: ScanResult; brand: string; 
           {serious > 0 ? `Want these fixed? Start with a 48-hour diagnosis.` : 'The outside looks clean. The inside is where most problems live.'}
         </h2>
         <p className="muted">
-          This scan only sees what your site sends to browsers. The diagnosis reviews your code, every database policy, storage rules, login flows and payment webhooks, then gives you a fixed price to fix everything. The fee is credited to the fix.
+          This scan only sees what your site sends to browsers. The diagnosis reviews your code, every database policy, storage rules, login flows and payment webhooks, then gives you a fixed price to fix what we find. The fee is credited to the fix.
         </p>
         <div className="btn-row">
           <Link href={diagnosisHref} className="btn btn-primary">Book the diagnosis</Link>
@@ -241,6 +291,10 @@ function EmailReport({ result, brand, defaultEmail }: { result: ScanResult; bran
   const [email, setEmail] = useState(defaultEmail)
   const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [msg, setMsg] = useState('')
+  const sentRef = useRef<HTMLParagraphElement>(null)
+  useEffect(() => {
+    if (state === 'sent') sentRef.current?.focus()
+  }, [state])
   async function send(e: React.FormEvent) {
     e.preventDefault()
     setState('sending')
@@ -262,7 +316,12 @@ function EmailReport({ result, brand, defaultEmail }: { result: ScanResult; bran
       setMsg(data.error || 'Could not send. Please try again.')
     }
   }
-  if (state === 'sent') return <p className="success" role="status">Got it. {brand} will email you a written copy of these results with suggested next steps.</p>
+  if (state === 'sent')
+    return (
+      <p className="success" ref={sentRef} tabIndex={-1}>
+        Got it. {brand} will email you a written copy of these results with suggested next steps, usually within one business day.
+      </p>
+    )
   return (
     <form className="card form" style={{ padding: 22 }} onSubmit={send}>
       <div className="field">

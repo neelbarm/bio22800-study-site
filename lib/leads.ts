@@ -29,39 +29,54 @@ export async function deliverLead(lead: Lead): Promise<{ delivered: string[] }> 
   console.log('[lead]', JSON.stringify({ ...lead, at: new Date().toISOString() }))
   if (await saveLead(lead)) delivered.push('store')
 
+  // Webhook and email run together so a slow one does not hold up the other.
+  await Promise.allSettled([sendWebhook(text, lead, delivered), sendEmail(title, text, lead, delivered)])
+  return { delivered }
+}
+
+/** Slack (and generic) webhooks: &, < and > start control sequences such as <!channel> and <url|label>. */
+export const slackEscape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+/** Discord markdown: escape everything that could render a masked link, heading, quote or formatting. */
+export const discordEscape = (s: string) => s.replace(/[\\`*_~|>#[\]()-]/g, '\\$&')
+
+async function sendWebhook(text: string, lead: Lead, delivered: string[]): Promise<void> {
   const hook = process.env.LEADS_WEBHOOK_URL
-  if (hook) {
-    try {
-      const body = /discord(?:app)?\.com\/api\/webhooks/.test(hook) ? { content: text.slice(0, 1900) } : { text, lead }
-      const r = await fetch(hook, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(5000) })
-      if (r.ok) delivered.push('webhook')
-    } catch (e) {
-      console.error('[lead] webhook failed', (e as Error).message)
-    }
+  if (!hook) return
+  try {
+    // Visitor-typed text must not ping the channel or plant links, on either platform.
+    const body = /discord(?:app)?\.com\/api\/webhooks/.test(hook)
+      ? { content: discordEscape(text.slice(0, 950)), allowed_mentions: { parse: [] }, flags: 4 }
+      : { text: slackEscape(text), lead }
+    const r = await fetch(hook, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(5000) })
+    if (r.ok) delivered.push('webhook')
+  } catch (e) {
+    console.error('[lead] webhook failed', (e as Error).message)
   }
+}
+
+async function sendEmail(title: string, text: string, lead: Lead, delivered: string[]): Promise<void> {
   const key = process.env.RESEND_API_KEY
   const to = process.env.LEADS_TO_EMAIL
-  if (key && to) {
-    try {
-      const r = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
-        body: JSON.stringify({
-          from: process.env.LEADS_FROM_EMAIL || 'ShipReady <onboarding@resend.dev>',
-          to: [to],
-          reply_to: lead.email || undefined,
-          subject: title.slice(0, 150),
-          text,
-        }),
-        signal: AbortSignal.timeout(6000),
-      })
-      if (r.ok) delivered.push('email')
-      else console.error('[lead] resend error', r.status, await r.text().catch(() => ''))
-    } catch (e) {
-      console.error('[lead] email failed', (e as Error).message)
-    }
+  if (!key || !to) return
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        from: process.env.LEADS_FROM_EMAIL || 'ShipReady <onboarding@resend.dev>',
+        to: [to],
+        reply_to: lead.email || undefined,
+        subject: title.slice(0, 150),
+        text,
+      }),
+      signal: AbortSignal.timeout(6000),
+    })
+    if (r.ok) delivered.push('email')
+    else console.error('[lead] resend error', r.status, await r.text().catch(() => ''))
+  } catch (e) {
+    console.error('[lead] email failed', (e as Error).message)
   }
-  return { delivered }
 }
 
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:]+@[^\s@<>()[\]\\,;:]+\.[a-z]{2,}$/i

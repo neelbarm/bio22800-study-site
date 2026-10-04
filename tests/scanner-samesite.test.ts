@@ -16,3 +16,13 @@ test('different registrable domains under a multi-part TLD are not the same site
 test('IP-literal hosts are only the same site as themselves', () => {
   assert.equal(sameSite('203.0.114.4', '198.51.114.4'), false)
 })
+
+test('trailing dots do not merge tenants, and real same-site pairs still match', () => {
+  assert.equal(sameSite('a.vercel.app.', 'evil.vercel.app.'), false)
+  assert.equal(sameSite('x.foo.app.', 'y.bar.app.'), false)
+  assert.equal(sameSite('shop.example.co.uk', 'cdn.example.co.uk'), true)
+  assert.equal(sameSite('app.example.com', 'cdn.example.com'), true)
+  assert.equal(sameSite('app.example.com.', 'example.com'), true)
+  assert.equal(sameSite('[::1]', '[::1]'), true)
+  assert.equal(sameSite('my-app.lovableproject.com', 'other.lovableproject.com'), false)
+})

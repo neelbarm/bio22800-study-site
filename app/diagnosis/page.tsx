@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import LeadForm, { type PaymentOption } from '@/components/LeadForm.tsx'
 import { PRICES, config, usd } from '@/lib/config.ts'
+import { parseScanParams } from '@/lib/scan-params.ts'
 
 export const metadata: Metadata = {
   title: 'Book a Ship-Ready Diagnosis',
@@ -12,14 +13,13 @@ type SP = Promise<Record<string, string | string[] | undefined>>
 
 export default async function DiagnosisPage({ searchParams }: { searchParams: SP }) {
   const sp = await searchParams
-  const url = typeof sp.url === 'string' ? sp.url.slice(0, 300) : ''
-  const score = typeof sp.score === 'string' ? sp.score.replace(/\D/g, '').slice(0, 3) : ''
+  const { appUrl: url, host, score } = parseScanParams(sp)
   const payments: PaymentOption[] = []
-  if (config.introSpotsLeft > 0 && config.stripe.diagnosisIntro) {
+  if (config.introAvailable) {
     payments.push({ label: `Pay the founding price: ${usd(PRICES.diagnosisIntro)}`, href: config.stripe.diagnosisIntro, primary: true, note: `For the next ${config.introSpotsLeft} client${config.introSpotsLeft > 1 ? 's' : ''}, in exchange for a short testimonial if you're happy.` })
   }
   if (config.stripe.diagnosis) {
-    payments.push({ label: `Pay ${usd(PRICES.diagnosis)} and start the 48-hour clock`, href: config.stripe.diagnosis, primary: payments.length === 0 })
+    payments.push({ label: `Pay ${usd(PRICES.diagnosis)} and book your slot`, href: config.stripe.diagnosis, primary: payments.length === 0 })
   }
   return (
     <div className="wrap">
@@ -29,9 +29,10 @@ export default async function DiagnosisPage({ searchParams }: { searchParams: SP
         <p className="lede">
           An engineer reviews your code, database policies, storage rules, login flows and payments. You get a written report ranked by severity, a video walkthrough and a fixed-price quote. The fee is credited to the fix, and refunded if we find nothing material.
         </p>
-        {score && (
+        {host && (
           <p className="callout card">
-            Your free scan scored <strong>{score}/100</strong>{url ? <> for <span className="mono">{url}</span></> : null}. We'll start from those results.
+            You came here from a free scan of <span className="mono">{host}</span>
+            {score !== null && <> (score {score}/100 as shown on your results page)</>}. Mention anything in it you want us to look at first.
           </p>
         )}
       </div>
@@ -43,7 +44,7 @@ export default async function DiagnosisPage({ searchParams }: { searchParams: SP
           successTitle={payments.length ? 'Thanks. One last step.' : 'Thanks. We got it.'}
           successText={
             payments.length
-              ? 'Pay below to reserve your slot. The 48-hour clock starts once we have payment and access to your code. You will get an email with access instructions right away.'
+              ? "Pay below to reserve your slot. After payment you'll see how to share access, and we'll email you within one business day (usually the same day) to confirm and start. The 48-hour clock starts once we have payment and access to your code."
               : `We'll reply within one business day with a payment link and access instructions. ${config.contactEmail ? `If anything is urgent, email ${config.contactEmail}.` : ''}`
           }
           payments={payments}

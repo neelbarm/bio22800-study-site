@@ -27,6 +27,7 @@ export async function saveLead(lead: Omit<StoredLead, 'id' | 'at'>): Promise<boo
       access: 'private',
       contentType: 'application/json',
       addRandomSuffix: false,
+      abortSignal: AbortSignal.timeout(4000),
     })
     return true
   } catch (e) {

@@ -1,5 +1,7 @@
+import dns from 'node:dns'
 import { lookup } from 'node:dns/promises'
 import { isIP } from 'node:net'
+import { Agent, fetch as undiciFetch } from 'undici'
 
 export class ScanBlockedError extends Error {}
 
@@ -36,6 +38,22 @@ export function isPrivateAddress(ip: string): boolean {
   return true
 }
 
+/** Parses what a visitor typed into a URL the same way everywhere (scan route and scanner). Throws on garbage. */
+export function normalizeTarget(raw: string): URL {
+  const s = raw.trim()
+  return new URL(/^https?:\/\//i.test(s) ? s : `https://${s}`)
+}
+
+/** Hostname for keying limits and comparisons: lower case, no IPv6 brackets, no trailing dots. */
+export function targetHost(u: URL): string {
+  return u.hostname.toLowerCase().replace(/^\[|\]$/g, '').replace(/\.+$/, '')
+}
+
+function withTimeout<T>(p: Promise<T>, ms: number, err: () => Error): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  return Promise.race([p, new Promise<never>((_, rej) => (timer = setTimeout(() => rej(err()), Math.max(0, ms))))]).finally(() => clearTimeout(timer))
+}
+
 /** Validates a user-supplied URL: http(s) only, no credentials, no odd ports, public DNS only. */
 export async function assertPublicUrl(raw: string): Promise<URL> {
   let u: URL
@@ -57,13 +75,43 @@ export async function assertPublicUrl(raw: string): Promise<URL> {
   }
   let addrs: { address: string }[]
   try {
-    addrs = await lookup(host, { all: true })
+    // getaddrinfo cannot be cancelled, so cap how long we wait for it.
+    addrs = await withTimeout(lookup(host, { all: true }), 3000, () => new Error('dns timeout'))
   } catch {
     throw new ScanBlockedError(`Could not resolve ${host}. Check the address and try again.`)
   }
   if (!addrs.length || addrs.some(a => isPrivateAddress(a.address))) throw new ScanBlockedError('Only public websites can be scanned.')
   return u
 }
+
+type LookupFn = (hostname: string, options: dns.LookupAllOptions, cb: (err: NodeJS.ErrnoException | null, addresses: dns.LookupAddress[]) => void) => void
+
+/**
+ * A connect-time resolver that refuses private addresses. The check runs on the exact addresses the
+ * socket is about to use, so a DNS answer that changes between assertPublicUrl() and the connect
+ * (DNS rebinding) cannot reach internal hosts. IP-literal hosts skip lookup, which is why
+ * assertPublicUrl() still runs on every hop.
+ */
+export function makeGuardedLookup(resolve: LookupFn = dns.lookup as unknown as LookupFn) {
+  return function guardedLookup(hostname: string, options: dns.LookupOptions, cb: (...a: unknown[]) => void) {
+    resolve(hostname, { ...(options || {}), all: true }, (err, list) => {
+      if (err) return cb(err)
+      if (!list || !list.length || list.some(a => isPrivateAddress(a.address))) {
+        return cb(Object.assign(new Error(`Blocked non-public address for ${hostname}`), { code: 'ESSRFBLOCKED' }))
+      }
+      if (options && options.all) cb(null, list)
+      else cb(null, list[0].address, list[0].family)
+    })
+  }
+}
+
+/** An undici Agent whose sockets only connect to public addresses. */
+export function makeGuardedAgent(resolve?: LookupFn): Agent {
+  return new Agent({ connect: { lookup: makeGuardedLookup(resolve) } as Record<string, unknown> })
+}
+
+const guardedDispatcher = makeGuardedAgent()
+const plainDispatcher = new Agent()
 
 export interface FetchResult {
   status: number
@@ -74,66 +122,96 @@ export interface FetchResult {
   truncated: boolean
 }
 
+export interface SafeFetchOptions {
+  method?: 'GET' | 'HEAD'
+  headers?: Record<string, string>
+  maxBytes?: number
+  /** Time budget for the whole call, across every redirect hop and the body read. */
+  timeoutMs?: number
+  /** Absolute epoch ms after which the call gives up, whatever timeoutMs says. */
+  deadline?: number
+  /** Tests only: skip the public-address check. Never set from request input. */
+  unsafeAllowPrivate?: boolean
+}
+
+const isAbort = (e: unknown) => {
+  const n = (e as Error)?.name
+  return n === 'AbortError' || n === 'TimeoutError'
+}
+
 /**
- * Fetch with SSRF guards: validates every hop (manual redirects, max 4), enforces a timeout and a byte cap.
+ * Fetch with SSRF guards: validates every hop (manual redirects, max 4) before the request and again at
+ * connect time, enforces one time budget across all hops and a byte cap.
  */
-export async function safeFetch(
-  raw: string,
-  opts: {
-    method?: 'GET' | 'HEAD'
-    headers?: Record<string, string>
-    maxBytes?: number
-    timeoutMs?: number
-    /** Tests only: skip the public-address check. Never set from request input. */
-    unsafeAllowPrivate?: boolean
-  } = {},
-): Promise<FetchResult> {
+export async function safeFetch(raw: string, opts: SafeFetchOptions = {}): Promise<FetchResult> {
   const maxBytes = opts.maxBytes ?? 3_000_000
+  const end = Math.min(Date.now() + (opts.timeoutMs ?? 8000), opts.deadline ?? Infinity)
   let current = raw
   for (let hop = 0; hop < 5; hop++) {
-    const u = opts.unsafeAllowPrivate ? new URL(current) : await assertPublicUrl(current)
-    const ctrl = new AbortController()
-    const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 8000)
-    let res: Response
-    try {
-      res = await fetch(u, {
-        method: opts.method ?? 'GET',
-        redirect: 'manual',
-        signal: ctrl.signal,
-        headers: { 'user-agent': UA, accept: '*/*', ...(opts.headers || {}) },
-      })
-    } catch (e) {
-      clearTimeout(timer)
-      const msg = (e as Error).name === 'AbortError' ? 'timed out' : 'could not connect'
-      throw new Error(`Request to ${u.host} ${msg}.`)
-    }
-    if (res.status >= 300 && res.status < 400 && res.headers.get('location')) {
-      clearTimeout(timer)
-      current = new URL(res.headers.get('location')!, u).toString()
-      continue
-    }
-    let text = ''
-    let bytes = 0
-    let truncated = false
-    if (opts.method !== 'HEAD' && res.body) {
-      const reader = res.body.getReader()
-      const chunks: Uint8Array[] = []
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        bytes += value.byteLength
-        if (bytes > maxBytes) {
-          truncated = true
-          chunks.push(value.subarray(0, value.byteLength - (bytes - maxBytes)))
-          await reader.cancel().catch(() => {})
-          break
-        }
-        chunks.push(value)
+    const hostLabel = (() => {
+      try {
+        return new URL(current).host
+      } catch {
+        return current
       }
-      text = new TextDecoder('utf-8', { fatal: false }).decode(Buffer.concat(chunks))
+    })()
+    const timedOut = () => new Error(`Request to ${hostLabel} timed out.`)
+    let remaining = end - Date.now()
+    if (remaining <= 0) throw timedOut()
+    const u = opts.unsafeAllowPrivate ? new URL(current) : await withTimeout(assertPublicUrl(current), remaining, timedOut)
+    remaining = end - Date.now()
+    if (remaining <= 0) throw timedOut()
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => ctrl.abort(), remaining)
+    try {
+      let res: Awaited<ReturnType<typeof undiciFetch>>
+      try {
+        res = await undiciFetch(u, {
+          method: opts.method ?? 'GET',
+          redirect: 'manual',
+          signal: ctrl.signal,
+          headers: { 'user-agent': UA, accept: '*/*', ...(opts.headers || {}) },
+          dispatcher: opts.unsafeAllowPrivate ? plainDispatcher : guardedDispatcher,
+        })
+      } catch (e) {
+        if ((e as { cause?: { code?: string } })?.cause?.code === 'ESSRFBLOCKED') throw new ScanBlockedError('Only public websites can be scanned.')
+        throw new Error(`Request to ${u.host} ${isAbort(e) ? 'timed out' : 'could not connect'}.`)
+      }
+      if (res.status >= 300 && res.status < 400 && res.headers.get('location')) {
+        await res.body?.cancel().catch(() => {})
+        current = new URL(res.headers.get('location')!, u).toString()
+        continue
+      }
+      let text = ''
+      let bytes = 0
+      let truncated = false
+      if (opts.method !== 'HEAD' && res.body) {
+        const reader = res.body.getReader()
+        const chunks: Uint8Array[] = []
+        try {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            bytes += value.byteLength
+            if (bytes > maxBytes) {
+              truncated = true
+              chunks.push(value.subarray(0, value.byteLength - (bytes - maxBytes)))
+              await reader.cancel().catch(() => {})
+              break
+            }
+            chunks.push(value)
+          }
+        } catch (e) {
+          throw new Error(`Request to ${u.host} ${isAbort(e) || ctrl.signal.aborted ? 'timed out' : 'could not connect'}.`)
+        }
+        text = new TextDecoder('utf-8', { fatal: false }).decode(Buffer.concat(chunks))
+      } else {
+        await res.body?.cancel().catch(() => {})
+      }
+      return { status: res.status, url: u.toString(), headers: res.headers as unknown as Headers, text, bytes, truncated }
+    } finally {
+      clearTimeout(timer)
     }
-    clearTimeout(timer)
-    return { status: res.status, url: u.toString(), headers: res.headers, text, bytes, truncated }
   }
   throw new Error('Too many redirects.')
 }

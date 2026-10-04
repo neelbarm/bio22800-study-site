@@ -11,12 +11,16 @@ const FIELDS = ['appUrl', 'builder', 'stack', 'users', 'revenue', 'deadline', 'p
 export async function POST(req: Request) {
   const ip = clientIp(req)
   if (!rateLimit(`lead:${ip}`, 8, 3600_000).ok) return NextResponse.json({ error: 'Too many submissions. Please email us instead.' }, { status: 429 })
-  let body: Record<string, unknown>
+  let parsed: unknown
   try {
-    body = await req.json()
+    parsed = await req.json()
   } catch {
     return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
   }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
+  }
+  const body = parsed as Record<string, unknown>
   if (typeof body.website === 'string' && body.website) return NextResponse.json({ ok: true }) // honeypot: pretend success
   const kind = KINDS.includes(body.kind as Lead['kind']) ? (body.kind as Lead['kind']) : 'contact'
   if (!isEmail(body.email)) return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 })

@@ -12,7 +12,7 @@ export default function AgenciesPage() {
     <div className="wrap">
       <div className="page-head">
         <p className="eyebrow">Partner program</p>
-        <h1>Your brand on the invoice. Our engineers on the code.</h1>
+        <h1>Your brand on the invoice. Our engineering behind it.</h1>
         <p className="lede">
           You sell AI apps, automations and agents. When a build gets stuck, needs a security review or has to go to production, we do the engineering under your name and you keep the client.
         </p>

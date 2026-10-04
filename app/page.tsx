@@ -38,8 +38,8 @@ const FAQ = [
   ['Why not just ask Lovable (or Bolt) to fix it?', "Builder AIs are great at features and weak at checking their own security. They often report a problem as fixed when it isn't, and later prompts can undo fixes. We verify every fix with tests and check the database policies directly."],
   ['Is my data safe with you?', 'We work from a branch or staging copy where possible, use read-only access to production, never paste your keys into chat or AI prompts, and remove our access at handover. We sign NDAs on request.'],
   ['What does the free scan actually check?', 'It loads your live site the way a visitor would and checks the JavaScript it ships for leaked keys, looks for an exposed .env file and source maps, checks security headers, and, for Supabase apps, checks whether your tables return rows to anonymous visitors. It never downloads your data. It only runs on apps you own or are authorized to test.'],
-  ['Can you guarantee my app is secure?', 'No honest engineer can. We guarantee the work: every issue we find is documented with evidence, and every fix we agree on is delivered and tested. If the diagnosis finds nothing material, you get your money back.'],
-  ['What if my app was built with something else?', 'Most of our work is React or Next.js front ends on Supabase, Stripe and Vercel or Netlify, whichever builder made them. Firebase, Replit-native and Base44-native backends are quoted as migrations after the diagnosis.'],
+  ['Can you guarantee my app is secure?', 'No honest engineer can. What we commit to: every issue we find is documented with evidence, and every fix we agree on is delivered and tested. If the diagnosis finds nothing material, you get your money back.'],
+  ['What if my app was built with something else?', 'We work on React or Next.js front ends on Supabase, Stripe and Vercel or Netlify, whichever builder made them. Firebase, Replit-native and Base44-native backends are quoted as migrations after the diagnosis.'],
   ['How fast is it?', 'The diagnosis lands within 48 hours of payment and repo access. Fix sprints take 5 to 10 days depending on the tier.'],
 ]
 
@@ -90,8 +90,8 @@ export default function Home() {
 
       <section className="wrap section" aria-labelledby="issues">
         <div className="section-head">
-          <p className="eyebrow">What we find most often</p>
-          <h2 id="issues">Six problems that show up in almost every AI-built app</h2>
+          <p className="eyebrow">What we check first</p>
+          <h2 id="issues">Six problems that are common in AI-built apps</h2>
           <p className="lede">They don't show in the demo. They show up when real people, real money and real data arrive.</p>
         </div>
         <div className="grid grid-3">
@@ -114,8 +114,8 @@ export default function Home() {
           {[
             ['01', 'Free scan', '60 seconds', 'Paste your live URL. See what your site exposes to anyone, ranked by severity.'],
             ['02', 'Diagnosis', `${usd(PRICES.diagnosis)} · 48 hours`, 'An engineer reviews your code, database policies, auth and payments. You get a written report, a video walkthrough and a fixed quote. The fee is credited to the fix.'],
-            ['03', 'Fix & Ship sprint', `from ${usd(PRICES.sprint[0].price)} · 5–10 days`, 'We fix what we found, add tests so fixes stay fixed, and deploy to production.'],
-            ['04', 'Keep it healthy', `from ${usd(PRICES.retainer[0].price)}/mo`, 'Updates, monitoring and small changes every month, so new prompts and new features don’t undo the work.'],
+            ['03', 'Fix & Ship sprint', `from ${usd(PRICES.sprint[0].price)} · 5–10 days`, `We fix what we found and add tests that catch regressions, with preview deploys for review and a production deploy on ${PRICES.sprint[1].name} and up.`],
+            ['04', 'Keep it healthy', `from ${usd(PRICES.retainer[0].price)}/mo`, 'Updates, monitoring and small changes every month, so new prompts and new features don’t undo the work. Re-fixes after builder re-prompts are covered.'],
           ].map(([n, t, p, b]) => (
             <article className="card step" key={n}>
               <span className="step-num">{n}</span>
@@ -149,7 +149,7 @@ export default function Home() {
               <li>Fixed-price fix plan. The {usd(PRICES.diagnosis)} is credited to it</li>
             </ul>
             <Link href="/diagnosis" className="btn btn-primary">Book the diagnosis</Link>
-            {config.introSpotsLeft > 0 && (
+            {config.introAvailable && (
               <p className="note">
                 Founding offer: {usd(PRICES.diagnosisIntro)} for {config.introSpotsLeft} more client{config.introSpotsLeft > 1 ? 's' : ''} in exchange for a short testimonial.
               </p>
@@ -210,8 +210,8 @@ export default function Home() {
             <tbody>
               {[
                 ['Checks database policies directly', 'Rarely', 'Rarely', 'Yes', 'Yes'],
-                ['Tests so fixes stay fixed', 'No', 'No', 'Yes', 'Yes'],
-                ['Production deploy and monitoring', 'No', 'Sometimes', 'Yes', 'Yes'],
+                ['Tests that catch regressions', 'No', 'No', 'Yes', 'Yes'],
+                ['Production deploy and monitoring', 'No', 'Sometimes', 'Yes', `Yes (${PRICES.sprint[1].name} and up)`],
                 ['Typical cost', 'Credits', '$30–$150', '$1,500–$10,000+', `${usd(PRICES.diagnosis)}, then from ${usd(PRICES.sprint[0].price)}`],
                 ['Time to a written answer', 'Minutes, unverified', 'Varies', '1–2 weeks', '48 hours'],
               ].map(row => (
@@ -232,7 +232,7 @@ export default function Home() {
         <div className="card callout">
           <p className="eyebrow">For AI and automation agencies</p>
           <h2 id="agencies-h" style={{ fontSize: 'clamp(24px, 3vw, 32px)' }}>Sold a build you can't ship? We'll do it under your brand.</h2>
-          <p className="muted">White-label diagnoses, fixes and production deploys at {PRICES.agencyDiscount} off list. You keep the client relationship.</p>
+          <p className="muted">White-label diagnoses, fixes and deploys at {PRICES.agencyDiscount} off list. You keep the client relationship.</p>
           <div className="btn-row"><Link href="/agencies" className="btn btn-secondary">See the partner program</Link></div>
         </div>
       </section>

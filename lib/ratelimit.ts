@@ -1,4 +1,7 @@
-/** Best-effort in-memory rate limiter (per server instance). Good enough to stop casual abuse of the free scan. */
+/**
+ * Best-effort in-memory rate limiter. Counters live in one server instance and reset on a cold start, so
+ * this stops casual abuse of the free scan but is not a hard guarantee across instances.
+ */
 const buckets = new Map<string, number[]>()
 
 export function rateLimit(key: string, limit: number, windowMs: number): { ok: boolean; retryAfterSec: number } {
@@ -18,3 +21,6 @@ export function clientIp(req: Request): string {
   const xf = req.headers.get('x-forwarded-for')
   return (xf ? xf.split(',')[0] : req.headers.get('x-real-ip') || 'unknown').trim()
 }
+
+/** Thrown when a limit is hit part-way through work (for example the post-redirect host of a scan). */
+export class RateLimitedError extends Error {}
