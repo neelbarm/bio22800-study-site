@@ -11,6 +11,11 @@ export async function renderMarkdownFile(rel: string): Promise<string> {
   } catch {
     return `<p>This page is being updated. ${config.contactEmail ? `Email <a href="mailto:${config.contactEmail}">${config.contactEmail}</a> with any questions.` : 'Use the contact form on this site with any questions.'}</p>`
   }
+  return renderMarkdownString(md)
+}
+
+/** Renders trusted Markdown from this repo to HTML, filling brand, URL, contact and legal placeholders. */
+export function renderMarkdownString(md: string): string {
   const L = config.legal
   const legalName = L.name || config.brand
   const contact = config.contactEmail || 'the contact form on this site'

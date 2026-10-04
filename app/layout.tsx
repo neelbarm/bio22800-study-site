@@ -58,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/scan">Free scan</Link>
               <Link href="/diagnosis">Book a diagnosis</Link>
               <Link href="/agencies">Agencies</Link>
+              <Link href="/guides">Guides</Link>
               <Link href="/privacy">Privacy</Link>
               <Link href="/terms">Terms</Link>
             </nav>

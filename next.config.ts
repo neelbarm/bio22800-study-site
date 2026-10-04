@@ -30,6 +30,8 @@ const nextConfig: NextConfig = {
     '/privacy': ['./business/legal/site-privacy.md'],
     '/terms': ['./business/legal/site-terms.md'],
     '/sample-report': ['./business/sample-report.md'],
+    '/guides': ['./business/sales/teardown-posts.md'],
+    '/guides/[slug]': ['./business/sales/teardown-posts.md'],
   },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }]

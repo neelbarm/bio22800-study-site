@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { config } from '@/lib/config.ts'
+import { loadGuides } from '@/lib/guides.ts'
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return ['', '/scan', '/diagnosis', '/sample-report', '/agencies', '/privacy', '/terms'].map(p => ({ url: `${config.siteUrl}${p}`, changeFrequency: 'monthly', priority: p === '' ? 1 : 0.7 }))
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const guides = (await loadGuides()).map(g => `/guides/${g.slug}`)
+  return ['', '/scan', '/diagnosis', '/sample-report', '/agencies', '/guides', ...guides, '/privacy', '/terms'].map(p => ({ url: `${config.siteUrl}${p}`, changeFrequency: 'monthly', priority: p === '' ? 1 : 0.7 }))
 }
