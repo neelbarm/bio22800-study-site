@@ -109,7 +109,7 @@ export function checkSupabase(ctx) {
           const evidence = snippet(stmt.sql, 220);
           if (anon && write) {
             ctx.add('supabase.policy-anon-write', {
-              title: `${label} lets anonymous users ${st.cmd === 'all' ? 'insert/update/delete' : st.cmd}${reasons.length ? ` with ${reasons.join(' and ')}` : ''}`,
+              title: `${label} lets anonymous users ${st.cmd === 'all' ? 'insert/update/delete' : st.cmd}${reasons.length ? ` (${reasons.join(', ')})` : ''}`,
               ...where, evidence,
             });
           } else if (write && (st.usingTrue || st.checkTrue)) {

@@ -9,6 +9,11 @@ const EFFORT_LABEL = { S: 'S (under 2h)', M: 'M (half a day to a day)', L: 'L (m
 const money = (n) => `$${n.toLocaleString('en-US')}`;
 const where = (f) => (f.file ? `${f.file}${f.line ? `:${f.line}` : ''}` : '(repo)');
 
+function whereList(issue) {
+  const all = [...new Set(issue.items.map((x) => x.where).filter((w) => w && w !== '(repo)'))];
+  return all.slice(0, 3).join(', ') + (all.length > 3 ? `, +${all.length - 3} more` : '') || '(repo-wide)';
+}
+
 function mdCode(s) {
   const str = String(s ?? '');
   if (!str) return '';
@@ -75,7 +80,7 @@ export function renderMarkdown(r) {
   if (p.issues.length) {
     L.push('| # | Issue | Severity | Effort | Where |', '|---|---|---|---|---|');
     for (const i of p.issues) {
-      const w = i.items.slice(0, 3).map((x) => x.where).filter(Boolean).join(', ') + (i.items.length > 3 ? `, +${i.items.length - 3} more` : '');
+      const w = whereList(i);
       L.push(`| ${i.n} | ${mdEsc(i.title)} | ${SEV_LABEL[i.severity]} | ${i.effort} | ${mdEsc(w)} |`);
     }
     L.push('');
@@ -167,7 +172,7 @@ export function renderHtml(r) {
   if (p.issues.length) {
     H.push('<table><thead><tr><th>#</th><th>Issue</th><th>Severity</th><th>Effort</th><th>Where</th></tr></thead><tbody>');
     for (const i of p.issues) {
-      const w = i.items.slice(0, 3).map((x) => x.where).filter(Boolean).join(', ') + (i.items.length > 3 ? `, +${i.items.length - 3} more` : '');
+      const w = whereList(i);
       H.push(`<tr><td>${i.n}</td><td>${esc(i.title)}</td><td><span class="pill sev-${i.severity}">${SEV_LABEL[i.severity]}</span></td><td>${i.effort}</td><td><code>${esc(w)}</code></td></tr>`);
     }
     H.push('</tbody></table>');
