@@ -5,3 +5,8 @@ dist/
 node_modules/
 .vercel
 .env*
+.next/
+next-env.d.ts
+*.tsbuildinfo
+shipready-audit/
+!.env.example
