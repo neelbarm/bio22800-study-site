@@ -217,6 +217,23 @@ export function tablesFromOpenApi(doc: unknown): string[] {
     .filter(n => /^[\w.-]+$/.test(n))
 }
 
+/**
+ * Table names the app itself queries through supabase-js: .from("todos"), .from('profiles').
+ * Storage calls (storage.from("bucket")) are excluded.
+ */
+export function tablesFromCode(js: string, limit = 40): string[] {
+  const out = new Set<string>()
+  const re = /(storage\s*\.\s*)?\.from\(\s*["'`]([A-Za-z_][\w]{0,62})["'`]\s*\)/g
+  let m: RegExpExecArray | null
+  while ((m = re.exec(js)) && out.size < limit) {
+    if (m[1]) continue
+    const before = js.slice(Math.max(0, m.index - 12), m.index)
+    if (/storage\s*$|Array\s*$|Buffer\s*$/.test(before)) continue
+    out.add(m[2])
+  }
+  return [...out]
+}
+
 /** "0-0/123" or "* /0" style Content-Range -> total count, or null. */
 export function countFromContentRange(h: string | null): number | null {
   if (!h) return null

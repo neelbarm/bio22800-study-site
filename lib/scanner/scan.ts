@@ -9,6 +9,7 @@ import {
   findSupabase,
   isSensitiveTable,
   scoreFindings,
+  tablesFromCode,
   tablesFromOpenApi,
   type SupabaseRef,
 } from './analyze.ts'
@@ -130,7 +131,8 @@ export async function scanUrl(rawUrl: string, opts: ScanOptions = {}): Promise<S
         notes.push('Ran out of time before checking database exposure. Run the scan again or book the diagnosis.')
         break
       }
-      await probeSupabase(ref.url, anon.value, get, findings, passed, notes, deadline)
+      const codeTables = [...new Set(bodies.flatMap(b => tablesFromCode(b.text)))]
+      await probeSupabase(ref.url, anon.value, get, findings, passed, notes, deadline, codeTables)
     }
   } else if (backendAll.includes('Supabase')) {
     notes.push('Supabase is referenced but the project URL was not found in the scanned files.')
@@ -227,6 +229,7 @@ async function probeSupabase(
   passed: string[],
   notes: string[],
   deadline: number,
+  codeTables: string[] = [],
 ): Promise<void> {
   const headers = { apikey: key, authorization: `Bearer ${key}`, accept: 'application/json' }
   const host = new URL(projectUrl).host
@@ -250,15 +253,20 @@ async function probeSupabase(
     /* ignore */
   }
 
-  let tables: string[] = []
+  // Tables come from two places: the API's own listing (if it shows one to anonymous visitors)
+  // and the table names the app's code queries. Either is enough to test exposure.
+  let listed: string[] = []
   try {
     const r = await get(`${projectUrl}/rest/v1/`, { headers: { ...headers, accept: 'application/openapi+json, application/json' }, timeoutMs: 8000, maxBytes: 2_000_000 })
-    if (r.status === 200) tables = tablesFromOpenApi(JSON.parse(r.text))
-    else notes.push(`The database API did not list its tables to anonymous visitors (HTTP ${r.status}), which is good. Table-level exposure was not tested.`)
+    if (r.status === 200) listed = tablesFromOpenApi(JSON.parse(r.text))
   } catch {
-    notes.push('Could not reach the Supabase API to check table exposure.')
+    /* listing is optional */
   }
-  if (!tables.length) return
+  const tables = [...new Set([...codeTables, ...listed])]
+  if (!tables.length) {
+    notes.push('Could not find any table names to test (the database API does not list them and none were found in the code). The diagnosis checks every table directly.')
+    return
+  }
 
   const readable: { name: string; count: number }[] = []
   const toCheck = tables.slice(0, MAX_TABLES)

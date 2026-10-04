@@ -155,3 +155,24 @@ test('scanUrl on a clean app gives a good grade', async () => {
   assert.equal(r.grade, 'ready')
   assert.equal(r.score, 100)
 })
+
+test('tablesFromCode finds supabase-js tables and skips storage buckets', async () => {
+  const { tablesFromCode } = await import('../lib/scanner/analyze.ts')
+  const js = `a.from("profiles").select("*");b.from('orders').insert(x);c.storage.from("avatars").upload(f);Array.from(set);d.from(\`todo_items\`)`
+  assert.deepEqual(tablesFromCode(js).sort(), ['orders', 'profiles', 'todo_items'])
+})
+
+test('table exposure is tested from code-discovered names even when the API hides its listing', async () => {
+  const site = 'https://hidden.example.com/'
+  const supa = `https://${REF}.supabase.co`
+  const { fn } = fakeFetcher({
+    [site]: { text: '<script src="/assets/index-q.js"></script>' },
+    'https://hidden.example.com/assets/index-q.js': { text: `const s=createClient("${supa}","${ANON}");s.from("customers").select("*")` },
+    [`${supa}/rest/v1/`]: { status: 401, text: '{"message":"no"}' },
+    [`${supa}/rest/v1/customers*`]: { status: 206, headers: new Headers({ 'content-range': '0-0/58' }) },
+  })
+  const r = await scanUrl(site, { fetcher: fn as never })
+  const t = r.findings.find(f => f.id === 'supabase-tables-public')
+  assert.ok(t, JSON.stringify(r.findings.map(f => f.id)))
+  assert.match(t!.detail, /customers \(58 rows\)/)
+})
