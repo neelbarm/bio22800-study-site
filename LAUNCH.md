@@ -18,7 +18,7 @@ These need your identity, money or judgment. Nothing else in this plan works unt
   - [ ] Fix & Ship Sprint deposit: **$750** (50% of the $1,500 tier) -> `NEXT_PUBLIC_STRIPE_LINK_SPRINT_DEPOSIT`. For other tiers and the diagnosis credit, create a per-quote link or invoice.
   - [ ] Optional: Maintain retainer **$500/month** subscription link.
   - [ ] Optional: Sprint 10 deposit **$1,250** link.
-  - On each link: collect name and email, set the confirmation to redirect to your site, and add a line referencing the SOW and terms.
+  - On each link: collect name and email, set **After payment -> Redirect customers to your website** to `https://[your-domain]/thanks` (that page tells buyers how to share code access), and add a line referencing the SOW and terms.
 - [ ] **Buy a domain** (and set up email on it, e.g. `hello@[domain]`).
 - [ ] **Connect this repo to Vercel**, add the domain, and **set the environment variables** below for Production (and Preview). Redeploy after changing any `NEXT_PUBLIC_` value, because they are baked in at build time.
 - [ ] **Create Upwork and Fiverr profiles** (Claude Code / Supabase / Lovable rescue positioning; see Day 4).
@@ -41,6 +41,7 @@ Set in Vercel > Project > Settings > Environment Variables. Values shown are exa
 | `NEXT_PUBLIC_STRIPE_LINK_DIAGNOSIS` | Yes | `https://buy.stripe.com/...` | $399 diagnosis Payment Link. |
 | `NEXT_PUBLIC_STRIPE_LINK_DIAGNOSIS_INTRO` | Recommended | `https://buy.stripe.com/...` | $199 intro diagnosis link (first 3 clients). Remove after 3 sales. |
 | `NEXT_PUBLIC_STRIPE_LINK_SPRINT_DEPOSIT` | Recommended | `https://buy.stripe.com/...` | $750 sprint deposit link. |
+| `NEXT_PUBLIC_INTRO_SPOTS_LEFT` | Optional | `3` | How many $199 founding-price spots to advertise. Set to `0` (and redeploy) after the third sale to hide the offer. |
 | `NEXT_PUBLIC_CAL_URL` | Optional | `https://cal.com/yourname/intake` | Booking link for intake calls. |
 | `RESEND_API_KEY` | Optional | `re_...` | Server-only. Enables emailing scan results and lead notifications. **Never prefix with `NEXT_PUBLIC_`.** |
 | `LEADS_TO_EMAIL` | Optional (with Resend) | `you@yourmail.com` | Where new-lead emails are sent. |
